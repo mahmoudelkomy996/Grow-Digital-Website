@@ -1,0 +1,334 @@
+=== slide1.xml | media: image2.jpeg, image1.jpeg, image3.png
+IT’S TIME TO GROW…
+THE AGILE INTEGRATOR
+=== slide2.xml | media: image4.jpeg, image1.jpeg
+Grow Digital is a business integrator, not another vendor in the stack. One accountable team designs, builds, operates, and markets your systems — so you stop managing five contracts and start managing one outcome. 
+We run the systems our clients’ revenue depends on — accountable for the number at quarter-end, not just the ticket count.
+MISSION
+We are the integrator KSA and UAE enterprises call first — end-to-end, from optimizing what exists to replacing what doesn’t work.
+VISION
+ABOUT US
+=== slide4.xml | media: image6.jpeg
+OUR SEVEN PILLARS
+1. CONSULT          2. TRANSFORM 
+3. BUILD               4. OPERATE  
+5. SECURE            6. SOLVE  
+7. GROW
+=== slide5.xml | media: image8.jpeg, image7.jpeg, image9.png, box_v2_1.png, box_v2_2.png, box_v2_3.png, box_v2_4.png, box_v2_5.png, box_v2_6.png, box_v2_7.png, box_v2_8.png
+CONSULT
+From Strategy to Execution with Full Governance and Measurable Impact
+=== slide6.xml | media: image5.jpeg, image1.jpeg, image10.png
+ADVISORY SERVICES
+Scope Includes:
+Digital transformation strategy &amp; roadmap
+Technology landscape assessment
+Enterprise architecture advisory
+Vendor evaluation &amp; selection
+Target operating model design
+ROI &amp; investment prioritization
+Value Delivered:
+Clear executive-aligned roadmap
+Reduced investment risk
+Improved decision-making framework
+Future-ready digital architecture
+=== slide7.xml | media: image11.jpeg, image1.jpeg, image12.png
+Independent project &amp; vendor audits
+Implementation quality reviews
+Risk &amp; compliance monitoring
+Governance validation
+System readiness &amp; performance benchmarking
+SCOPE INCLUDES
+Reduced implementation risk
+Vendor accountability
+Improved governance visibility
+Early detection of critical gaps
+VALUE DELIVERED
+QUALITY ASSURANCE
+=== slide8.xml | media: image13.jpeg, image7.jpeg, image14.png
+PROGRAM &amp; PROJECT MANAGEMENT OFFICE (PMO)
+Scope Includes
+PMO setup &amp; governance structure
+Multi-vendor coordination
+Budget &amp; timeline control
+Risk &amp; issue management
+Executive KPI reporting
+Change management alignment
+Value Delivered
+On-time &amp; on-budget delivery
+Structured execution model
+Full executive transparency
+Controlled transformation environment
+=== slide9.xml | media: image15.jpeg, image7.jpeg, image16.png
+Scope Includes
+Business process re-engineering
+Operational performance assessment
+KPI framework design
+Cost optimization initiatives
+Revenue cycle improvement
+AI &amp; automation use-case identification
+BUSINESS CONSULTANCY
+Value Delivered
+Improved operational efficiency
+Measurable ROI impact
+Optimized resource utilization
+Sustainable performance growth
+=== slide11.xml | media: image19.jpeg
+TRANSFORM
+=== slide12.xml | media: image20.png, image7.jpeg, image21.png
+AI VALUE PROPOSITION
+=== slide13.xml | media: image22.svg, image7.jpeg
+Grow Digital runs Data and AI delivery with our global partners Navinspire and GTech. Our data scientists and AI engineers build predictive models and decision systems that hold up in production — not just in a demo. The result: faster decisions, lower operating cost, and fewer people needed to babysit a dashboard.
+DATA &amp; AI SERVICES
+=== slide14.xml | media: image7.jpeg
+Data Management Services 
+Offers comprehensive solutions for collecting, storing, and protecting data. Their expertise in Data Warehousing (DWH) allows organizations to consolidate data from various sources, ensuring quality and consistency. The services support fast data processing, facilitate modern data management, and ensure controlled, secure processing with regular audits to prevent unauthorized access and data breaches.
+Data Integration Services
+Focuses on unifying data from multiple sources to create a cohesive, accessible structure for analysis. The solutions help streamline data flow, improve decision-making, and provide insights by integrating data from diverse systems, ensuring consistency and accuracy across the business. These services are critical for businesses looking to enhance operational efficiency and make informed, data-driven decisions. Methods like Data Mining to extract valuable insights, Data Warehousing for consolidating and standardizing data from various sources, and Master Data Management (MDM) to ensure accuracy and quality in key data. These approaches allow organizations to improve data accessibility, consistency, and reporting.
+Data Lake Services
+Store large volumes and diverse types of data, enabling businesses to derive value through various analytical methods. GTech's consultancy helps create hybrid data lakes by integrating multiple technologies for real-time and historical data analytics. A key advantage is the elimination of the need for data modeling during storage, allowing for data models to be created during discovery and exploration, offering flexibility to generate insights across different domains.
+=== slide15.xml | media: image7.jpeg
+Reporting and Business Intelligence
+Supports organizations in making strategic data-driven decisions. It is and end-to-end services that collect, process, analyze, and visualize large datasets, ensuring safe storage in the cloud or on-premise. These solutions simplify decision-making and provide self-service analytical features for managers, data scientists, analysts, and consultants. The tools allow businesses to manage complex data from various sources, such as ERPs, CRMs, and APIs. Key features include quick analysis, easy-to-understand visuals, employee satisfaction, and safe forecasts. Our methodology incorporates in-memory analytics, live analytical reporting, and OLAP tools for complex queries. They promise to support decision-making, enhance business processes, and help identify trends and patterns in data, improving performance and strategic planning.
+AI and Advanced Analytics
+This service helps businesses turn complex data into actionable insights. By leveraging machine learning, deep learning, and predictive analytics, it enables you to make smarter decisions based on data.It includes analyzing large datasets, automating processes, and providing real-time insights that go beyond traditional reporting. It uses modern frameworks to ensure efficient data processing, whether it's from sensors, smart devices, or other sources, making it easier for you to integrate and act on data-driven insights. With its expertise, it helps businesses improve decision-making, optimize processes, and stay ahead with innovative, future-focused solutions.
+=== slide16.xml | media: image23.jpeg, image1.jpeg, image24.jpeg
+SAMPLE OF AI USE CASES
+Inflight Catering Optimization:
+Project: Low-cost carrier partnered with us to optimize its onboard food and beverages product management through the ”Waste Optimization Project.; The project focused on improving demand forecasting and product loading processes to minimize waste and increase operational efficiency.
+Business value: reduce unnecessary product loading, achieving up to 20% savings in operational costs, Improved product availability and planning resulted in a 32% increase in revenue per passenger, Enhanced operational efficiency led to a 30% rise in profitability per passenger and Food waste was reduced by 7%, supporting sustainability goals.
+=== slide17.xml | media: image25.jpeg, image1.jpeg
+Data-Driven Approach to Boosting Customer Loyalty (The Vehicle Purchase Prediction Project):
+The project's AI and machine learning models predict what each customer actually wants to buy next. Campaigns get built around that prediction instead of a demographic guess — right product, right customer, right moment.
+Business Value: Personalized campaigns led to a 71% increase in campaign conversion rates, Filtered campaigns, targeted to specific customer segments, achieved a 10x increase in purchase rates during pilot studies and there has been a 30% increase in positive feedback rates from customer satisfaction surveys.
+=== slide18.xml | media: image25.jpeg, image1.jpeg
+SAMPLE OF AI USE CASES – CONT.
+Banking Regulatory Chatbot - Virtual Advisor
+Project: guiding businesses and individuals on KYC/AML procedures, international transfers, regulatory thresholds, central banks forms… ​Supported languages: Arabic, French, English, Japanese, Chinese, Italian, German…
+Business value: Response times reduced from several days to a few seconds, regardless of the user’s country of origin
+24/7 Digital Healthcare Assistant
+Project: WhatsApp chatbot for patients' interactions with the hospital 24*7 to Instant, accurate responses to patient inquiries anytime, Appointment &amp; Booking Management and Patient Requests like sick leave &amp; accessing medical reports.
+Business value: 30% cost reduction compared to call center and 50% Faster Appointment Booking turnaround.
+=== slide19.xml | media: image25.jpeg, image1.jpeg
+Agentic AI for Combating Financial Fraud and Money Laundering (Detection of Abnormal Behaviors)
+Project: Continuous analysis of transaction habits: every transfer, delay, and payment instrument (cards, mobile banking, forex) is compared against a historical “normal” profile using AI models Plus Real‑time alerts: as soon as a significant deviation is detected (e.g., an unusually large overseas purchase or a series of micro‑transfers), the AI agent raises a “red flag” and auto‑generates a pre‑filled investigation dossier
+Business Value: Reduced lag between anomaly occurrence and alert and Fewer false positives thanks to probabilistic scoring combining business rules and generative detection ​
+Agentic AI for clinical decision support
+Project: AI-enabled cloud-based product that improves clinical decision-making, enhances the accuracy of medical coding, and streamlines claims auditing and related administrative processes for different healthcare providers 
+Business Value: Enhance Clinical Decision Making by Empowering healthcare providers with AI-driven, evidence-based guidance to improve the timeliness and quality of patient care, Improve Medical Coding Accuracy, Streamline Claims Auditing &amp; Compliance, Strengthen Data Security &amp; Regulatory Compliance
+AI-Powered Maintenance Scheduling (Human Task Optimization)
+Project: AI automatically plans daily, and weekly maintenance schedules based on asset health, available technicians, skills, and work priorities.
+Business value: Higher technician productivity, Reduced overtime and idle time, Faster maintenance response and Fewer emergency repairs
+AI-Based Competency &amp; Skill Gap Management
+Project: AI analyzes current workforce competencies, identifies gaps, recommends training paths, and tracks employee readiness for promotion or job rotation.
+Business Value: Faster skill development, More effective training investments, Better job satisfaction and retention and Safer and more capable workforce
+=== slide20.xml | media: image27.jpeg, image26.jpeg
+AGILE PREDICTIVE MONITORING (AGPM) FOR SMARTER INFRASTRUCTURE
+=== slide21.xml | media: image33.png, image38.png, image28.jpeg, image32.png, image37.png, image26.jpeg, image31.png, image36.png, image30.png, image35.png, image29.png, image34.png, image39.png
+❖Low-Cost Digitalization: Agile Predictive Monitoring platforms enable cost-effective AI deployment using affordable IoT devices and built-in AI, eliminating the need for third-party services and potentially reducing costs by up to tenfold.
+❖Suitable For Lean Enterprises: Agile Predictive Monitoring platforms provide customizable no-code interfaces and diverse sensors to streamline operations, tackle challenges, and lower costs, aligning with lean enterprise practices.
+❖Native AI Implementation: The Agile Predictive Monitoring platform enables quick integration of operational parameters with AI capabilities such as anomaly detection at a low cost, simplifying data acquisition and architecture processes.
+❖Different Industries: various applications in sectors like manufacturing, logistics, energy, Industrial Enterprises, Fuel Stations, Airports, Smart Facilities like Smart Hospitals and Smart Schools and more.
+=== slide22.xml | media: image40.jpeg
+IOT SERVICES
+=== slide23.xml | media: image41.png, image7.jpeg, image42.svg
+IOT VALUE PROPOSITION
+=== slide24.xml | media: image43.svg, image7.jpeg, image44.png
+Grow Digital runs industrial IoT with our partner SkySens: long-range wireless networks, predictive analytics, and data integration that connects the shop floor to the systems that run the business.
+Grow Digital runs an Industrial IoT platform with our partner MaestroHub, connecting shop-floor data directly into ERP and SCADA in real time. Manufacturers act on what the floor is telling them the same day, not the same quarter.
+INDUSTRIAL IOT SOLUTIONS
+MANUFACTURING IOT SOLUTIONS
+=== slide25.xml | media: image4.jpeg, image1.jpeg
+Real-time monitoring and mapping of energy usage to production output.
+Use Case: A chemical manufacturer saved $45K annually by reducing steam consumption by 8 tones per day, achieving ROI in less than three months by connecting his SCADA and ERP to Maestro Hub.
+Dynamic resource deployment using data from SCADA and maintenance systems to optimize repair times and skill-based technician assignments.
+Use Case: Maintenance optimization led to a 1% capacity increase for a manufacturer within one month by connecting SCADA, Maintenance and skill sets to Maestro hub
+Integration of IIoT with data contextualization to provide role-based insights, enabling proactive actions like anomaly detection and production optimization.
+Use Case: A durable goods OEM improved production capacity by 30% within a month through real-time virtual twins and dashboards.
+ENERGY COST OPTIMIZATION
+REDUCING DOWNTIME
+PRODUCTION EFFICIENCY
+Real-time monitoring of reactor parameters and process adjustments using advanced analytics.
+Use Case: Reduced quality problems by 50% within two months through condition-based monitoring by connecting SCADA, LIMS, Recipes and CIP details to Maestrohub.
+IMPROVING PRODUCT QUALITY
+SAMPLE OF IOT USE CASES
+=== slide26.xml | media: image45.jpeg
+BUILD
+=== slide27.xml | media: image46.png, image7.jpeg
+Grow Digital builds mobile and web platforms that work on the device the customer actually owns — phone, tablet, or desktop. We build new or fix what’s already breaking, and we’re measured on load time and conversion, not on how the site looks in a screenshot. 
+Grow Digital designs interfaces people finish using without giving up halfway through. Research, wireframes, and testing come before a single pixel gets polished, because a beautiful screen nobody completes is a wasted build.
+MOBILE/WEB DEVELOPMENT
+UX/UI DESIGN
+=== slide28.xml | media: image47.svg, image7.jpeg
+Grow Digital builds custom applications end to end — ideation, build, launch, and support after launch. MERN, Java, Python: whatever the stack, the interface has to work the same way on web and mobile, because your customer doesn’t care which platform they open.
+Grow Digital connects systems that were never built to talk to each other: Healthcare Information Systems to ERP, patient apps to HIS, Oracle Fusion to NCR POS. We’ve wired payment gateways into multiple applications so the money moves without a manual step in between.
+APPLICATION DEVELOPMENT
+INTEGRATION SERVICES
+=== slide29.xml | media: image48.jpeg
+OPERATE
+=== slide30.xml | media: image49.png, image7.jpeg
+Google Cloud Platform (GCP): Assists organizations in leveraging GCP's capabilities, including cloud migration, infrastructure design, security implementation, big data analytics, and AI/ML solutions.
+Microsoft Azure: Provides services to help businesses utilize Azure's cloud solutions, focusing on scalability, security, and performance optimization.
+Oracle Cloud: Offers expertise in Oracle Cloud services, including database management, application development, and enterprise resource planning (ERP) solutions.
+IBM Cloud: Supports organizations in adopting IBM Cloud services, emphasizing hybrid cloud solutions and AI integration.
+CLOUD SERVICES
+=== slide31.xml | media: image50.jpeg, image7.jpeg, image51.png
+Scope Includes
+Application &amp; system support (ERP, HIS, IoT, AI)
+L1, L2, L3 support coverage
+Incident &amp; problem management
+Performance monitoring &amp; optimization
+Patch management &amp; upgrades
+SLA-based managed services
+Cloud &amp; infrastructure monitoring
+GROWSHIELD™ MANAGED SERVICES
+Value Delivered
+Reduced downtime &amp; operational risk
+Improved system availability
+Predictable operational costs
+Proactive issue resolution
+Enhanced user satisfaction
+Long-term platform sustainability
+=== slide32.xml | media: image52.png, image7.jpeg
+SAMPLE OF OUR LOGOS FOR CONSULTANCY &amp; SW SERVICES
+Healthcare &amp; Insurance 
+Retail &amp; eCommerce
+Government
+Construction &amp; Realestate 
+=== slide33.xml | media: image53.jpeg
+SECURE
+=== slide34.xml | media: image54.png, image7.jpeg
+CYBERSECURITY SERVICES
+=== slide35.xml | media: image55.jpeg, image1.jpeg
+Vulnerability assessments and penetration testing: Conduct rigorous assessments to identify and address potential weaknesses in your systems, ensuring that your infrastructure is protected from potential threats.
+Managed Security Services: Our 24/7 monitoring and response services provide real-time threat detection and incident response, allowing you to focus on your core business while we keep a close eye on your security posture.
+Cybersecurity Services for Cloud Environments including but not limited to Cloud Security Assessment, Cloud Security Architecture &amp; Design, and Identity &amp; Access Management (IAM) 
+Security Awareness Training: Provide your employees with the knowledge and skills necessary to identify and mitigate cyber threats. Our training programs promote a cybersecurity-conscious culture within your organization.
+A DEEPER LOOK INTO OUR SECURITY SOLUTIONS
+Our expert cybersecurity team is committed to understanding the unique challenges your company faces. We provide tailored solutions that cover a wide range of services, including:
+=== slide36.xml | media: image56.jpeg, image1.jpeg, image57.jpeg
+WHAT'S SPECIAL ABOUT US
+Custom-Built Defense: We build the security stack around your actual risk profile, not a template. You get a defense that matches your threat model, not a generic checklist.
+Tailored to Your Risk Profile: Retail, healthcare, and finance don’t face the same threats. Your defense is scoped to your industry and your actual attack surface, not a one-size template.
+24/7 Real-Time Vigilance: Round-the-clock monitoring catches threats before they reach your systems, so your team can focus on the business instead of watching a dashboard.
+=== slide37.xml | media: image58.jpeg, image7.jpeg
+COMPREHENSIVE EXPERTISE
+❖ Our cybersecurity professionals include some of the brightest minds in the industry. Their expertise includes:
+Vulnerability assessments
+Penetration testing
+Strategic incident response planning
+❖ This diverse skill set enables us to provide comprehensive solutions that address all aspects of cybersecurity, leaving no stone unturned in securing your digital footprint.
+❖ Along with our resources &amp; partners, Our journey has been adorned with accolades and industry recognition, which has solidified our position as cybersecurity market leaders. These endorsements demonstrate the impact we've had in raising the standard for cybersecurity excellence.
+=== slide38.xml | media: image59.png, image7.jpeg
+KEY PROJECTS
+=== slide39.xml | media: image61.png, image60.jpeg
+Grow Digital is exclusive representative and delivery arm for the following solution providers in Kingdom of Saudi Arabia and UAE:
+SOLVE
+=== slide40.xml | media: image62.jpeg, image7.jpeg, image63.png
+❖ Omni-channel commerce platform
+❖ Marketplace integrator 
+❖ App-Commerce
+❖ Order management system
+❖ Loyalty module
+❖ Real-time promotions
+Inveon inComerce is agile way to build, launch and expand your 
+e-Commerce business across different channels, marketplaces and partners
+INVEON INCOMMERCE
+=== slide41.xml | media: image64.jpeg, image1.jpeg, image67.png, image66.png, image65.jpeg
+❖ Mobilgi OneStore is a Visual Merchandising solution.
+❖ Provides the most comprehensive tool kit for all users – store staff and managers – in a single easy to use software package. 
+ ❖ Acts as the connective tissue between your store, field team and headquarters.
+RETAIL STORE OPERATIONS
+=== slide42.xml | media: image68.jpeg
+GROW
+=== slide43.xml | media: image69.png, image7.jpeg, image71.png, image70.svg
+MARKETING SERVICES BUSINESS UNIT
+Digital Marketing
+Business Development
+Marketing Research
+=== slide44.xml | media: image72.jpeg, image7.jpeg, image73.png
+DIGITAL MARKETING
+=== slide45.xml | media: image74.svg, image7.jpeg
+BUSINESS DEVELOPMENT
+Grow Digital assists businesses in developing effective strategies for growth and expansion, leveraging market insights and industry expertise. 
+=== slide46.xml | media: image75.png, image7.jpeg
+GROWTHLAB - DATA ANALYTICS
+A data strategy built to match your EPG business plan — not bolted on after the fact.
+=== slide47.xml | media: image76.png, image7.jpeg
+A team of growth management experts boost your online growth &amp; revenue through Inveon’s extensive know-how, ecosystem and benchmarking capability
+=== slide48.xml | media: image77.png, image7.jpeg
+GROWTHLAB: REINVENTING CUSTOMER SUCCESS THROUGH
+Every growth lever pulled together — no siloed tactics, no budget wasted chasing the wrong channel
+=== slide49.xml | media: image2.jpeg, image78.jpeg, image3.png
+THANK YOU
+=== slide50.xml | media: image4.jpeg, image1.jpeg
+OWNERSHIP
+We take responsibility for outcomes, not just tasks.
+INTEGRITY
+We do what is right and communicate honestly.
+CLIENT IMPACT
+We focus on creating real, measurable business value.
+ONE TEAM
+We work as one team, across roles and locations.
+KEEP GROWING
+We stay curious and keep developing our capabilities.
+MAKE IT HAPPEN
+We move from ideas to action, with speed and discipline.
+RESPECT
+We treat everyone with respect and value different views.
+OUR VALUES
+=== slide51.xml | media: image5.jpeg, image1.jpeg, image10.png, image_dt_banner.png
+DIGITAL TRANSFORMATION
+Scope Includes:
+Digital transformation program design
+Change management &amp; stakeholder alignment
+Process digitization &amp; automation
+Technology adoption planning
+Innovation pipeline management
+Transformation governance &amp; tracking
+Value Delivered:
+Faster, structured transformation delivery
+Higher user adoption, less resistance
+Reduced execution risk
+Measurable transformation KPIs
+=== slide52.xml | media: image5.jpeg, image1.jpeg, image10.png, banner_data.png
+DATA &amp; ANALYTICS ADVISORY
+Scope Includes:
+Data strategy and governance framework
+Data quality and architecture assessment
+BI and reporting enablement
+Analytics use-case identification
+Data platform and tooling selection
+Data literacy and training programs
+Value Delivered:
+Trusted, decision-ready data
+Faster and more confident reporting
+Reduced data risk and duplication
+Clear data governance ownership
+=== slide53.xml | media: image5.jpeg, image1.jpeg, image10.png, banner_ai_lab.png
+AI LAB (IMPACTLAB)
+Scope Includes:
+AI maturity assessment for leadership
+Ideation workshops to identify and prioritize use cases
+AI strategy and roadmap definition
+Use-case feasibility and ROI scoring
+Data and platform readiness review
+Ethical and governance framework setup
+Value Delivered:
+Clear AI adoption roadmap
+Prioritized use-case backlog
+Leadership alignment on AI strategy
+Reduced execution risk on AI investments
+=== slide54.xml | media: image5.jpeg, image1.jpeg, image10.png, banner_change.png
+CHANGE MANAGEMENT &amp; TRAINING
+Scope Includes:
+Change readiness assessment
+Stakeholder engagement planning
+Training needs and program design
+Adoption tracking and reinforcement
+Resistance management
+Change champion network setup
+Value Delivered:
+Higher adoption and lower resistance
+Faster time-to-value on new systems
+Sustained behavior change
+Stronger internal capability
