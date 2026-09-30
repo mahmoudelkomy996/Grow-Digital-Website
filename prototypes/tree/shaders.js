@@ -13,10 +13,11 @@ const MASK = /* glsl */ `
 uniform vec2 uRes;
 uniform float uMaskMode;
 uniform float uMaskFloor;
+uniform vec2 uMaskX;
 float protectMask() {
   vec2 f = gl_FragCoord.xy / uRes;
-  float d = smoothstep(0.30, 0.47, f.x);
-  float m = smoothstep(0.40, 0.56, f.y);
+  float d = smoothstep(uMaskX.x, uMaskX.y, f.x);
+  float m = smoothstep(0.46, 0.60, f.y);
   return mix(uMaskFloor, 1.0, mix(d, m, uMaskMode));
 }
 `;
@@ -91,7 +92,8 @@ export function tubeMaterial(U) {
       varying float vGroup;
       varying float vAng;
       varying float vTr;
-      uniform float uTraceA;
+      uniform float uDim;
+      uniform vec2 uNear;
       void main() {
         if (vLocal > vGrowV || vGrowV < 0.0005) discard;
         vec3 N = normalize(vN);
@@ -118,18 +120,28 @@ export function tubeMaterial(U) {
         // growing tip (roots: capped mint flare, never a white starburst)
         float gap = max(vGrowV - vLocal, 0.0);
         float tip = exp(-gap * mix(60.0, 170.0, isRoot)) * (1.0 - step(0.999, vGrowV));
-        vec3 tipC = mix(mix(uMint, uPaper, vAct * (1.0 - isRoot)), uLime, vHi * 0.6);
+        vec3 tipC = mix(uMint, uPaper, vAct * (1.0 - isRoot));
         float tipI = tip * (0.35 + 2.05 * vAct);
         tipI = mix(tipI, min(tipI, 0.8), isRoot);
         col += tipC * tipI;
-        // OPERATE: comet pulses circulating root -> trunk -> branches, head leading, on a faint track
+        // OPERATE: the tree dims and comet pulses carry the frame, circulating root -> trunk -> branches.
+        // A per-pillar phase offset keeps a pulse on every branch in any still.
         if (uPulse > 0.001) {
-          float ph = vPd * 0.3 - uFlow * 0.6;
+          col *= 1.0 - 0.45 * uDim;
+          float ph = vPd * 0.3 - uFlow * 0.6 + vGroup * 0.37;
           float f1 = fract(ph);
           float f2 = fract(ph * 2.0 + 0.5);
-          float c1 = exp(-(1.0 - f1) * 6.5) * (1.0 - smoothstep(0.96, 1.0, f1));
-          float c2 = exp(-(1.0 - f2) * 9.0) * (1.0 - smoothstep(0.95, 1.0, f2)) * 0.4;
-          col += (mix(glowB, uPaper, 0.3) * (c1 + c2) * 2.1 + glowB * 0.06) * uPulse;
+          float cut1 = 1.0 - smoothstep(0.985, 1.0, f1);
+          float cut2 = 1.0 - smoothstep(0.985, 1.0, f2);
+          float head = exp(-(1.0 - f1) * 30.0) * cut1;
+          float tail = exp(-(1.0 - f1) * 5.0) * cut1;
+          float head2 = exp(-(1.0 - f2) * 30.0) * cut2;
+          float tail2 = exp(-(1.0 - f2) * 5.0) * cut2;
+          float thinP = mix(1.0, 1.6, thin);
+          // after OPERATE the thick trunk stays calm; the circulation lives on in the limbs
+          float calm = mix(1.0, 0.3, thick * (1.0 - uDim));
+          col += (mix(uMint, uPaper, 0.6) * (head * 1.7 + head2 * 0.8) * thinP
+                + uMint * (tail * 0.7 + tail2 * 0.25) + uMint * 0.03) * uPulse * calm;
         }
         // BUILD: structured segments + traces on the trunk
         if (abs(vGroup - 1.0) < 0.5 && uBands > 0.001) {
@@ -143,14 +155,22 @@ export function tubeMaterial(U) {
           float reveal = 1.0 - smoothstep(uBands * 1.1 - 0.1, uBands * 1.1, vLocal);
           col += glowB * (ring * 1.3 + trace * 0.45) * reveal * uBands;
         }
-        // finale roll-call: a tracer runs up each pillar in turn
+        // finale roll-call: a soft mint tracer runs up each pillar in turn (fades in and out of its window)
         if (vTr > -0.5) {
           float dd = vLocal - vTr;
-          float trc = exp(-dd * dd * 1400.0) + step(dd, 0.0) * exp(dd * 16.0) * 0.28;
-          col += mix(uMint, uPaper, 0.45) * trc * (1.0 - smoothstep(0.95, 1.12, vTr)) * 1.25;
+          float trc = exp(-dd * dd * 500.0) * 0.7 + step(dd, 0.0) * exp(dd * 16.0) * 0.15;
+          float env = smoothstep(-0.08, 0.12, vTr) * (1.0 - smoothstep(0.85, 1.12, vTr));
+          col += mix(uMint, uPaper, 0.15) * trc * env;
         }
         float d = length(vW - cameraPosition);
-        col = mix(col, uFogColor, fogAmount(d));
+        float fa = fogAmount(d);
+        col = mix(col, uFogColor, fa);
+        // active-pillar lime, luminance preserving and only on bright pixels that are not lost in fog
+        float L = dot(col, vec3(0.2126, 0.7152, 0.0722));
+        float lt = vHi * smoothstep(0.2, 0.42, L) * (1.0 - fa);
+        col = mix(col, uLime * (L / 0.762), lt);
+        // limbs that pass close to the lens dissolve instead of smearing across the frame
+        col = mix(uFogColor, col, smoothstep(uNear.x, uNear.y, d));
         col = mix(uFogColor, col, protectMask());
         gl_FragColor = vec4(col, 1.0);
       }`,
@@ -228,16 +248,19 @@ export function groundMaterial(U) {
           col += uMint * bw * (0.12 + grid * 1.3);
         }
         // OPERATE: 24-tick monitoring dial; its sweep and the base flash share the pulse clock
+        // A 24-hour clock face around the trunk: 24 hour ticks, 4 long quarter marks, a sweeping hand.
         if (uClock > 0.001) {
-          float band = smoothstep(1.28, 1.34, r) * (1.0 - smoothstep(1.86, 1.92, r));
-          float ticks = gline(ang * 24.0, fwp * 24.0, 2.2) * smoothstep(1.58, 1.62, r) * (1.0 - smoothstep(1.8, 1.84, r));
-          float ringA = gline(r / 0.3, fwr / 0.3, 1.4) * band;
+          float band = smoothstep(1.86, 1.92, r) * (1.0 - smoothstep(2.74, 2.8, r));
+          float rings = gline((r - 1.9) / 0.85, fwr / 0.85, 1.8) * smoothstep(1.8, 1.86, r) * (1.0 - smoothstep(2.8, 2.86, r));
+          float ticks = gline(ang * 24.0, fwp * 24.0, 2.4) * smoothstep(2.3, 2.34, r) * (1.0 - smoothstep(2.62, 2.66, r));
+          float quarter = gline(ang * 4.0, fwp * 4.0, 4.0) * smoothstep(2.02, 2.06, r) * (1.0 - smoothstep(2.66, 2.7, r));
           float sw = fract(ang - uFlow * 0.3);
-          float sweep = exp(-(1.0 - sw) * 6.0) * band;
+          float sweep = exp(-(1.0 - sw) * 7.0) * band;
+          float hand = exp(-(1.0 - sw) * 90.0) * band;
           float beatP = exp(-fract(uFlow * 0.6) * 5.0);
-          float inner = exp(-pow((r - 1.31) * 30.0, 2.0));
-          col += uMint * (ticks * 1.1 + ringA * 0.5 + sweep * 0.45 + inner * beatP * 0.7) * uClock;
-          col += uPaper * sweep * ticks * uClock * 0.6;
+          float inner = exp(-pow((r - 1.9) * 30.0, 2.0));
+          col += uMint * (ticks * 2.2 + quarter * 2.4 + rings * 0.9 + sweep * 0.3 + hand * 1.1 + inner * beatP * 0.6) * uClock;
+          col += uPaper * (sweep * (ticks + quarter) * 0.8 + hand * 0.4) * uClock;
         }
         col *= (1.0 - fogAmount(length(vW - cameraPosition))) * protectMask();
         gl_FragColor = vec4(col, 1.0);
@@ -320,13 +343,14 @@ export function leavesMaterial(U) {
         vec4 mv = billboard(pos, size, 0.0, 44.0, b * fade);
         gl_Position = projectionMatrix * mv;
         vec3 c = aRnd.y < 0.3 ? uT500 : (aRnd.y < 0.56 ? uT400 : (aRnd.y < 0.8 ? uT300 : uMint));
-        float isHi = 1.0 - step(0.5, abs(aGroup - 8.0));
-        float hi = isHi * uLeafHi * 0.75;
-        c = mix(c, uLime, hi);
         float flash = b * (1.0 - b) * 4.0;
         vCol = c * (uLeafGlow + flash * 0.6) + uMint * flash * 0.12;
-        vec3 hc = mix(uMint, uLime, hi);
-        vHalo = hc * (vCol.g / hc.g);
+        // halo always mint at the leaf's own brightness; the active pillar (GROW) adds a bright lime
+        // pinpoint core to ~a quarter of its leaves (never a dim lime wash, which reads olive)
+        vHalo = uMint * (vCol.g / uMint.g);
+        float isHi = 1.0 - step(0.5, abs(aGroup - 8.0));
+        float hi = isHi * uLeafHi * step(0.74, fract(aRnd.w * 7.31 + aRnd.x * 3.7));
+        vCol = mix(vCol, uLime * 2.5, hi);
         vA = (1.0 - fogAmount(-mv.z)) * step(0.0001, b) * fade;
       }`,
     fragmentShader: pointFrag(0.66, 0.34),
@@ -371,28 +395,39 @@ export function sapMaterial(U) {
         ex = mix(texelFetch(uPaths, ivec2(i0, rowR), 0), texelFetch(uPaths, ivec2(i1, rowR), 0), fr);
         return mix(texelFetch(uPaths, ivec2(i0, row), 0), texelFetch(uPaths, ivec2(i1, row), 0), fr);
       }
+      uniform float uSapTrunk;
       void main() {
         int row = int(aPath + 0.5);
         float u = fract(aRnd.x + uTime * (0.03 + aRnd.y * 0.035) + uS * 0.22);
-        vec4 ex, ex2;
+        vec4 ex, ex2, ex3;
         vec4 H = pathAt(u, row, ex);
-        float du = (0.34 + 0.3 * aRnd.y) / max(ex.w, 0.1);
+        float du = (0.22 + 0.2 * aRnd.y) / max(ex.w, 0.1);
         vec4 Tl = pathAt(u - du, row, ex2);
         vec3 T = H.xyz - Tl.xyz;
         T = length(T) > 1e-5 ? normalize(T) : vec3(0.0, 1.0, 0.0);
+        // streaks ride on the camera-facing half of the tube surface (never outside the silhouette),
+        // so the trunk reads as a lit channel instead of a frayed, hairy bundle
+        vec3 C = cameraPosition - H.xyz;
+        vec3 Cp = C - T * dot(C, T);
         vec3 hlp = abs(T.y) > 0.9 ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0);
-        vec3 N = normalize(cross(T, hlp));
-        vec3 Bn = cross(T, N);
-        float ang = aRnd.w * 6.2831853 + u * 8.0;
-        float trunkS = 1.0 - abs(ex.y - 1.0);
-        float rad = ex.x * mix(1.0, uTrunkK, clamp(trunkS, 0.0, 1.0));
-        vec3 off = (N * cos(ang) + Bn * sin(ang)) * (rad * aRnd.z + 0.012);
+        Cp = length(Cp) > 1e-4 ? normalize(Cp) : normalize(cross(T, hlp));
+        vec3 Sd = cross(T, Cp);
+        float ang = aRnd.w * 1.15 + 0.12 * sin(u * 9.0 + aRnd.x * 6.2831853);
+        float trunkS = clamp(1.0 - abs(ex.y - 1.0), 0.0, 1.0);
+        float rad = ex.x * mix(1.0, uTrunkK, trunkS);
+        vec3 off = (Cp * cos(ang) + Sd * sin(ang)) * (rad * (1.035 + 0.05 * aRnd.z) + 0.002);
         vec3 pH = H.xyz + off;
         vec3 pT = Tl.xyz + off;
         float vis = smoothstep(H.w, H.w + 0.05, uS);
+        // fade out before any growth frontier ahead (streaks never stack into a brush at a resting tip)
+        vec4 Ah = pathAt(u + 0.45 / max(ex.w, 0.1), row, ex3);
+        float ahead = smoothstep(Ah.w, Ah.w + 0.05, uS);
+        // paths whose pillar has not grown yet stay faint: the flow reads as going somewhere
+        float endW = texelFetch(uPaths, ivec2(int(uNS) - 1, row), 0).w;
+        float done = smoothstep(endW, endW + 0.12, uS);
         float ends = smoothstep(0.0, 0.04, u - du) * (1.0 - smoothstep(0.95, 1.0, u));
         float root = clamp(1.0 - ex.y, 0.0, 1.0);
-        float amp = vis * ends * uSap * mix(1.0, uRootSap, root);
+        float amp = vis * ahead * mix(0.22, 1.0, done) * ends * uSap * mix(1.0, uRootSap, root) * mix(1.0, uSapTrunk, trunkS);
         vec4 mvH = modelViewMatrix * vec4(pH, 1.0);
         vec4 mvT = modelViewMatrix * vec4(pT, 1.0);
         vec4 cH = projectionMatrix * mvH;
@@ -411,9 +446,9 @@ export function sapMaterial(U) {
         vQ = vec2(al * (len + w) - w * 0.5, position.y * 2.0);
         vLen = len;
         vWid = max(w, 0.001);
-        // mostly mint; ~8% paper heads; decision streams brighten as they reach the node
-        float paper = max(step(0.92, aRnd.y), ex.z * smoothstep(0.82, 0.97, u) * 0.7);
-        vCol = mix(uMint, uPaper, paper) * 1.35;
+        // mostly mint; ~8% paper heads; decision streams brighten (capped) as they reach the node
+        float paper = max(step(0.92, aRnd.y) * 0.8, ex.z * smoothstep(0.82, 0.97, u) * 0.4);
+        vCol = mix(uMint, uPaper, paper);
         vA = amp * (1.0 - fogAmount(z));
       }`,
     fragmentShader: /* glsl */ `
@@ -435,9 +470,42 @@ export function sapMaterial(U) {
         float body = exp(-r * r * 3.2) * t * t;
         float rh = length(vec2(vQ.x - vLen, y)) / hw;
         float head = exp(-rh * rh * 3.5);
-        vec3 c = uMint * body * 0.6 + vCol * (head * 0.95 + body * 0.2);
+        vec3 c = uMint * body * 0.35 + vCol * head * 0.9;
         gl_FragColor = vec4(c * vA * protectMask(), 1.0);
       }`,
+  });
+}
+
+// Buds on twig tips: the sprout from CONSULT, the whole crown from OPERATE until the bloom.
+export function budMaterial(U) {
+  return new THREE.ShaderMaterial({
+    uniforms: U,
+    ...additive,
+    vertexShader: /* glsl */ `
+      ${FOG}
+      ${QUAD_VERT}
+      attribute vec4 aRnd; // tip story time, group, size, phase
+      uniform float uS;
+      uniform float uTime;
+      uniform float uMotion;
+      uniform float uBudA;
+      uniform vec3 uMint;
+      uniform vec3 uPaper;
+      varying vec3 vCol;
+      varying vec3 vHalo;
+      varying float vA;
+      void main() {
+        float on = smoothstep(aRnd.x + 0.01, aRnd.x + 0.07, uS);
+        float sprout = 1.0 - step(0.5, abs(aRnd.y - 2.0));
+        float a = on * mix(uBudA, max(uBudA, 1.0 - 0.55 * smoothstep(1.8, 2.2, uS)), sprout);
+        a *= 0.85 + 0.15 * sin(uTime * 1.3 + aRnd.w * 6.2831853) * uMotion;
+        vec4 mv = billboard(aPos, (0.03 + aRnd.z * 0.02) * mix(1.0, 1.5, sprout), 0.0, 16.0, a);
+        gl_Position = projectionMatrix * mv;
+        vCol = mix(uMint, uPaper, 0.35) * 1.25;
+        vHalo = uMint * 0.9;
+        vA = a * (1.0 - fogAmount(-mv.z));
+      }`,
+    fragmentShader: pointFrag(0.5, 0.8),
   });
 }
 
@@ -484,21 +552,31 @@ export function blockMaterial(U) {
     uniforms: U,
     vertexShader: /* glsl */ `
       attribute vec3 aFrom;
-      attribute vec2 aTime;
+      attribute vec3 aIn;   // vector from the block centre to the branch axis
+      attribute vec3 aTime; // start, duration (story units), order along the branch 0..1
       uniform float uS;
+      uniform float uRetract;
+      uniform float uSweep;
       varying vec3 vW;
       varying vec3 vN;
       varying vec2 vUv;
       varying float vB;
+      varying float vLive;
       void main() {
         float b = clamp((uS - aTime.x) / aTime.y, 0.0, 1.0);
         float e = 1.0 - pow(1.0 - b, 3.0);
-        vec4 w = modelMatrix * instanceMatrix * vec4(position * e, 1.0);
-        w.xyz += aFrom * (1.0 - e);
+        // after BUILD the modules settle into the limb; the trunk rings carry "what was built stays"
+        float k = e * (1.0 - 0.72 * uRetract);
+        vec4 w = modelMatrix * instanceMatrix * vec4(position * k, 1.0);
+        w.xyz += aFrom * (1.0 - e) + aIn * 0.3 * uRetract;
         vW = w.xyz;
         vN = normalize(mat3(modelMatrix) * mat3(instanceMatrix) * normal);
         vUv = uv;
         vB = b;
+        // lime only on modules still being assembled, and on the integration sweep during the hold
+        float settle = clamp((uS - aTime.x - aTime.y) / 0.09, 0.0, 1.0);
+        float sweep = exp(-pow((aTime.z - uSweep) * 7.0, 2.0)) * step(-0.5, uSweep);
+        vLive = max((1.0 - settle) * step(0.0001, b), sweep) * (1.0 - uRetract);
         gl_Position = projectionMatrix * viewMatrix * w;
       }`,
     fragmentShader: /* glsl */ `
@@ -508,13 +586,14 @@ export function blockMaterial(U) {
       uniform vec3 uLime;
       uniform vec3 uPaper;
       uniform vec3 uBody;
-      uniform float uHi3;
       uniform float uBlockGlow;
       uniform float uLineK;
+      uniform vec2 uNear;
       varying vec3 vW;
       varying vec3 vN;
       varying vec2 vUv;
       varying float vB;
+      varying float vLive;
       void main() {
         if (vB <= 0.0) discard;
         vec3 N = normalize(vN);
@@ -523,11 +602,15 @@ export function blockMaterial(U) {
         float fres = pow(1.0 - ndv, 2.0);
         float e = min(min(vUv.x, 1.0 - vUv.x), min(vUv.y, 1.0 - vUv.y));
         float fw = fwidth(e);
-        float line = 1.0 - smoothstep(0.035, 0.035 + fw * 1.5 + 0.01, e);
-        vec3 glow = mix(uMint, uLime, uHi3 * 0.75);
-        vec3 col = uBody * (0.18 + 0.45 * ndv) + glow * (line * (0.95 + uHi3 * 0.4) * uLineK + fres * 0.22 + 0.02) * uBlockGlow;
-        col += mix(uMint, uPaper, 0.5) * (1.0 - vB) * vB * 3.0;
-        col = mix(col, uFogColor, fogAmount(length(vW - cameraPosition)));
+        float line = 1.0 - smoothstep(0.045, 0.045 + fw * 1.5 + 0.01, e);
+        // solid faces (a module, not an outline) with a crisp mint edge
+        vec3 fill = (uBody * 0.6 + uMint * 0.15) * (0.55 + 0.45 * ndv);
+        vec3 edge = mix(uMint, uLime, vLive);
+        vec3 col = (fill + edge * line * (0.85 + 0.5 * vLive) * uLineK + uMint * fres * 0.16) * uBlockGlow;
+        col += mix(uMint, uPaper, 0.5) * (1.0 - vB) * vB * 2.2;
+        float d = length(vW - cameraPosition);
+        col = mix(col, uFogColor, fogAmount(d));
+        col = mix(uFogColor, col, smoothstep(uNear.x, uNear.y, d));
         col = mix(uFogColor, col, protectMask());
         gl_FragColor = vec4(col, 1.0);
       }`,
@@ -580,19 +663,23 @@ export function shellMaterial(U) {
         float mid = vBary.x + vBary.y + vBary.z - mx - mn;
         float d = mx - mid;
         float fw = fwidth(d);
-        float edge = 1.0 - smoothstep(fw * 0.6, fw * 1.9, d);
+        // per-cell line weight (0.6..1.0) so the lattice reads crafted, not stamped
+        float wt = 0.6 + 0.4 * fract(o * 91.7 + 0.37);
+        float edge = (1.0 - smoothstep(fw * 0.5 * wt, fw * 1.7 * wt, d)) * wt;
         float prog = uShell * 1.4 - o;
         float rev = smoothstep(0.0, 0.06, prog);
         float flash = smoothstep(0.0, 0.03, prog) * (1.0 - smoothstep(0.03, 0.3, prog));
         vec3 N = normalize(vN);
         vec3 V = normalize(cameraPosition - vW);
-        float fres = pow(1.0 - abs(dot(N, V)), 3.0);
+        float f1 = 1.0 - abs(dot(N, V));
+        float fres = f1 * f1 * f1;
+        float fres2 = f1 * f1;
         float inner = exp(-d * 9.0);
         float hy = (vW.y - uShellC.y) / uShellR;
         float scanY = fract(uFlow * 0.07) * 2.4 - 1.2;
         float scan = exp(-pow((hy - scanY) * 7.0, 2.0));
-        // thin and dim face-on, bright only toward the silhouette: a shield, not a force field
-        vec3 col = uMint * rev * (edge * (0.08 + fres * 0.6) + fres * 0.12 + inner * 0.03 + scan * edge * 0.22);
+        // near-invisible face-on, glowing toward the silhouette: a shield, not a stock force field
+        vec3 col = uMint * rev * (edge * (0.03 + fres2 * 0.62) + fres * 0.12 + inner * 0.025 + scan * edge * 0.16);
         col += mix(uMint, uPaper, 0.35) * flash * edge * 0.6;
         if (!gl_FrontFacing) col *= 0.15;
         col *= uShellA * (1.0 - fogAmount(length(vW - cameraPosition))) * protectMask();

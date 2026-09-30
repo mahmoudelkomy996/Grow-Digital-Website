@@ -561,7 +561,7 @@ export function buildBlocks(tree, rng, maxCount, scale = 1) {
   let maxKey = 0;
   for (const c of curves) {
     const isMain = c === main;
-    const rows = isMain ? 3 : 2;
+    let rows = isMain ? 3 : 2;
     const out = isMain ? mainList : kidList;
     let next = isMain ? 0.12 : 0.02, station = 0;
     for (let i = 0; i < c.n - 1; i++) {
@@ -577,18 +577,19 @@ export function buildBlocks(tree, rng, maxCount, scale = 1) {
       prevT.copy(Tn);
       if (c.arc[i] < next || (!isMain && c.local[i] > c.local[0] + (c.local[c.n - 1] - c.local[0]) * 0.6)) continue;
       const r = c.rad[i];
-      const sz = Math.min(0.135, Math.max(0.04, r * 1.35)) * scale;
-      next = c.arc[i] + sz * 1.06;
+      const sz = Math.min(0.165, Math.max(0.05, r * 1.8)) * scale;
+      next = c.arc[i] + sz * 1.08;
+      rows = isMain && r > 0.045 ? 3 : 2;
       const wid = Math.min(sz * 1.35, ((Math.PI * 2 * (r * 0.8 + sz * 0.3)) / rows) * 0.88);
       for (let k = 0; k < rows; k++) {
         const ang = (k / rows) * Math.PI * 2 + (station % 2) * (Math.PI / rows) + i * 0.02;
         radial.copy(Nn).multiplyScalar(Math.cos(ang)).addScaledVector(Bn, Math.sin(ang)).normalize();
         around.crossVectors(Tn, radial).normalize();
-        const lift = r * 0.72 + sz * 0.3;
+        const lift = r * 0.7 + sz * 0.28;
         P.copy(c.pts[i]).addScaledVector(radial, lift);
         basis.makeBasis(Tn, radial, around);
         q.setFromRotationMatrix(basis);
-        const len = sz * (0.92 + rng() * 0.1), hgt = sz * (0.5 + rng() * 0.14);
+        const len = sz * (0.9 + rng() * 0.1), hgt = sz * (0.7 + rng() * 0.16);
         randUnit(rng, j);
         const from = radial.clone().multiplyScalar(0.55 + rng() * 0.5).addScaledVector(UP, 0.35 + rng() * 0.4).addScaledVector(j, 0.2);
         const key = c.gd[i] + k * 0.004;
