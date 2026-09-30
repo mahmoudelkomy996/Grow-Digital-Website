@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3D story prototypes · Grow Digital</title>
+  <link rel="icon" href="data:,">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&family=Instrument+Serif:ital@1&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="shared/base.css">
+  <style>
+    body { min-height: 100vh; display: grid; place-items: center; padding: 96px 24px; }
+    main { width: min(1100px, 100%); }
+    h1 { font-weight: 400; font-size: clamp(36px, 5vw, 64px); margin: 0 0 12px; color: var(--paper); }
+    h1 em { font-family: var(--font-serif); color: var(--mint); }
+    .sub { color: var(--teal-200); margin: 0 0 40px; max-width: 620px; line-height: 1.6; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+    .card { display: block; text-decoration: none; padding: 28px; border-radius: 20px; border: 1px solid rgba(143, 205, 198, 0.22); background: rgba(8, 59, 59, 0.45); transition: border-color .3s, transform .3s; }
+    .card:hover { border-color: var(--lime); transform: translateY(-3px); }
+    .card h2 { font-weight: 400; font-size: 28px; margin: 12px 0 10px; color: var(--paper); }
+    .card p { margin: 0; color: var(--teal-200); line-height: 1.6; font-size: 15px; }
+  </style>
+</head>
+<body>
+  <a class="proto-logo" href="index.html" aria-label="grow digital" style="position:fixed;top:18px;left:clamp(16px,4vw,48px)"></a>
+  <main>
+    <p class="eyebrow">Homepage 3D story · spike prototypes</p>
+    <h1>Three ways to tell the <em>growth</em> story.</h1>
+    <p class="sub">Same seven chapters, same copy, three different 3D worlds. Scroll through each and pick the one that feels most like Grow Digital.</p>
+    <div class="grid">
+      <a class="card" href="tree.html"><span class="eyebrow">A</span><h2>The digital tree</h2><p>A seed grows into a tree of light; each of the seven pillars is a branch that grows as you scroll.</p></a>
+      <a class="card" href="city.html"><span class="eyebrow">B</span><h2>A city in the making</h2><p>A Gulf smart city goes from blueprint to glowing skyline, one pillar at a time.</p></a>
+      <a class="card" href="arc.html"><span class="eyebrow">C</span><h2>The smile path</h2><p>The arc from the logo becomes a path; the camera travels it past seven pillar sculptures.</p></a>
+    </div>
+  </main>
+</body>
+</html>

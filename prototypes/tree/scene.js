@@ -1,0 +1,398 @@
+// "The digital tree" — a seed becomes a tree of light; each pillar grows as one branch of one root system.
+// Scene contract: see ../shared/story.js. State is a pure function of p; time only drives idle motion.
+import * as THREE from "three";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+import { segment, clamp } from "../shared/story.js";
+import {
+  TL, TREE, DEG, lerp, sstep, sstepW, mulberry32,
+  generateTree, buildTubeGeometry, buildRootMap, buildSapTexture, buildSapParticles, buildLeaves,
+  buildFireflies, buildBlocks, buildShellGeometry, buildOrbits, toQuads,
+} from "./gen.js";
+import * as M from "./shaders.js";
+import { DualBloomPass } from "./bloom.js";
+
+const BG = 0x052626;
+const smoother = (x) => { x = clamp(x); return x * x * x * (x * (x * 6 - 15) + 10); };
+const easeOutBack = (x) => { x = clamp(x); const m = x - 1; return 1 + 2.4 * m * m * m + 1.4 * m * m; };
+
+// Camera azimuth (deg) per chapter; branch k is grown toward the camera's right side in chapter k.
+// 360/7 apart: the seven pillar branches are spread evenly around the trunk with the least camera travel.
+const STEP = 360 / 7;
+const THETA = [-24, ...Array.from({ length: 7 }, (_, k) => 16 + k * STEP)];
+THETA.push(THETA[7] + 4); // finale: a calm pull-back that keeps the SOLVE fruits on the right of the crown
+const DRIFT = 2.2; // extra deg of orbit per chapter (scroll-linked)
+const EL = [8, 38, 9, 14, 9, 8, 7, 18, 6];
+
+export function createScene({ canvas, reducedMotion, isMobile }) {
+  const Q = isMobile
+    ? { leaves: 2800, sapNP: 32, sapNPd: 12, sap: 800, fire: 60, motes: 110, shellDetail: 3, blocks: 70, blockScale: 1.8, lineK: 1.5, rootMap: 512, radialDrop: 2 }
+    : { leaves: 7000, sapNP: 56, sapNPd: 20, sap: 2200, fire: 150, motes: 320, shellDetail: 5, blocks: 260, blockScale: 1, lineK: 1, rootMap: 1024, radialDrop: 0 };
+  const fixedDpr = /[?&]fixeddpr\b/.test(location.search);
+
+  // ---------------------------------------------------------------- renderer / scene / camera
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, stencil: false, powerPreference: "high-performance" });
+  renderer.setClearColor(BG, 1);
+  renderer.toneMapping = THREE.NoToneMapping;
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(BG);
+  const camera = new THREE.PerspectiveCamera(isMobile ? 44 : 34, 1, 0.05, 150);
+  const shift = isMobile ? { x: 0, y: 0.36 } : { x: 0.3, y: 0.02 };
+
+  const col = (h) => new THREE.Color(h);
+  const U = {
+    uTime: { value: 0 }, uFlow: { value: 0 }, uS: { value: 0 }, uPx: { value: 600 },
+    uMotion: { value: reducedMotion ? 0 : 1 },
+    uFogColor: { value: col(BG) }, uFogDensity: { value: 0.04 },
+    uRes: { value: new THREE.Vector2(1, 1) }, uMaskMode: { value: isMobile ? 1 : 0 }, uMaskFloor: { value: 0.3 },
+    uMint: { value: col(0x7fe0c8) }, uLime: { value: col(0xc8f169) }, uPaper: { value: col(0xf6f5f0) },
+    uBody: { value: col(0x0d4b4a) }, uT600: { value: col(0x1e7773) }, uT500: { value: col(0x2e948e) },
+    uT400: { value: col(0x58b0a9) }, uT300: { value: col(0x8fcdc6) },
+    uGrow: { value: new Array(9).fill(0) }, uHi: { value: new Array(9).fill(0) }, uAct: { value: new Array(9).fill(0) },
+    uTrace: { value: new Array(9).fill(-1) }, uTrunkK: { value: 0.35 }, uSprout: { value: 0 },
+    uPulse: { value: 0 }, uBands: { value: 0 }, uRootGlow: { value: 1 }, uSap: { value: 0 }, uRootSap: { value: 0.4 },
+    uSapSize: { value: isMobile ? 1.6 : 1 }, uSapMin: { value: isMobile ? 3.5 : 1.6 },
+    uFire: { value: 0 }, uMotes: { value: 1 },
+    uShell: { value: 0 }, uShellA: { value: 0 }, uHiShell: { value: 0 },
+    uLeafHi: { value: 0 }, uLeafGlow: { value: 0.5 }, uDrift: { value: 0 },
+    uHi3: { value: 0 }, uBlockGlow: { value: 1 }, uLineK: { value: Q.lineK },
+    uFruitS: { value: [0, 0, 0] }, uOrbitA: { value: 0 },
+    uRootMap: { value: null }, uExtent: { value: 10 }, uRootGrow: { value: 0 }, uGridBase: { value: 0.6 }, uGridLit: { value: 1.5 },
+    uBeat: { value: 1 }, uClock: { value: 0 }, uSeedGlow: { value: 1 }, uBirth: { value: 0 },
+    uPaths: { value: null }, uNP: { value: Q.sapNP }, uNS: { value: 128 },
+    uShellC: { value: new THREE.Vector3() }, uShellR: { value: 1 },
+  };
+
+  // ---------------------------------------------------------------- procedural tree
+  // fruit tips are chosen for on-screen spread from the SOLVE, GROW and finale cameras
+  const fruitViews = [6, 7, 8].map((k) => ({ az: THETA[k] + (k + 0.5 - 4.5) * DRIFT, el: EL[k], ...(k === 6 ? { d: 7.2 } : { dCrown: k === 7 ? 4.3 : 4.7 }) }));
+  const tree = generateTree({ thetas: THETA.slice(1, 8), mobile: isMobile, fruitViews });
+  const rng = mulberry32(4711);
+
+  const tubes = new THREE.Mesh(
+    buildTubeGeometry(tree.curves, (c) => {
+      const base = c.group === 1 ? 18 : c.group === 0 ? [6, 5, 4][c.level] : [10, 7, 5, 4][c.level];
+      return Math.max(3, base - Q.radialDrop);
+    }),
+    M.tubeMaterial(U),
+  );
+  tubes.frustumCulled = false;
+  scene.add(tubes);
+
+  // ground
+  U.uRootMap.value = buildRootMap(tree, Q.rootMap);
+  U.uExtent.value = tree.rootExtent;
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), M.groundMaterial(U));
+  ground.rotation.x = -Math.PI / 2;
+  ground.renderOrder = -1;
+  ground.frustumCulled = false;
+  scene.add(ground);
+
+  // seed: two husk halves + bright core + halo. It opens by dissolving (scale to zero), not by hinging.
+  const seedY = 0.26, seedR = 0.2;
+  const seed = new THREE.Group();
+  seed.position.set(0, seedY, 0);
+  scene.add(seed);
+  const huskMat = M.orbMaterial(U, { uIntensity: { value: 1 }, uHiO: { value: 0 }, uBandsO: { value: 0.35 } });
+  const halfGeo = new THREE.SphereGeometry(1, 40, 20, 0, Math.PI);
+  const husks = new THREE.Group();
+  seed.add(husks);
+  for (let k = 0; k < 2; k++) {
+    const m = new THREE.Mesh(halfGeo, huskMat);
+    m.rotation.y = k * Math.PI;
+    m.scale.set(seedR, seedR * 1.3, seedR);
+    husks.add(m);
+  }
+  const coreMat = M.orbMaterial(U, { uIntensity: { value: 1.2 }, uHiO: { value: 0 }, uBandsO: { value: 0 } });
+  const core = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), coreMat);
+  seed.add(core);
+  const quad = new THREE.PlaneGeometry(1, 1);
+  const seedHalo = new THREE.Mesh(quad, M.haloMaterial(U, { uCenter: { value: new THREE.Vector3(0, seedY, 0) }, uSize: { value: 1.3 }, uColor: { value: col(0x7fe0c8) }, uIntensity: { value: 1 } }));
+  seedHalo.frustumCulled = false;
+  scene.add(seedHalo);
+
+  // sap / data streams (the first sapNPd paths end in the "decision" node at the tip of branch 2)
+  U.uPaths.value = buildSapTexture(tree, Q.sapNP, 128, Q.sapNPd);
+  const sap = new THREE.Mesh(toQuads(buildSapParticles(Q.sapNP, Q.sap, rng)), M.sapMaterial(U));
+  sap.frustumCulled = false;
+  scene.add(sap);
+  const m2 = tree.mains[1];
+  const nodePos = m2.pts[m2.n - 1].clone();
+  const node = new THREE.Mesh(quad, M.haloMaterial(U, {
+    uCenter: { value: nodePos }, uSize: { value: isMobile ? 1.0 : 0.8 }, uColor: { value: col(0x7fe0c8) },
+    uCoreColor: { value: col(0xf6f5f0) }, uIntensity: { value: 0 }, uRing: { value: 0.55 },
+  }));
+  node.frustumCulled = false;
+  scene.add(node);
+
+  // BUILD blocks on branch 3
+  const blockList = buildBlocks(tree, rng, Q.blocks, Q.blockScale);
+  const blockGeo = new THREE.BoxGeometry(1, 1, 1);
+  const bFrom = new Float32Array(blockList.length * 3), bTime = new Float32Array(blockList.length * 2);
+  blockList.forEach((b, i) => { bFrom.set([b.from.x, b.from.y, b.from.z], i * 3); bTime.set([b.start, b.dur], i * 2); });
+  blockGeo.setAttribute("aFrom", new THREE.InstancedBufferAttribute(bFrom, 3));
+  blockGeo.setAttribute("aTime", new THREE.InstancedBufferAttribute(bTime, 2));
+  const blocks = new THREE.InstancedMesh(blockGeo, M.blockMaterial(U), blockList.length);
+  blockList.forEach((b, i) => blocks.setMatrixAt(i, b.m));
+  blocks.instanceMatrix.needsUpdate = true;
+  blocks.frustumCulled = false;
+  scene.add(blocks);
+
+  // fireflies + motes
+  const flies = new THREE.Mesh(toQuads(buildFireflies(tree, Q.fire, Q.motes, rng)), M.fireflyMaterial(U));
+  flies.frustumCulled = false;
+  scene.add(flies);
+
+  // SECURE shell around the canopy
+  const shellC = tree.crownC.clone();
+  const shellR = tree.crownR + 0.35;
+  U.uShellC.value.copy(shellC); U.uShellR.value = shellR;
+  const shell = new THREE.Mesh(buildShellGeometry(Q.shellDetail), M.shellMaterial(U));
+  shell.position.copy(shellC);
+  shell.scale.setScalar(shellR);
+  shell.frustumCulled = false;
+  scene.add(shell);
+
+  // SOLVE fruits + orbits
+  const fruitGeo = new THREE.SphereGeometry(1, 36, 24);
+  const fruits = tree.fruits.map((f) => {
+    const mat = M.fruitMaterial(U, { uIntensity: { value: 0.9 }, uHiO: { value: 0 }, uBandsO: { value: 0.5 } });
+    const m = new THREE.Mesh(fruitGeo, mat);
+    m.position.copy(f.pos);
+    m.scale.setScalar(0.0001);
+    m.visible = false;
+    scene.add(m);
+    const halo = new THREE.Mesh(quad, M.haloMaterial(U, { uCenter: { value: f.pos.clone() }, uSize: { value: f.r * 6.5 }, uColor: { value: col(0x7fe0c8) }, uIntensity: { value: 0 } }));
+    halo.frustumCulled = false;
+    scene.add(halo);
+    return { f, m, mat, halo };
+  });
+  const orb = buildOrbits(tree.fruits, rng);
+  const orbitLines = new THREE.LineSegments(orb.lines, M.orbitLineMaterial(U));
+  orbitLines.frustumCulled = false;
+  scene.add(orbitLines);
+  const sats = new THREE.Mesh(toQuads(orb.sats), M.satelliteMaterial(U));
+  sats.frustumCulled = false;
+  scene.add(sats);
+
+  // GROW leaves
+  const leaves = new THREE.Mesh(toQuads(buildLeaves(tree, Q.leaves, rng)), M.leavesMaterial(U));
+  leaves.frustumCulled = false;
+  scene.add(leaves);
+
+  // ---------------------------------------------------------------- camera keys (one per chapter)
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+  const trunkAt = (h) => tree.trunk.pts[Math.round((h / TREE.trunkH) * (tree.trunk.n - 1))];
+  const mid = (c, f = 0.5) => c.pts[Math.floor((c.n - 1) * f)];
+  const focus = (k, f) => trunkAt(TREE.H[k - 1]).clone().lerp(mid(tree.mains[k - 1]), f);
+  const buildFocus = focus(3, 0.8);
+  const fruitFocus = V(0, 0, 0);
+  tree.fruits.forEach((f) => fruitFocus.add(f.pos));
+  fruitFocus.multiplyScalar(1 / tree.fruits.length);
+  const cy = tree.crownC.y, cr = tree.crownR;
+  const K = [
+    { t: V(0, 0.3, 0), d: 3.7 },
+    { t: focus(1, 0.25).setY(0.35), d: 9.2 },
+    { t: focus(2, 0.3), d: 11.3 },
+    { t: buildFocus, d: 9.4 },
+    { t: V(0, 2.8, 0), d: 13.5 },
+    { t: shellC.clone().add(V(0, 0.3, 0)), d: shellR * 4.2 },
+    { t: fruitFocus, d: 7.2 },
+    { t: V(0, cy + 0.1, 0), d: cr * 4.3 },
+    { t: V(0, cy - 0.3, 0), d: cr * 4.7 },
+  ];
+  K.forEach((k, i) => { k.az = THETA[i]; k.el = EL[i]; });
+  if (isMobile) {
+    K.forEach((k, i) => { k.d *= [1.45, 1.62, 1.5, 1.85, 1.7, 1.62, 2.0, 1.62, 1.62][i]; });
+    // TRANSFORM on a phone: frame the trunk column tighter so the rising streams dominate
+    K[2].t = trunkAt(1.4).clone().lerp(mid(m2, 0.55), 0.4);
+    K[6].t = fruitFocus.clone().add(V(0, 0.4, 0));
+  }
+  const tgt = new THREE.Vector3();
+
+  function updateProjection() {
+    camera.updateProjectionMatrix();
+    const e = camera.projectionMatrix.elements;
+    e[8] = -shift.x; e[9] = -shift.y; // shift the principal point: subject reads right of the text panel
+    camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+  }
+
+  function placeCamera(p, tm) {
+    const { i, t } = segment(p);
+    const s = p * 9;
+    const x = clamp(i + t - 0.5, 0, 8);
+    const k = Math.min(7, Math.floor(x));
+    // intro -> CONSULT pulls back early, so the seed opens in a wide shot (not in the close-up)
+    const w = k === 0 ? smoother((s - 0.62) / 0.4) : smoother((x - k - 0.18) / 0.64);
+    const A = K[k], B = K[k + 1];
+    tgt.lerpVectors(A.t, B.t, w);
+    const d = lerp(A.d, B.d, w) * (1 + 0.02 * Math.sin(s * Math.PI * 2 - Math.PI / 2));
+    const az = (lerp(A.az, B.az, w) + (s - 4.5) * DRIFT + Math.sin(tm * 0.11) * 0.8) * DEG;
+    const el = (lerp(A.el, B.el, w) + Math.sin(tm * 0.083) * 0.35) * DEG;
+    camera.position.set(tgt.x + d * Math.sin(az) * Math.cos(el), tgt.y + d * Math.sin(el), tgt.z + d * Math.cos(az) * Math.cos(el));
+    camera.lookAt(tgt);
+    U.uFogDensity.value = 0.42 / d;
+  }
+
+  // ---------------------------------------------------------------- story schedule (pure function of s)
+  const G = U.uGrow.value, HI = U.uHi.value, ACT = U.uAct.value, TR = U.uTrace.value;
+  const active = (w, s) => sstep(w[0] - 0.03, w[0] + 0.03, s) * (1 - sstep(w[1] - 0.03, w[1] + 0.05, s));
+  const traceAt = (s, t0, dur) => { const x = (s - t0) / dur; return x < 0 || x > 1 ? -1 : x * 1.2 - 0.08; };
+  function schedule(s, tm) {
+    G[0] = sstepW(TL.roots, s);
+    let tr = 0;
+    for (let k = 1; k <= 7; k++) tr += (tree.TOPL[k] - tree.TOPL[k - 1]) * sstepW(TL.trunk[k], s);
+    G[1] = tr;
+    for (let k = 1; k <= 7; k++) {
+      G[k + 1] = sstepW(TL.branch[k], s);
+      HI[k + 1] = sstep(k - 0.2, k + 0.1, s) * (1 - sstep(k + 0.8, k + 1.1, s));
+    }
+    ACT[0] = active(TL.roots, s);
+    ACT[1] = 0;
+    for (let k = 1; k <= 7; k++) { ACT[1] = Math.max(ACT[1], active(TL.trunk[k], s)); ACT[k + 1] = active(TL.branch[k], s); }
+    HI[0] = 0;
+    HI[1] = 0;
+    // finale roll-call: trunk first, then pillars 1 -> 7, then the crown settles
+    TR[0] = -1;
+    TR[1] = traceAt(s, 7.93, 0.16);
+    for (let k = 1; k <= 7; k++) TR[k + 1] = traceAt(s, 8.0 + (k - 1) * 0.055, 0.17);
+
+    U.uS.value = s;
+    U.uTime.value = tm;
+    U.uFlow.value = tm + s * 0.8;
+    U.uRootGrow.value = G[0];
+    U.uGridBase.value = 0.55 + 0.45 * sstep(0.7, 1.2, s);
+    U.uGridLit.value = 1.5 + 1.3 * sstep(1.0, 1.24, s) * (1 - sstep(1.75, 2.2, s));
+    U.uBirth.value = clamp((s - 0.9) / 0.45);
+    const beatOn = 1 - sstep(0.8, 1.0, s);
+    U.uBeat.value = beatOn * (reducedMotion ? 0 : 1);
+    U.uTrunkK.value = 0.35 + 0.35 * sstep(1.7, 2.15, s) + 0.3 * sstep(2.7, 3.1, s);
+    U.uSprout.value = sstep(0.95, 1.12, s) * (1 - sstep(1.75, 2.2, s));
+    U.uSap.value = sstep(1.72, 2.18, s) * (1 - 0.72 * sstep(2.78, 3.2, s));
+    U.uBands.value = sstep(2.72, 3.2, s) * (1 - 0.88 * sstep(3.8, 4.2, s));
+    U.uRootGlow.value = 0.62 - 0.07 * sstep(1.8, 2.3, s);
+    U.uHi3.value = HI[4];
+    U.uBlockGlow.value = 1 - 0.35 * sstep(3.8, 4.2, s);
+    U.uPulse.value = sstep(3.72, 4.18, s) * (1 - 0.7 * sstep(4.78, 5.2, s));
+    U.uFire.value = sstep(3.7, 4.2, s) * (1 - 0.55 * sstep(4.8, 5.2, s));
+    U.uClock.value = sstep(3.72, 4.2, s) * (1 - sstep(4.75, 5.15, s));
+    U.uShell.value = sstep(4.78, 5.24, s);
+    U.uShellA.value = sstep(4.7, 4.75, s) * (1 - sstep(5.72, 6.1, s)) + 0.12 * sstep(7.7, 8.2, s);
+    U.uHiShell.value = HI[6];
+    U.uLeafHi.value = HI[8];
+    U.uLeafGlow.value = 0.5 - 0.08 * sstep(7.7, 8.2, s);
+    U.uDrift.value = sstep(7.75, 8.2, s);
+    U.uMotes.value = 0.6 + 0.4 * sstep(0.8, 1.5, s);
+
+    // seed: heartbeat, then the husk dissolves in a mint flash and the core sinks into the sprout
+    const beat = reducedMotion ? 0 : beatCurve(tm);
+    const open = sstepW(TL.seedOpen, s);
+    const flash = sstep(0.86, 0.98, s) * (1 - sstep(1.0, 1.22, s));
+    const coreK = 1 - sstep(1.02, 1.26, s);
+    husks.scale.setScalar(Math.max(1e-4, 1 - open));
+    husks.visible = open < 0.999;
+    huskMat.uniforms.uIntensity.value = (0.9 + 0.35 * beat * beatOn) * (1 + 0.5 * open);
+    core.scale.setScalar(Math.max(1e-4, seedR * (0.62 + 0.1 * beat * beatOn) * (1 + 0.2 * flash) * coreK));
+    core.visible = coreK > 0.001;
+    coreMat.uniforms.uIntensity.value = 1.15 + 0.8 * flash;
+    seed.visible = husks.visible || core.visible;
+    const baseHalo = (0.55 + 0.35 * beat * beatOn) * (1 - 0.75 * sstep(1.0, 1.4, s)) + 0.1 * (1 - sstep(1.7, 2.2, s));
+    seedHalo.material.uniforms.uIntensity.value = (baseHalo + 0.55 * flash) * 0.8;
+    seedHalo.material.uniforms.uSize.value = 1.25 + 1.8 * flash;
+    seedHalo.visible = seedHalo.material.uniforms.uIntensity.value > 0.002;
+    U.uSeedGlow.value = (1 + 0.5 * beat * beatOn + 0.8 * flash) * (1 - 0.6 * sstep(1.3, 2.0, s));
+
+    // TRANSFORM: the decision node at the tip of branch 2 lights as the streams reach it
+    const dn = sstep(2.0, 2.2, s) * (1 - sstep(2.8, 3.15, s));
+    node.material.uniforms.uIntensity.value = dn * (1 + (reducedMotion ? 0 : 0.1 * Math.sin(tm * 2.2)));
+    node.visible = dn > 0.001;
+
+    // SOLVE fruits bloom as the branch-6 tips arrive
+    const fs = U.uFruitS.value;
+    for (let j = 0; j < fruits.length; j++) {
+      const o = fruits[j];
+      const b = clamp((s - Math.min(o.f.rev, 6.08)) / 0.15);
+      fs[j] = b;
+      const sc = o.f.r * easeOutBack(b);
+      o.m.visible = b > 0.001;
+      o.m.scale.setScalar(Math.max(0.0001, sc));
+      o.mat.uniforms.uHiO.value = HI[7];
+      o.mat.uniforms.uIntensity.value = 0.9 + 0.12 * HI[7];
+      o.mat.uniforms.uBandsO.value = 0.5 * (1 - sstep(6.75, 7.2, s));
+      o.halo.material.uniforms.uIntensity.value = sstep(0.2, 1, b) * (0.34 + 0.14 * HI[7]);
+    }
+    U.uOrbitA.value = 1 - 0.45 * sstep(6.8, 7.2, s);
+
+    // skip systems that are fully hidden at this point of the story (still a pure function of s)
+    sap.visible = U.uSap.value > 0.001;
+    leaves.visible = s > TL.leaves[0] - 0.02;
+    blocks.visible = s > TL.branch[3][0];
+    shell.visible = U.uShellA.value > 0.002;
+    orbitLines.visible = sats.visible = fs[0] > 0.6;
+  }
+  function beatCurve(t) {
+    const ph = (t / 1.6) % 1;
+    return Math.exp(-Math.pow((ph - 0.08) * 16, 2)) + 0.6 * Math.exp(-Math.pow((ph - 0.26) * 16, 2));
+  }
+
+  // ---------------------------------------------------------------- post: bloom + output
+  // no MSAA: it doubled the frame cost on the UHD 630; bloom and analytic line AA carry the edges instead
+  const rt = new THREE.WebGLRenderTarget(4, 4, { type: THREE.HalfFloatType });
+  const composer = new EffectComposer(renderer, rt);
+  composer.addPass(new RenderPass(scene, camera));
+  const bloom = new DualBloomPass({ levels: isMobile ? 4 : 5, threshold: 0.36, knee: 0.3 });
+  composer.addPass(bloom);
+  const out = new ShaderPass(M.outputMaterial());
+  out.uniforms.tBloom.value = bloom.texture;
+  out.uniforms.uBloom.value = 0.46;
+  composer.addPass(out);
+
+  // ---------------------------------------------------------------- sizing + adaptive resolution
+  // Starts at min(dpr, 1.25). A sustained slow frame EMA (> 19 ms for ~30 frames) steps the ratio down by
+  // 0.25 (floor 0.75); a sustained fast one (< 12 ms for ~120 frames) steps it back up (cap 1.5).
+  let W = 1, H = 1, reqDpr = 1, curDpr = 0, ema = 16.7, lastT = -1, slow = 0, fast = 0, cool = 60;
+  const buf = new THREE.Vector2();
+  function applySize() {
+    renderer.setPixelRatio(curDpr);
+    renderer.setSize(W, H, false);
+    composer.setPixelRatio(curDpr);
+    composer.setSize(W, H);
+    renderer.getDrawingBufferSize(buf);
+    U.uRes.value.copy(buf);
+    U.uPx.value = buf.y / (2 * Math.tan((camera.fov * DEG) / 2));
+  }
+  function adapt(time) {
+    if (fixedDpr) return;
+    const dt = lastT < 0 ? 0 : (time - lastT) * 1000;
+    lastT = time;
+    if (!(dt > 0 && dt < 120)) return;
+    ema += (dt - ema) * 0.08;
+    if (cool > 0) { cool--; return; }
+    slow = ema > 19 ? slow + 1 : 0;
+    fast = ema < 12 ? fast + 1 : 0;
+    const cap = Math.min(reqDpr, 1.5);
+    if (slow > 30 && curDpr > 0.75) { curDpr = Math.max(0.75, curDpr - 0.25); applySize(); cool = 90; slow = 0; ema = 16.7; }
+    else if (fast > 120 && curDpr < cap) { curDpr = Math.min(cap, curDpr + 0.25); applySize(); cool = 90; fast = 0; }
+  }
+
+  const api = {
+    resize(width, height, dpr) {
+      W = Math.max(1, width); H = Math.max(1, height);
+      if (dpr !== reqDpr || !curDpr) { reqDpr = dpr; curDpr = fixedDpr ? dpr : Math.min(dpr, 1.25); }
+      camera.aspect = W / H;
+      updateProjection();
+      applySize();
+    },
+    render(time, p) {
+      adapt(time);
+      const tm = reducedMotion ? 0 : time;
+      const s = clamp(p) * 9;
+      schedule(s, tm);
+      placeCamera(clamp(p), tm);
+      out.uniforms.uSeed.value = reducedMotion ? 0 : (time * 60) % 97;
+      composer.render(0);
+    },
+  };
+  return api;
+}

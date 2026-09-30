@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "prototypes", "runtimeExecutable": "node", "runtimeArgs": ["prototypes/serve.js", "5178"], "port": 5178 }
+  ]
+}
