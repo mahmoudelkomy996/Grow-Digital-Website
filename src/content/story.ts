@@ -1,6 +1,6 @@
 // Copy for the homepage 3D growth story (9 chapters: intro, 7 pillars, finale).
 // Chapter i spans story progress p ∈ [i/9, (i+1)/9]; the 3D scene is keyed to the same mapping.
-import type { StoryChapter } from "./types";
+import type { StoryChapter } from "./types.ts";
 
 export const STORY: StoryChapter[] = [
   {

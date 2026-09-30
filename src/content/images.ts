@@ -1,6 +1,6 @@
 // Image manifest. Every photograph on the site is AI-generated with Magnific
 // (Seedream 5 Pro, 2K) from these prompts plus IMAGE_STYLE, then saved to `src`.
-import type { ImageRef } from "./types";
+import type { ImageRef } from "./types.ts";
 
 export const IMAGE_STYLE =
   "editorial corporate photography, cinematic, colour graded with deep teal shadows (#083B3B) and soft warm cream highlights (#F6F5F0), muted desaturated palette, soft natural light, shallow depth of field, shot on 35mm, premium and calm, photorealistic, modern Gulf (Saudi Arabia / UAE) setting, no text, no letters, no logos, no watermarks, no UI text";

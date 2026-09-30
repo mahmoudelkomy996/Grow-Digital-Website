@@ -135,7 +135,7 @@ function growRoot(o, rng, curves) {
 }
 
 // ---------------------------------------------------------------------------------------------
-export function generateTree({ thetas, mobile, fruitViews = [], seed = 90417 }) {
+export function generateTree({ thetas, mobile, fruitViews = [], textAz = null, seed = 90417 }) {
   const rng = mulberry32(seed);
   const curves = [];
   const T = TREE;
@@ -170,7 +170,10 @@ export function generateTree({ thetas, mobile, fruitViews = [], seed = 90417 }) 
   for (let i = 0; i < nR; i++) {
     const a = ((i + 0.35 * rng()) / nR) * Math.PI * 2;
     const dir = new V3(Math.cos(a), 0, Math.sin(a));
-    rootMains.push(growRoot({ start: dir.clone().multiplyScalar(0.1), dir, len: 2.4 + rng() * 2.6, r0: 0.042, level: 0, parent: null, attach: 0 }, rng, curves));
+    let len = 2.4 + rng() * 2.6;
+    // roots that would run behind the text column in the CONSULT shot are kept at ~70%
+    if (textAz !== null) len *= 1 - 0.3 * sstep(0.1, 0.7, -Math.cos(a + textAz * DEG));
+    rootMains.push(growRoot({ start: dir.clone().multiplyScalar(0.1), dir, len, r0: 0.042, level: 0, parent: null, attach: 0 }, rng, curves));
   }
 
   // arc length, group distance (growth order), path distance (pulse coordinate)
@@ -361,8 +364,8 @@ export function buildRootMap(tree, size) {
 // xyz + story time at which that point exists; rows NP..2NP-1 hold (tube radius, section 0 root /
 // 1 trunk / 2 branch, decision flag, warped path length).
 // The first NPd paths are the TRANSFORM "decision" streams: they end at the tip of branch 2.
-// Samples are spaced by a warped length (trunk counts 1.5x, roots 0.8x) so particles linger on the
-// trunk and the rising column is the densest part of the flow.
+// Samples are spaced by a warped length (trunk counts 1.1x, roots 0.8x) so the rising column is dense
+// without stacking into a solid bundle.
 export function buildSapTexture(tree, NP, NS, NPd = 0) {
   const data = new Float32Array(NS * NP * 2 * 4);
   const { trunk, mains, rootMains } = tree;
@@ -382,7 +385,7 @@ export function buildSapTexture(tree, NP, NS, NPd = 0) {
     let r0 = 0;
     while (r0 < root.n - 1 && root.arc[r0 + 1] <= rootLen) r0++;
     for (let i = r0; i >= 0; i--) push(root.pts[i], root.rad[i], winRev(TL.roots, root.local[i]), 0, 0.8);
-    for (let i = 0; i <= main.attach; i++) push(trunk.pts[i], trunk.rad[i] * 0.85, tree.trunkRev(trunk.local[i]), 1, 1.5);
+    for (let i = 0; i <= main.attach; i++) push(trunk.pts[i], trunk.rad[i], tree.trunkRev(trunk.local[i]), 1, 1.1);
     const end = kid ? kid.attach : main.n - 1;
     for (let i = 1; i <= end; i++) push(main.pts[i], main.rad[i], winRev(TL.branch[bi + 1], main.local[i]), 2, 1);
     if (kid) for (let i = 1; i < kid.n; i++) push(kid.pts[i], kid.rad[i], winRev(TL.branch[bi + 1], kid.local[i]), 2, 1);
@@ -416,7 +419,8 @@ export function buildSapParticles(NP, count, rng) {
   const pos = new Float32Array(count * 3), path = new Float32Array(count), rnd = new Float32Array(count * 4);
   for (let i = 0; i < count; i++) {
     path[i] = i % NP;
-    rnd[i * 4] = rng(); rnd[i * 4 + 1] = rng(); rnd[i * 4 + 2] = 0.9 + rng() * 0.9; rnd[i * 4 + 3] = rng();
+    // phase, speed, radial factor (just outside the tube surface), angle across the camera-facing half (-1..1)
+    rnd[i * 4] = rng(); rnd[i * 4 + 1] = rng(); rnd[i * 4 + 2] = rng(); rnd[i * 4 + 3] = rng() * 2 - 1;
   }
   const g = new THREE.BufferGeometry();
   g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
@@ -545,52 +549,88 @@ export function buildFireflies(tree, nFire, nMotes, rng) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// BUILD: modular crystalline blocks assembling along branch 3 (group 4).
+// BUILD: modules that clad branch 3 (group 4) in 2-3 tight, brick-offset rows, snapping on in sequence
+// from the trunk outward right behind the growing tip. Each block carries its order along the branch.
 export function buildBlocks(tree, rng, maxCount, scale = 1) {
-  const list = [];
-  const Tn = new V3(), Nn = new V3(), Bn = new V3(), radial = new V3(), side = new V3(), P = new V3(), from = new V3(), j = new V3();
-  const q = new THREE.Quaternion(), sc = new V3(), basis = new THREE.Matrix4();
-  const add = (c, i, pos, xAxis, yAxis, sx, sy, sz) => {
-    side.crossVectors(xAxis, yAxis).normalize();
-    basis.makeBasis(xAxis, yAxis, side);
-    q.setFromRotationMatrix(basis);
-    sc.set(sx * scale, sy * scale, sz * scale);
-    randUnit(rng, j);
-    from.copy(yAxis).multiplyScalar(0.7 + rng() * 0.8).addScaledVector(UP, 0.5 + rng() * 0.6).addScaledVector(j, 0.35).multiplyScalar(0.9 + rng());
-    const rev = winRev(TL.branch[3], c.local[i]);
-    const dur = 0.1 + rng() * 0.05;
-    list.push({ m: new THREE.Matrix4().compose(pos.clone(), q.clone(), sc.clone()), from: from.clone(), start: Math.min(rev + 0.01, 3.24 - dur), dur, key: c.local[i] + rng() * 0.01 });
-  };
-  for (const c of tree.branchCurves) {
-    if (c.group !== 4 || c.level > 2) continue;
-    const per = c.level === 0 ? 2 : 1;
-    const base = c.level === 0 ? 0.078 : c.level === 1 ? 0.056 : 0.04;
-    for (let i = 1; i < c.n; i += c.level === 0 ? 1 : 2) {
-      Tn.subVectors(c.pts[Math.min(c.n - 1, i + 1)], c.pts[i - 1]).normalize();
-      perp(Tn, Nn, Bn);
-      for (let k = 0; k < per; k++) {
-        if (c.level === 0 && k > 0 && rng() < 0.35) continue;
-        const a = (k / per) * Math.PI * 2 + i * 0.62;
-        radial.copy(Nn).multiplyScalar(Math.cos(a)).addScaledVector(Bn, Math.sin(a)).normalize();
-        const s = base * (0.6 + rng() * 0.8) * (1 - 0.45 * c.local[i]);
-        P.copy(c.pts[i]).addScaledVector(radial, c.rad[i] * 0.6 + s * 0.35);
-        add(c, i, P, Tn, radial, s * (0.9 + rng() * 0.7), s, s * (0.85 + rng() * 0.3));
+  const Tn = new V3(), Nn = new V3(), Bn = new V3(), prevT = new V3(), axis = new V3();
+  const radial = new V3(), around = new V3(), P = new V3(), j = new V3();
+  const q = new THREE.Quaternion(), basis = new THREE.Matrix4();
+  const main = tree.mains[2];
+  const mainList = [], kidList = [];
+  const curves = [main, ...main.children];
+  let maxKey = 0;
+  for (const c of curves) {
+    const isMain = c === main;
+    const rows = isMain ? 3 : 2;
+    const out = isMain ? mainList : kidList;
+    let next = isMain ? 0.12 : 0.02, station = 0;
+    for (let i = 0; i < c.n - 1; i++) {
+      Tn.subVectors(c.pts[i + 1], c.pts[Math.max(0, i - 1)]).normalize();
+      if (i === 0) perp(Tn, Nn, Bn);
+      else {
+        axis.crossVectors(prevT, Tn);
+        const l = axis.length();
+        if (l > 1e-6) Nn.applyAxisAngle(axis.multiplyScalar(1 / l), Math.acos(Math.min(1, Math.max(-1, prevT.dot(Tn)))));
+        Bn.crossVectors(Tn, Nn).normalize();
+        Nn.crossVectors(Bn, Tn).normalize();
       }
-    }
-    for (const ch of c.children) {
-      const i = ch.attach;
-      Tn.subVectors(c.pts[Math.min(c.n - 1, i + 1)], c.pts[i - 1]).normalize();
-      perp(Tn, Nn, Bn);
-      const s = base * 1.55;
-      add(c, i, c.pts[i], Tn, Nn, s, s, s);
+      prevT.copy(Tn);
+      if (c.arc[i] < next || (!isMain && c.local[i] > c.local[0] + (c.local[c.n - 1] - c.local[0]) * 0.6)) continue;
+      const r = c.rad[i];
+      const sz = Math.min(0.135, Math.max(0.04, r * 1.35)) * scale;
+      next = c.arc[i] + sz * 1.06;
+      const wid = Math.min(sz * 1.35, ((Math.PI * 2 * (r * 0.8 + sz * 0.3)) / rows) * 0.88);
+      for (let k = 0; k < rows; k++) {
+        const ang = (k / rows) * Math.PI * 2 + (station % 2) * (Math.PI / rows) + i * 0.02;
+        radial.copy(Nn).multiplyScalar(Math.cos(ang)).addScaledVector(Bn, Math.sin(ang)).normalize();
+        around.crossVectors(Tn, radial).normalize();
+        const lift = r * 0.72 + sz * 0.3;
+        P.copy(c.pts[i]).addScaledVector(radial, lift);
+        basis.makeBasis(Tn, radial, around);
+        q.setFromRotationMatrix(basis);
+        const len = sz * (0.92 + rng() * 0.1), hgt = sz * (0.5 + rng() * 0.14);
+        randUnit(rng, j);
+        const from = radial.clone().multiplyScalar(0.55 + rng() * 0.5).addScaledVector(UP, 0.35 + rng() * 0.4).addScaledVector(j, 0.2);
+        const key = c.gd[i] + k * 0.004;
+        maxKey = Math.max(maxKey, key);
+        out.push({ m: new THREE.Matrix4().compose(P.clone(), q.clone(), new V3(len, hgt, wid)), from, inward: radial.clone().multiplyScalar(-lift),
+          rev: winRev(TL.branch[3], c.local[i]), key });
+      }
+      station++;
     }
   }
-  list.sort((a, b) => a.key - b.key);
-  const n = Math.min(maxCount, list.length);
-  const step = list.length / n;
-  const chosen = [];
-  for (let i = 0; i < n; i++) chosen.push(list[Math.floor(i * step)]);
-  return chosen;
+  kidList.sort((a, b) => a.key - b.key);
+  const chosen = [...mainList, ...kidList].slice(0, maxCount);
+  chosen.sort((a, b) => a.key - b.key);
+  const last = 3.22;
+  return chosen.map((b) => {
+    const dur = 0.07 + rng() * 0.035;
+    return { ...b, order: b.key / maxKey, start: Math.min(b.rev + 0.012, last - dur), dur };
+  });
+}
+
+// Buds: tiny mint points on twig tips (the sprout from CONSULT, the whole crown from OPERATE on), so
+// the pre-bloom tree reads alive rather than as a bare winter sapling.
+export function buildBuds(tree, rng, maxCount) {
+  const tips = [];
+  for (const c of tree.branchCurves) {
+    if (c.level === 0 && c.group !== 2) continue;
+    const tip = c.pts[c.n - 1], prev = c.pts[c.n - 2];
+    const d = tip.clone().sub(prev).normalize();
+    tips.push({ p: tip.clone().addScaledVector(d, 0.012), rev: winRev(TL.branch[c.group - 1], c.local[c.n - 1]), g: c.group, h: rng() });
+  }
+  tips.sort((a, b) => a.h - b.h);
+  const list = tips.filter((t) => t.g === 2).concat(tips.filter((t) => t.g !== 2)).slice(0, maxCount);
+  const n = list.length;
+  const pos = new Float32Array(n * 3), rnd = new Float32Array(n * 4);
+  list.forEach((t, i) => {
+    pos.set([t.p.x, t.p.y, t.p.z], i * 3);
+    rnd.set([t.rev, t.g, rng(), rng()], i * 4);
+  });
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  g.setAttribute("aRnd", new THREE.BufferAttribute(rnd, 4));
+  return g;
 }
 
 // ---------------------------------------------------------------------------------------------

@@ -53,7 +53,8 @@ export function tubeMaterial(U) {
         float grow = uGrow[g];
         float act = uAct[g];
         // roots grow as fine lines with a short point; trunk/branches as tapered shoots
-        float win = g == 0 ? mix(0.012, 0.02, act) : mix(0.03, 0.045, act);
+        // (a resting trunk top gets a short window: a rounded cap about one radius long)
+        float win = g == 0 ? mix(0.012, 0.02, act) : (g == 1 ? mix(0.014, 0.045, act) : mix(0.03, 0.045, act));
         float k = clamp((grow - aData.x) / win, 0.0, 1.0);
         k = mix(sqrt(k), k, act); // a resting tip is a rounded bud, a growing tip is a sharp shoot
         // the trunk (and the first shoot) start as a thin sprout and thicken as the tree rises
@@ -90,15 +91,17 @@ export function tubeMaterial(U) {
       varying float vGroup;
       varying float vAng;
       varying float vTr;
+      uniform float uTraceA;
       void main() {
         if (vLocal > vGrowV || vGrowV < 0.0005) discard;
         vec3 N = normalize(vN);
         vec3 V = normalize(cameraPosition - vW);
         float ndv = clamp(abs(dot(N, V)), 0.0, 1.0);
         float fres = pow(1.0 - ndv, 2.2);
-        // the active pillar's lime lives on the rim and the growing tip; the body keeps only a hint
-        vec3 glowF = mix(uMint, uLime, vHi);
-        vec3 glowB = mix(uMint, uLime, vHi * 0.55);
+        // everything is lit in mint; the active pillar's lime is applied at the end, only where the
+        // pixel is bright (dim lime reads olive against the teal stage)
+        vec3 glowF = uMint;
+        vec3 glowB = uMint;
         float isRoot = 1.0 - step(0.5, vGroup);
         float isStem = step(0.5, vGroup) * (1.0 - step(2.5, vGroup));
         float gk = mix(1.0, uRootGlow, isRoot);
