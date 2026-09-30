@@ -41,7 +41,7 @@ export const TREE = {
   trunkH: 4.8,
   H: [0.36, 1.75, 2.3, 2.8, 3.3, 3.8, 4.3], // attach heights of the 7 pillar branches
   TOP: [0, 0.5, 2.7, 3.05, 3.5, 3.95, 4.45, 4.8], // trunk height reached at the end of chapter k (ch1: a short sprout)
-  L: [1.25, 3.4, 3.6, 3.5, 3.2, 2.8, 2.2],
+  L: [1.6, 3.4, 3.6, 3.5, 3.2, 2.8, 2.2],
   E: [40, 22, 17, 30, 37, 46, 64],
 };
 
@@ -92,7 +92,8 @@ function growBranch(o, rng, curves, cfg) {
       side.copy(nn).multiplyScalar(Math.cos(rot)).addScaledVector(bb, Math.sin(rot));
       const ang = (38 + rng() * 26) * DEG;
       const cd = t0.clone().multiplyScalar(Math.cos(ang)).addScaledVector(side, Math.sin(ang)).addScaledVector(UP, 0.22).normalize();
-      const clen = o.len * lerp(0.42, 0.6, rng()) * (1 - 0.3 * t);
+      // level-3 twigs are kept short so the crown reads as grown wood, not needles
+      const clen = o.len * lerp(0.42, 0.6, rng()) * (1 - 0.3 * t) * (o.level + 1 === 3 ? 0.7 : 1);
       growBranch({ start: c.pts[idx], dir: cd, len: clen, r0: c.rad[idx] * 0.72, level: o.level + 1, group: o.group, parent: c, attach: idx }, rng, curves, cfg);
     }
   }
@@ -144,15 +145,16 @@ export function generateTree({ thetas, mobile, fruitViews = [], seed = 90417 }) 
   const trunk = newCurve(1, 0, null, 0);
   for (let i = 0; i <= nT; i++) {
     const y = (i / nT) * T.trunkH, f = y / T.trunkH;
-    trunk.pts.push(new V3(0.14 * Math.sin(y * 0.9 + 0.3) * f, y, 0.11 * Math.sin(y * 0.65 + 2.0) * f));
-    trunk.rad.push(lerp(0.15, 0.03, Math.pow(f, 0.75)) + 0.1 * Math.exp(-y * 4));
+    // a gentle S-curve and a flared root collar: grown, not extruded
+    trunk.pts.push(new V3(0.2 * Math.sin(y * 0.7 + 0.3) * f, y, 0.11 * Math.sin(y * 0.65 + 2.0) * f));
+    trunk.rad.push(lerp(0.22, 0.05, Math.pow(f, 0.75)) + 0.18 * Math.exp(-y * 3));
   }
   curves.push(trunk);
 
   // the 7 pillar branches (branch k faces the camera's right-front during chapter k)
-  const cfg = { step: [0.085, 0.07, 0.06, 0.05], up: [0.14, 0.26, 0.34, 0.4], wander: [0.35, 0.55, 0.7, 0.8], rEnd: [0.3, 0.32, 0.36, 0.4], children: mobile ? [5, 3, 0] : [6, 3, 2], maxLevel: mobile ? 2 : 3 };
-  // CONSULT (branch 1) is the seedling's first shoot: small, low, two or three twigs.
-  const cfg1 = { ...cfg, children: [3, 0, 0], maxLevel: 1 };
+  const cfg = { step: [0.085, 0.07, 0.06, 0.05], up: [0.14, 0.26, 0.34, 0.15], wander: [0.35, 0.55, 0.91, 1.04], rEnd: [0.3, 0.32, 0.36, 0.5], children: mobile ? [5, 3, 0] : [6, 3, 2], maxLevel: mobile ? 2 : 3 };
+  // CONSULT (branch 1) is the seedling's first shoot: small, low, two bud-tipped twigs.
+  const cfg1 = { ...cfg, children: [2, 0, 0], maxLevel: 1 };
   const mains = [];
   for (let k = 0; k < 7; k++) {
     const idx = Math.round((T.H[k] / T.trunkH) * nT);

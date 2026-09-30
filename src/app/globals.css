@@ -1,26 +1,145 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * Grow Digital design tokens.
+ * The teal ramp is anchored on the logo colour #083B3B (teal-900).
+ * Lime is an accent for dark surfaces only — never use it as text on paper.
+ */
+@theme {
+  --color-teal-50: #f1f8f6;
+  --color-teal-100: #e2f2ef;
+  --color-teal-200: #c2e5e0;
+  --color-teal-300: #8fcdc6;
+  --color-teal-400: #58b0a9;
+  --color-teal-500: #2e948e;
+  --color-teal-600: #1e7773;
+  --color-teal-700: #145e5c;
+  --color-teal-800: #0d4b4a;
+  --color-teal-900: #083b3b;
+  --color-teal-950: #041f1f;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-stage: #052626;
+  --color-paper: #f6f5f0;
+  --color-paper-2: #edebe3;
+  --color-line: #d9d6cc;
+  --color-ink: #0e1c1c;
+  --color-mint: #7fe0c8;
+  --color-lime: #c8f169;
+  --color-danger: #c2412d;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-instrument-serif), Georgia, serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  /* Fluid type scale */
+  --text-display: clamp(3.5rem, 2.1rem + 5.6vw, 7.5rem);
+  --text-display--line-height: 0.98;
+  --text-display--letter-spacing: -0.035em;
+  --text-h1: clamp(2.75rem, 1.9rem + 3.6vw, 5rem);
+  --text-h1--line-height: 1.02;
+  --text-h1--letter-spacing: -0.03em;
+  --text-h2: clamp(2rem, 1.45rem + 2.3vw, 3.5rem);
+  --text-h2--line-height: 1.06;
+  --text-h2--letter-spacing: -0.025em;
+  --text-h3: clamp(1.375rem, 1.23rem + 0.6vw, 1.75rem);
+  --text-h3--line-height: 1.2;
+  --text-h3--letter-spacing: -0.01em;
+  --text-body-l: 1.1875rem;
+  --text-body-l--line-height: 1.6;
+  --text-body: 1.0625rem;
+  --text-body--line-height: 1.65;
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.5;
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1.4;
+  --text-eyebrow--letter-spacing: 0.16em;
+
+  --radius-card: 20px;
+  --radius-control: 12px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+
+  --animate-marquee: marquee 48s linear infinite;
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Site container: max 1280px content, 16px gutter on phones growing to 32px */
+@utility container-site {
+  width: 100%;
+  max-width: calc(1280px + 2 * clamp(16px, 4vw, 32px));
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 32px);
 }
+
+/* Vertical section rhythm: 64/80px mobile → 128px desktop */
+@utility section-y {
+  padding-block: clamp(4rem, 2.6rem + 5.6vw, 8rem);
+}
+
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  line-height: var(--text-eyebrow--line-height);
+  letter-spacing: var(--text-eyebrow--letter-spacing);
+  text-transform: uppercase;
+}
+
+/* Serif italic accent for the single emphasised word in a headline */
+@utility accent-word {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  ::selection {
+    background-color: var(--color-teal-900);
+    color: var(--color-paper);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-teal-500);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  .surface-dark :focus-visible {
+    outline-color: var(--color-lime);
+  }
+  h1, h2, h3, h4 {
+    font-weight: 400;
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Lenis smooth scroll (home page only) */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
