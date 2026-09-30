@@ -1,7 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const PORT = 3100;
-const baseURL = `http://localhost:${PORT}`;
+// Set BASE_URL to test against an already-running server (e.g. a shared next dev on :3000).
+const baseURL = process.env.BASE_URL ?? `http://localhost:${PORT}`;
 
 export default defineConfig({
   testDir: "tests/e2e",
@@ -31,7 +32,7 @@ export default defineConfig({
       },
     },
   ],
-  webServer: {
+  webServer: process.env.BASE_URL ? undefined : {
     command: `npm run build && npm run start -- -p ${PORT}`,
     url: baseURL,
     reuseExistingServer: true,
