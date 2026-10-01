@@ -41,7 +41,7 @@ function Rings() {
  *
  * Fits one screen: with an image the hero is exactly the viewport height on desktop (capped at 880px)
  * and the image fills that height instead of dictating it; without an image it is shorter. On short
- * viewports ( = max-height 760px) spacing and the headline size tighten so nothing needs a scroll.
+ * viewports (the `short:` variant, max-height 760px) spacing and the headline size tighten so nothing needs a scroll.
  */
 export function PageHero({ eyebrow, num, title, kicker, lead, image, breadcrumb, children }: PageHeroProps) {
   return (
