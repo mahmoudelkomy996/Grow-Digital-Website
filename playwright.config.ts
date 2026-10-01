@@ -7,6 +7,8 @@ const baseURL = process.env.BASE_URL ?? `http://localhost:${PORT}`;
 export default defineConfig({
   testDir: "tests/e2e",
   fullyParallel: true,
+  // The 3D story and image optimization are heavy; 2 workers keeps local runs stable on modest machines.
+  workers: process.env.CI ? undefined : 2,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? "github" : "list",

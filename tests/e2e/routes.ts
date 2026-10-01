@@ -8,4 +8,9 @@ export const ROUTES = [
   "/use-cases",
   "/partners",
   "/contact",
+  "/blog",
+  "/blog/page/2",
+  "/blog/category/transform",
+  "/blog/the-critical-importance-of-cybersecurity-for-modern-organizations",
+  "/blog/2030-ksa-vision",
 ] as const;
