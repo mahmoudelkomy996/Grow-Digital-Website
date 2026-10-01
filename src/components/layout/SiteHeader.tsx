@@ -21,12 +21,24 @@ function subscribeScroll(cb: () => void) {
   window.addEventListener("scroll", cb, { passive: true });
   return () => window.removeEventListener("scroll", cb);
 }
-const getScrolled = () => window.scrollY > SCROLL_THRESHOLD;
+const HEADER_HEIGHT = 72;
+/**
+ * Solid once scrolled past the threshold, except while a dark section marked [data-header-transparent]
+ * (the homepage 3D story) is still behind the header, so the header stays transparent over it.
+ */
+const getScrolled = () => {
+  if (window.scrollY <= SCROLL_THRESHOLD) return false;
+  const dark = document.querySelector("[data-header-transparent]");
+  if (!dark) return true;
+  const r = dark.getBoundingClientRect();
+  return !(r.top <= 0 && r.bottom > HEADER_HEIGHT);
+};
 const getScrolledServer = () => false;
 
 /**
  * Fixed 72px header. Transparent with paper text over the dark hero every page starts with; switches to a
- * paper background, teal text and a hairline border after 24px of scroll or while the mega menu is open.
+ * paper background, teal text and a hairline border after 24px of scroll (unless a [data-header-transparent]
+ * section is behind it) or while the mega menu is open.
  */
 export function SiteHeader() {
   const pathname = usePathname();
