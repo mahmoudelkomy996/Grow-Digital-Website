@@ -5,25 +5,26 @@ import { LogoTile } from "@/components/ui/LogoTile";
 
 interface LogoWallProps {
   items: LogoItem[];
-  columns?: 3 | 4 | 5 | 6;
+  columns?: 2 | 3 | 4 | 5 | 6;
   tone?: Tone;
   className?: string;
 }
 
 const cols: Record<NonNullable<LogoWallProps["columns"]>, string> = {
-  3: "lg:grid-cols-3",
-  4: "lg:grid-cols-4",
-  5: "lg:grid-cols-5",
-  6: "lg:grid-cols-6",
+  2: "",
+  3: "sm:grid-cols-3 lg:grid-cols-3",
+  4: "sm:grid-cols-3 lg:grid-cols-4",
+  5: "sm:grid-cols-3 lg:grid-cols-5",
+  6: "sm:grid-cols-3 lg:grid-cols-6",
 };
 
-/** Hairline grid of logos (2 columns on phones, 3 on tablets, `columns` on desktop). */
+/** Hairline grid of logos (2 columns on phones, 3 on tablets, `columns` on desktop; `2` stays at two). */
 export function LogoWall({ items, columns = 5, tone = "paper", className }: LogoWallProps) {
   const dark = tone === "dark";
   return (
     <ul
       className={cn(
-        "grid grid-cols-2 border-t border-l sm:grid-cols-3",
+        "grid grid-cols-2 border-t border-l",
         cols[columns],
         dark ? "border-teal-300/15" : "border-line",
         className,

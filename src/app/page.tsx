@@ -1,10 +1,73 @@
-import { Logo } from "@/components/ui/Logo";
+import type { Metadata } from "next";
+import { METRICS, PILLARS, VALUES } from "@/content";
+import { organizationJsonLd, pageMetadata } from "@/lib/seo";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { GrowthStory } from "@/components/story/GrowthStory";
+import { Container } from "@/components/ui/Container";
+import { Reveal } from "@/components/ui/Reveal";
+import { Section } from "@/components/ui/Section";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { CtaBand } from "@/components/sections/CtaBand";
+import { MetricBand } from "@/components/sections/MetricBand";
+import { PillarGrid } from "@/components/sections/PillarGrid";
+import { ValuesGrid } from "@/components/sections/ValuesGrid";
+import { FeaturedUseCases } from "@/components/home/FeaturedUseCases";
+import { IndustryTiles } from "@/components/home/IndustryTiles";
+import { IntegratorStatement } from "@/components/home/IntegratorStatement";
+import { PartnersAndClients } from "@/components/home/PartnersAndClients";
+import { SolutionsShowcase } from "@/components/home/SolutionsShowcase";
+
+const base = pageMetadata({
+  title: "The agile integrator",
+  description:
+    "One accountable team to consult, transform, build, operate, secure and grow the systems your revenue depends on, for enterprises across KSA and the UAE.",
+  path: "/",
+});
+
+export const metadata: Metadata = { ...base, title: { absolute: "Grow Digital — The agile integrator" } };
 
 export default function Home() {
   return (
-    <main className="container-site section-y">
-      <Logo className="h-10 text-teal-900" />
-      <h1 className="mt-10 text-display">It&apos;s time to <em className="accent-word">grow</em>.</h1>
-    </main>
+    <>
+      <JsonLd data={organizationJsonLd()} />
+      <GrowthStory />
+      <IntegratorStatement />
+      <MetricBand metrics={METRICS} eyebrow="Impact, in numbers" />
+
+      <Section tone="paper" id="pillars" aria-labelledby="pillars-title" className="scroll-mt-20">
+        <Container>
+          <Reveal>
+            <SectionHeading
+              eyebrow="Seven pillars"
+              title="Seven pillars. One accountable *team*."
+              lead="Consult, transform, build, operate, secure, solve and grow: every stage of the lifecycle, under one contract and one outcome."
+              id="pillars-title"
+            />
+          </Reveal>
+          <PillarGrid pillars={PILLARS} className="mt-14 md:mt-20" />
+        </Container>
+      </Section>
+
+      <FeaturedUseCases />
+      <SolutionsShowcase />
+      <IndustryTiles />
+      <PartnersAndClients />
+
+      <Section tone="paper-2" aria-labelledby="values-title">
+        <Container>
+          <Reveal>
+            <SectionHeading
+              eyebrow="Our values"
+              title="How we *work*, every day."
+              lead="Seven values that shape how one team delivers, across roles and locations."
+              id="values-title"
+            />
+          </Reveal>
+          <ValuesGrid values={VALUES} className="mt-14 md:mt-20" />
+        </Container>
+      </Section>
+
+      <CtaBand />
+    </>
   );
 }

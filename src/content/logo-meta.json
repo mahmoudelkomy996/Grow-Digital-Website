@@ -1,0 +1,227 @@
+{
+  "/logos/clients/alfagih-hospital.png": {
+    "w": 172,
+    "h": 160,
+    "coverage": 0.286
+  },
+  "/logos/clients/anaqeed.png": {
+    "w": 145,
+    "h": 160,
+    "coverage": 0.219
+  },
+  "/logos/clients/aqarverse.png": {
+    "w": 111,
+    "h": 160,
+    "coverage": 0.1
+  },
+  "/logos/clients/bazarluks.png": {
+    "w": 625,
+    "h": 160,
+    "coverage": 0.308
+  },
+  "/logos/clients/bin-taleb.png": {
+    "w": 159,
+    "h": 160,
+    "coverage": 0.25
+  },
+  "/logos/clients/bupa-careconnect.png": {
+    "w": 572,
+    "h": 160,
+    "coverage": 0.318
+  },
+  "/logos/clients/marco.png": {
+    "w": 361,
+    "h": 160,
+    "coverage": 0.265
+  },
+  "/logos/clients/ncm.png": {
+    "w": 254,
+    "h": 160,
+    "coverage": 0.109
+  },
+  "/logos/clients/prime-scent.png": {
+    "w": 631,
+    "h": 160,
+    "coverage": 0.109
+  },
+  "/logos/clients/riyadh-hospital.png": {
+    "w": 629,
+    "h": 160,
+    "coverage": 0.21
+  },
+  "/logos/clients/riyadh-municipality.png": {
+    "w": 237,
+    "h": 160,
+    "coverage": 0.173
+  },
+  "/logos/clients/tmc-health.png": {
+    "w": 135,
+    "h": 160,
+    "coverage": 0.093
+  },
+  "/logos/clients/uno.png": {
+    "w": 215,
+    "h": 160,
+    "coverage": 0.6
+  },
+  "/logos/clients/wlmma.png": {
+    "w": 135,
+    "h": 160,
+    "coverage": 0.221
+  },
+  "/logos/partners/inveon.png": {
+    "w": 949,
+    "h": 160,
+    "coverage": 0.355
+  },
+  "/logos/partners/maestrohub.png": {
+    "w": 594,
+    "h": 160,
+    "coverage": 0.175
+  },
+  "/logos/partners/mobilgi.png": {
+    "w": 530,
+    "h": 160,
+    "coverage": 0.184
+  },
+  "/logos/partners/skysens.png": {
+    "w": 1538,
+    "h": 160,
+    "coverage": 0.371
+  },
+  "/logos/projects/db-netz.png": {
+    "w": 428,
+    "h": 160,
+    "coverage": 0.291
+  },
+  "/logos/projects/deutsche-bank.png": {
+    "w": 859,
+    "h": 160,
+    "coverage": 0.193
+  },
+  "/logos/projects/ecb.png": {
+    "w": 461,
+    "h": 160,
+    "coverage": 0.199
+  },
+  "/logos/projects/european-commission.png": {
+    "w": 584,
+    "h": 160,
+    "coverage": 0.26
+  },
+  "/logos/projects/saudia.png": {
+    "w": 695,
+    "h": 160,
+    "coverage": 0.227
+  },
+  "/logos/references/advantech.png": {
+    "w": 819,
+    "h": 160,
+    "coverage": 0.857
+  },
+  "/logos/references/afia.png": {
+    "w": 348,
+    "h": 160,
+    "coverage": 0.219
+  },
+  "/logos/references/arup.png": {
+    "w": 521,
+    "h": 160,
+    "coverage": 0.266
+  },
+  "/logos/references/beko.png": {
+    "w": 287,
+    "h": 160,
+    "coverage": 0.382
+  },
+  "/logos/references/bimbo.png": {
+    "w": 413,
+    "h": 160,
+    "coverage": 0.425
+  },
+  "/logos/references/bizim.png": {
+    "w": 268,
+    "h": 160,
+    "coverage": 0.697
+  },
+  "/logos/references/bridgestone.png": {
+    "w": 1231,
+    "h": 160,
+    "coverage": 0.393
+  },
+  "/logos/references/columbia.png": {
+    "w": 835,
+    "h": 160,
+    "coverage": 0.26
+  },
+  "/logos/references/garanti.png": {
+    "w": 489,
+    "h": 160,
+    "coverage": 0.225
+  },
+  "/logos/references/horizon.png": {
+    "w": 193,
+    "h": 160,
+    "coverage": 0.555
+  },
+  "/logos/references/hotic.png": {
+    "w": 614,
+    "h": 160,
+    "coverage": 0.16
+  },
+  "/logos/references/iga.png": {
+    "w": 160,
+    "h": 160,
+    "coverage": 0.856
+  },
+  "/logos/references/ikea.png": {
+    "w": 403,
+    "h": 160,
+    "coverage": 0.856
+  },
+  "/logos/references/isg.png": {
+    "w": 118,
+    "h": 160,
+    "coverage": 0.678
+  },
+  "/logos/references/kansai-paint.png": {
+    "w": 515,
+    "h": 160,
+    "coverage": 0.299
+  },
+  "/logos/references/lc-waikiki.png": {
+    "w": 994,
+    "h": 160,
+    "coverage": 0.369
+  },
+  "/logos/references/lego.png": {
+    "w": 159,
+    "h": 160,
+    "coverage": 0.855
+  },
+  "/logos/references/mudo.png": {
+    "w": 649,
+    "h": 160,
+    "coverage": 0.18
+  },
+  "/logos/references/organik-kimya.png": {
+    "w": 763,
+    "h": 160,
+    "coverage": 0.14
+  },
+  "/logos/references/sneaks-up.png": {
+    "w": 951,
+    "h": 160,
+    "coverage": 0.403
+  },
+  "/logos/references/vestel.png": {
+    "w": 702,
+    "h": 160,
+    "coverage": 0.431
+  },
+  "/logos/references/watsons.png": {
+    "w": 787,
+    "h": 160,
+    "coverage": 0.81
+  }
+}
