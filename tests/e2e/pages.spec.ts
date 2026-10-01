@@ -100,7 +100,7 @@ test.describe("contact", () => {
     await page.fill("#message", "We would like to talk about a data platform.");
     await page.check("input[name='consent']");
     await page.getByRole("button", { name: "Send message" }).click();
-    await expect(page.getByRole("status").or(page.getByRole("alert"))).toContainText(/Thank you|info@growdigital.com/);
+    await expect(page.locator("main").getByRole("status").or(page.locator("#form-status")).first()).toContainText(/Thank you|info@growdigital.com/);
     await expect(page.locator("[aria-invalid=true]")).toHaveCount(0);
   });
 
