@@ -49,6 +49,30 @@ export function SiteHeader() {
   useEffect(() => {
     if (!megaOpen) return;
     const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Tab") {
+        // The panel is rendered after the nav in the DOM; route Tab from the trigger into the panel and
+        // from the panel's last link back to the nav item after the trigger, like an inline disclosure.
+        const panel = document.getElementById(MEGA_ID);
+        const links = panel ? Array.from(panel.querySelectorAll<HTMLElement>("a[href], button")) : [];
+        const active = document.activeElement;
+        if (!links.length) return;
+        if (active === triggerRef.current && !e.shiftKey) {
+          e.preventDefault();
+          links[0].focus();
+        } else if (active === links[0] && e.shiftKey) {
+          e.preventDefault();
+          triggerRef.current?.focus();
+        } else if (active === links[links.length - 1] && !e.shiftKey) {
+          const navItems = Array.from(headerRef.current?.querySelectorAll<HTMLElement>("nav[aria-label='Main'] a, nav[aria-label='Main'] button") ?? []);
+          const next = navItems[navItems.indexOf(triggerRef.current as HTMLElement) + 1];
+          if (next) {
+            e.preventDefault();
+            setMegaPath(null);
+            next.focus();
+          }
+        }
+        return;
+      }
       if (e.key !== "Escape") return;
       e.preventDefault();
       setMegaPath(null);

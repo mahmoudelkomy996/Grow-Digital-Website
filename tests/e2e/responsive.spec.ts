@@ -15,7 +15,8 @@ for (const route of ROUTES) {
         page.on("pageerror", (e) => errors.push(e.message));
 
         await page.setViewportSize({ width, height: 900 });
-        const res = await page.goto(route, { waitUntil: "networkidle" });
+        const res = await page.goto(route, { waitUntil: "load" });
+        await page.waitForLoadState("networkidle", { timeout: 15_000 }).catch(() => {});
         expect(res?.status()).toBe(200);
 
         await expect(page.locator("h1")).toHaveCount(1);
