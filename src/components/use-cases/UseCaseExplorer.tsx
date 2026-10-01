@@ -98,7 +98,7 @@ export function UseCaseExplorer({ useCases, industries }: { useCases: UseCase[];
       {results.length ? (
         <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3" data-testid="use-case-grid">
           {results.map((u) => (
-            <li key={u.id} className="flex" data-use-case={u.id}>
+            <li key={u.id} className="flex">
               <UseCaseCard useCase={u} expandable className="w-full" />
             </li>
           ))}
