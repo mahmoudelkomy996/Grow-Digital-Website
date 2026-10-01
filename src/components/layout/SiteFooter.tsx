@@ -3,7 +3,6 @@ import { ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { CONTACT, COPYRIGHT, FOOTER_LINKS, type FooterColumn } from "@/content/navigation";
 import { Logo } from "@/components/ui/Logo";
-import { SmileArc } from "@/components/ui/SmileArc";
 import { Headline } from "@/components/ui/SectionHeading";
 
 const linkClass =
@@ -47,21 +46,21 @@ function Column({ column }: { column: FooterColumn }) {
   );
 }
 
-/** Dark site footer with the large smile-arc motif. */
+/** Compact dark site footer; the smile arc sits under the tagline's accent word. */
 export function SiteFooter() {
   return (
     <footer id="site-footer" className="surface-dark relative isolate overflow-hidden bg-teal-950 text-teal-100">
-      <div className="container-site pt-20 pb-10 md:pt-28">
-        <div className="grid gap-16 lg:grid-cols-12 lg:gap-8">
+      <div className="container-site pt-14 pb-12 md:pt-20 md:pb-16">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-4">
             <Link href="/" className="-m-2 inline-block rounded-md p-2">
               <Logo title="Grow Digital home" className="h-8 text-paper" />
             </Link>
-            <p className="mt-8 text-h2 font-light text-paper">
-              <Headline text={CONTACT.tagline} tone="dark" />
+            <p className="mt-6 text-h2 font-light text-paper md:mt-8">
+              <Headline text={CONTACT.tagline} tone="dark" arc />
             </p>
           </div>
-          <nav aria-label="Footer" className="grid grid-cols-2 gap-x-8 gap-y-12 sm:grid-cols-4 lg:col-span-8 lg:pl-8">
+          <nav aria-label="Footer" className="grid grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-4 lg:col-span-8 lg:pl-8">
             {FOOTER_LINKS.map((c) => (
               <Column key={c.title} column={c} />
             ))}
@@ -69,12 +68,7 @@ export function SiteFooter() {
         </div>
       </div>
 
-      {/* Signature motif: the logo's smile, drawn at landscape scale and cropped by the bottom bar */}
-      <div aria-hidden className="container-site pointer-events-none relative -mb-[9%] select-none">
-        <SmileArc strokeWidth={1.1} className="w-full text-teal-800" />
-      </div>
-
-      <div className="relative border-t border-teal-300/15 bg-teal-950">
+      <div className="relative border-t border-teal-300/15">
         <div className="container-site flex flex-col gap-3 py-6 text-small text-teal-300 sm:flex-row sm:items-center sm:justify-between">
           <p>{COPYRIGHT}</p>
           <a href="#main" className="self-start rounded-sm text-teal-200 transition-colors hover:text-paper sm:self-auto">
