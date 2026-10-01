@@ -148,6 +148,7 @@ export function GrowthStory() {
   const [active, setActive] = useState(0); // panel with opacity > 0.5 (-1 mid cross-fade)
   const [railActive, setRailActive] = useState(0); // chapter under the progress (rail highlight)
   const [fallback, setFallback] = useState(false);
+  const [ready, setReady] = useState(false); // first scene frame is up (fades the CSS placeholder out)
   const fallbackRef = useRef(false);
   useEffect(() => {
     fallbackRef.current = fallback;
@@ -302,17 +303,32 @@ export function GrowthStory() {
         cv.addEventListener("webglcontextrestored", () => window.clearTimeout(lostTimer));
         framesRef.current = 0;
         sceneRef.current = s;
+        setReady(true);
         setFallback(false);
       } catch (err) {
         if (!cancelled) fail(err);
       }
     };
 
+    // Start once the story is near the viewport AND the visitor first interacts (scroll, pointer, touch,
+    // key) — or after 8s without interaction. The intro text and a CSS seed placeholder paint immediately,
+    // so three.js never competes with the first paint or hydration.
+    const EVENTS = ["pointerdown", "pointermove", "keydown", "touchstart", "wheel", "scroll"] as const;
+    let started = false;
+    let timer = 0;
+    const start = () => {
+      if (started || cancelled) return;
+      started = true;
+      EVENTS.forEach((e) => window.removeEventListener(e, start));
+      window.clearTimeout(timer);
+      void load();
+    };
     const near = new IntersectionObserver(
       (entries) => {
         if (!entries.some((e) => e.isIntersecting)) return;
         near.disconnect();
-        void load();
+        EVENTS.forEach((e) => window.addEventListener(e, start, { passive: true }));
+        timer = window.setTimeout(start, 8000);
       },
       { rootMargin: "200px 0px" },
     );
@@ -320,6 +336,8 @@ export function GrowthStory() {
     return () => {
       cancelled = true;
       near.disconnect();
+      EVENTS.forEach((e) => window.removeEventListener(e, start));
+      window.clearTimeout(timer);
       teardown();
     };
   }, [isMobile, reducedMotion]);
@@ -342,6 +360,17 @@ export function GrowthStory() {
 
       <div className="sticky top-0 h-svh overflow-hidden">
         <div ref={hostRef} aria-hidden className="absolute inset-0" />
+
+        {/* Placeholder until the 3D scene is up: a soft glowing seed where the scene's seed appears */}
+        <div
+          aria-hidden
+          className={cn(
+            "pointer-events-none absolute inset-0 transition-opacity duration-700",
+            ready || fallback ? "opacity-0" : "opacity-100",
+          )}
+        >
+          <div className="absolute top-[34%] left-1/2 size-[clamp(120px,22vw,220px)] -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-[radial-gradient(circle,rgba(226,242,239,0.9)_0%,rgba(127,224,200,0.55)_28%,rgba(46,148,142,0.18)_55%,transparent_70%)] blur-[2px] md:top-1/2 md:left-[64%]" />
+        </div>
 
         {fallback ? (
           <div aria-hidden className="absolute inset-0" data-testid="story-fallback">

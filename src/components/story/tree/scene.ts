@@ -61,6 +61,9 @@ function textColumnRight(W: number) {
   return left + Math.min(520, 0.88 * W);
 }
 
+/** Let the browser paint and handle input between the heavy build steps (keeps each task short). */
+const yieldToMain = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
+
 export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = false }: SceneOptions): Promise<StoryScene> {
   const Q = isMobile
     ? { leaves: 2800, sapNP: 32, sapNPd: 12, sap: 640, fire: 60, motes: 110, shellDetail: 3, blocks: 90, blockScale: 1.2, lineK: 1.4, buds: 180, rootMap: 512, radialDrop: 2 }
@@ -109,6 +112,7 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
     ...(k === 6 ? { d: 10.5 } : { dCrown: k === 7 ? 4.3 : 4.7 }),
   }));
   const tree = generateTree({ thetas: THETA.slice(1, 8), mobile: isMobile, fruitViews, textAz: isMobile ? null : THETA[1] + (1.5 - 4.5) * DRIFT });
+  await yieldToMain();
   const rng = mulberry32(4711);
 
   const tubes = new THREE.Mesh(
@@ -123,6 +127,7 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
 
   // ground
   const rootMap = buildRootMap(tree, Q.rootMap);
+  await yieldToMain();
   U.uRootMap.value = rootMap;
   U.uExtent.value = tree.rootExtent;
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), M.groundMaterial(U));
@@ -168,6 +173,7 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
 
   // sap / data streams (the first sapNPd paths end in the "decision" node at the tip of branch 2)
   const paths = buildSapTexture(tree, Q.sapNP, 128, Q.sapNPd);
+  await yieldToMain();
   U.uPaths.value = paths;
   const sap = new THREE.Mesh(toQuads(buildSapParticles(Q.sapNP, Q.sap, rng)), M.sapMaterial(U));
   sap.frustumCulled = false;
@@ -184,6 +190,7 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
 
   // BUILD blocks on branch 3
   const blockList = buildBlocks(tree, rng, Q.blocks, Q.blockScale);
+  await yieldToMain();
   const blockGeo = new THREE.BoxGeometry(1, 1, 1);
   const nB = blockList.length;
   const bFrom = new Float32Array(nB * 3),
@@ -219,6 +226,7 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
   U.uShellC.value.copy(shellC);
   U.uShellR.value = shellR;
   const shell = new THREE.Mesh(buildShellGeometry(Q.shellDetail), M.shellMaterial(U));
+  await yieldToMain();
   shell.position.copy(shellC);
   shell.scale.setScalar(shellR);
   shell.frustumCulled = false;
@@ -249,6 +257,7 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
 
   // GROW leaves
   const leaves = new THREE.Mesh(toQuads(buildLeaves(tree, Q.leaves, rng)), M.leavesMaterial(U));
+  await yieldToMain();
   leaves.frustumCulled = false;
   scene.add(leaves);
 

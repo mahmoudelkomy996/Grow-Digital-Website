@@ -40,8 +40,11 @@ export default function UseCasesPage() {
         lead={`${USE_CASES.length} programs, ${ai} in AI and ${iot} in IoT, each measured on the business result it delivered.`}
         breadcrumb={[{ label: "Home", href: "/" }, { label: "Use cases" }]}
       />
-      <Section tone="paper-2" aria-label="All use cases">
+      <Section tone="paper-2" aria-labelledby="all-use-cases">
         <Container>
+          <h2 id="all-use-cases" className="sr-only">
+            All use cases
+          </h2>
           <Suspense fallback={<StaticGrid />}>
             <UseCaseExplorer useCases={USE_CASES} industries={INDUSTRIES} />
           </Suspense>
