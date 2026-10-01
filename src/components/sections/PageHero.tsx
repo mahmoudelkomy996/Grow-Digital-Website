@@ -12,6 +12,8 @@ interface PageHeroProps {
   num?: string;
   /** Page H1; wrap one word in *asterisks* for the serif accent */
   title: string;
+  /** Optional first line inside the H1 (e.g. the pillar name), rendered smaller above the headline */
+  kicker?: string;
   lead?: ReactNode;
   image?: ImageRef;
   breadcrumb?: BreadcrumbItem[];
@@ -35,7 +37,7 @@ function Rings() {
  * Dark page hero with the page H1. The image sits on the right on desktop and becomes a full-bleed
  * background with a teal overlay on smaller screens. Top padding clears the fixed 72px header.
  */
-export function PageHero({ eyebrow, num, title, lead, image, breadcrumb, children }: PageHeroProps) {
+export function PageHero({ eyebrow, num, title, kicker, lead, image, breadcrumb, children }: PageHeroProps) {
   return (
     <section className="surface-dark relative isolate overflow-hidden bg-teal-900 text-teal-100">
       <div
@@ -55,6 +57,7 @@ export function PageHero({ eyebrow, num, title, lead, image, breadcrumb, childre
             {eyebrow}
           </Eyebrow>
           <h1 className="max-w-[16ch] text-h1 font-light text-paper">
+            {kicker ? <span className="mb-5 block text-h3 font-light tracking-[-0.01em] text-teal-200">{kicker}</span> : null}
             <Headline text={title} tone="dark" arc />
           </h1>
           {lead ? <div className="max-w-xl text-body-l text-teal-200">{lead}</div> : null}
