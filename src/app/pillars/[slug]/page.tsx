@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { PILLARS, getPillar } from "@/content";
 import { pageMetadata, serviceJsonLd } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { getPostsByCategory } from "@/lib/blog";
+import { LatestPosts } from "@/components/blog/LatestPosts";
 import { Button } from "@/components/ui/Button";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { PageHero } from "@/components/sections/PageHero";
@@ -66,6 +68,15 @@ export default async function PillarPage({ params }: PageProps<"/pillars/[slug]"
       <PillarDeepDives pillar={pillar} />
       <PillarExtras pillar={pillar} />
       <PillarUseCases pillar={pillar} />
+      <LatestPosts
+        posts={getPostsByCategory(pillar.slug)}
+        eyebrow={`Insights · ${pillar.verb}`}
+        title="Related *insights*."
+        href={`/blog/category/${pillar.slug}`}
+        linkLabel={`All ${pillar.verb} insights`}
+        tone={pillar.useCaseIds.length ? "paper" : "paper-2"}
+        id="pillar-insights-title"
+      />
       {PILLARS_WITH_PARTNER_EXTRAS.has(pillar.slug) ? null : <PillarPartners pillar={pillar} />}
       <PillarNav current={pillar.slug} />
       <CtaBand />

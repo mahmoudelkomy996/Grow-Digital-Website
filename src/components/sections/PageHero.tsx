@@ -5,6 +5,8 @@ import type { ImageRef } from "@/content/types";
 import { Breadcrumb, type BreadcrumbItem } from "@/components/ui/Breadcrumb";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Headline } from "@/components/ui/SectionHeading";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { breadcrumbJsonLd } from "@/lib/seo";
 
 interface PageHeroProps {
   eyebrow: ReactNode;
@@ -36,6 +38,10 @@ function Rings() {
 /**
  * Dark page hero with the page H1. The image sits on the right on desktop and becomes a full-bleed
  * background with a teal overlay on smaller screens. Top padding clears the fixed 72px header.
+ *
+ * Fits one screen: with an image the hero is exactly the viewport height on desktop (capped at 880px)
+ * and the image fills that height instead of dictating it; without an image it is shorter. On short
+ * viewports ( = max-height 760px) spacing and the headline size tighten so nothing needs a scroll.
  */
 export function PageHero({ eyebrow, num, title, kicker, lead, image, breadcrumb, children }: PageHeroProps) {
   return (
@@ -47,28 +53,36 @@ export function PageHero({ eyebrow, num, title, kicker, lead, image, breadcrumb,
       <Rings />
       <div
         className={cn(
-          "container-site grid min-h-[min(88svh,780px)] items-end gap-12 pt-[calc(72px+clamp(4rem,9vw,8rem))] pb-[clamp(3.5rem,7vw,6.5rem)] lg:grid-cols-12 lg:gap-8",
-          image && "lg:min-h-[min(92svh,840px)]",
+          "container-site grid min-h-[min(88svh,720px)] items-end gap-12 pt-[calc(72px+clamp(2.5rem,6vw,4.5rem))] pb-[clamp(2.5rem,5vw,4.5rem)] lg:grid-cols-12 lg:gap-8",
+          "short:min-h-0 short:pt-[calc(72px+1.75rem)] short:pb-8",
+          image
+            ? "lg:h-[min(100svh,880px)] lg:min-h-fit short:lg:h-svh"
+            : "lg:min-h-[min(72svh,640px)]",
         )}
       >
-        <div className={cn("relative flex flex-col gap-7", image ? "lg:col-span-7 lg:pr-8" : "lg:col-span-10")}>
-          {breadcrumb?.length ? <Breadcrumb items={breadcrumb} tone="dark" /> : null}
+        <div className={cn("relative flex flex-col gap-7 short:gap-4", image ? "lg:col-span-7 lg:pr-8" : "lg:col-span-10")}>
+          {breadcrumb?.length ? (
+            <>
+              <Breadcrumb items={breadcrumb} tone="dark" />
+              <JsonLd data={breadcrumbJsonLd(breadcrumb)} />
+            </>
+          ) : null}
           <Eyebrow tone="dark" num={num}>
             {eyebrow}
           </Eyebrow>
-          <h1 className="max-w-[16ch] text-h1 font-light text-paper">
-            {kicker ? <span className="mb-5 block text-h3 font-light tracking-[-0.01em] text-teal-200">{kicker}</span> : null}
+          <h1 className="max-w-[16ch] text-h1 font-light text-paper short:text-h2">
+            {kicker ? <span className="mb-5 block text-h3 font-light tracking-[-0.01em] text-teal-200 short:mb-2">{kicker}</span> : null}
             <Headline text={title} tone="dark" arc />
           </h1>
-          {lead ? <div className="max-w-xl text-body-l text-teal-200">{lead}</div> : null}
-          {children ? <div className="mt-2 flex flex-wrap items-center gap-3">{children}</div> : null}
+          {lead ? <div className="max-w-xl text-body-l text-teal-200 short:text-body">{lead}</div> : null}
+          {children ? <div className="mt-2 flex flex-wrap items-center gap-3 short:mt-0">{children}</div> : null}
         </div>
 
         {image ? (
           <div
             className={cn(
               "absolute inset-0 -z-10 overflow-hidden",
-              "lg:relative lg:inset-auto lg:z-auto lg:col-span-5 lg:aspect-[4/5] lg:self-end lg:rounded-[var(--radius-card)]",
+              "lg:relative lg:inset-auto lg:z-auto lg:col-span-5 lg:h-full lg:min-h-[360px] lg:self-stretch lg:rounded-[var(--radius-card)]",
             )}
           >
             <Image

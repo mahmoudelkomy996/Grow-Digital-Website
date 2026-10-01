@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { METRICS, PILLARS, VALUES } from "@/content";
-import { organizationJsonLd, pageMetadata } from "@/lib/seo";
+import { organizationJsonLd, pageMetadata, websiteJsonLd } from "@/lib/seo";
+import { getAllPosts } from "@/lib/blog";
+import { LatestPosts } from "@/components/blog/LatestPosts";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { GrowthStory } from "@/components/story/GrowthStory";
 import { Container } from "@/components/ui/Container";
@@ -30,6 +32,7 @@ export default function Home() {
   return (
     <>
       <JsonLd data={organizationJsonLd()} />
+      <JsonLd data={websiteJsonLd()} />
       <GrowthStory />
       <IntegratorStatement />
       <MetricBand metrics={METRICS} eyebrow="Impact, in numbers" />
@@ -52,8 +55,9 @@ export default function Home() {
       <SolutionsShowcase />
       <IndustryTiles />
       <PartnersAndClients />
+      <LatestPosts posts={getAllPosts()} title="Ideas from the *field*." />
 
-      <Section tone="paper-2" aria-labelledby="values-title">
+      <Section tone="paper" aria-labelledby="values-title">
         <Container>
           <Reveal>
             <SectionHeading

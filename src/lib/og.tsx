@@ -27,7 +27,7 @@ export async function ogImage({ eyebrow, title }: { eyebrow: string; title: stri
         <img src={logoSrc} width={326} height={64} alt="" />
         <div style={{ display: "flex", flexDirection: "column", gap: 24, maxWidth: 980 }}>
           <div style={{ fontSize: 24, letterSpacing: 4, color: "#c8f169", textTransform: "uppercase" }}>{eyebrow}</div>
-          <div style={{ fontSize: 76, lineHeight: 1.04, letterSpacing: -2 }}>{title}</div>
+          <div style={{ fontSize: title.length > 90 ? 50 : title.length > 60 ? 60 : 76, lineHeight: 1.06, letterSpacing: -2 }}>{title}</div>
         </div>
         <svg
           width="200"

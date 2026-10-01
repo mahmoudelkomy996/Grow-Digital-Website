@@ -46,6 +46,7 @@ export const NAV: NavItem[] = [
   { label: "Solutions", href: "/pillars/solve" },
   { label: "Use cases", href: "/use-cases" },
   { label: "Partners", href: "/partners" },
+  { label: "Insights", href: "/blog" },
   { label: "About", href: "/about" },
 ];
 
@@ -87,6 +88,7 @@ export const FOOTER_LINKS: FooterColumn[] = [
       { label: "About", href: "/about" },
       { label: "Use cases", href: "/use-cases" },
       { label: "Partners", href: "/partners" },
+      { label: "Insights", href: "/blog" },
       { label: "Contact", href: "/contact" },
     ],
   },
