@@ -5,6 +5,7 @@ import { getAllPosts } from "@/lib/blog";
 import { LatestPosts } from "@/components/blog/LatestPosts";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { GrowthStory } from "@/components/story/GrowthStory";
+import { Preloader } from "@/components/home/Preloader";
 import { Container } from "@/components/ui/Container";
 import { Reveal } from "@/components/ui/Reveal";
 import { Section } from "@/components/ui/Section";
@@ -33,6 +34,7 @@ export default function Home() {
     <>
       <JsonLd data={organizationJsonLd()} />
       <JsonLd data={websiteJsonLd()} />
+      <Preloader />
       <GrowthStory />
       <IntegratorStatement />
       <MetricBand metrics={METRICS} eyebrow="Impact, in numbers" />

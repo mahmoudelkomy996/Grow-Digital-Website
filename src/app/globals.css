@@ -142,6 +142,9 @@
   }
 }
 
+/* Homepage first-visit preloader: visible only when the boot script turned it on (hidden for no-JS) */
+html:not([data-preloader="on"]) #preloader { display: none; }
+
 /* Lenis smooth scroll (home page only) */
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }

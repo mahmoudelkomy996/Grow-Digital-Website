@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { skipPreloader } from "./helpers";
 
 // Homepage growth story (plan Task 5): 3D canvas, chapter panels, rail and the no-WebGL fallback.
 
@@ -18,6 +19,11 @@ async function scrollToProgress(page: Page, p: number) {
 }
 
 const panel = (page: Page, id: string) => page.locator(`#story article[data-chapter="${id}"]`);
+
+// The first-visit preloader is covered by loader.spec.ts; here the story is tested directly.
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(skipPreloader);
+});
 
 // allow a software GL fallback on machines without a usable GPU
 test.use({ launchOptions: { args: ["--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] } });
@@ -60,6 +66,7 @@ test.describe("growth story without WebGL", () => {
     // a browser of its own: launch flags cannot be changed per describe group
     const browser = await playwright.chromium.launch({ args: ["--disable-webgl", "--disable-webgl2"] });
     const context = await browser.newContext({ baseURL, viewport });
+    await context.addInitScript(skipPreloader);
     const page = await context.newPage();
     const errors: string[] = [];
     page.on("console", (m) => {

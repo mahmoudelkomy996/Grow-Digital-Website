@@ -159,7 +159,14 @@ export function GrowthStory() {
     if (reducedMotion) return;
     const lenis = new Lenis({ lerp: 0.09, smoothWheel: true, autoRaf: true });
     lenisRef.current = lenis;
+    // Hold smooth scroll while the first-visit preloader covers the page.
+    const resume = () => lenis.start();
+    if (document.documentElement.dataset.preloader === "on") {
+      lenis.stop();
+      window.addEventListener("gd:preloader-done", resume, { once: true });
+    }
     return () => {
+      window.removeEventListener("gd:preloader-done", resume);
       lenis.destroy();
       lenisRef.current = null;
     };
@@ -227,7 +234,10 @@ export function GrowthStory() {
       const scene = sceneRef.current;
       if (scene) {
         scene.render(now / 1000, smoothP);
-        if (++framesRef.current === 3) window.__sceneReady = true;
+        if (++framesRef.current === 3) {
+          window.__sceneReady = true;
+          window.dispatchEvent(new CustomEvent("gd:scene", { detail: "ready" })); // lets the preloader lift
+        }
       }
     };
 
@@ -273,6 +283,7 @@ export function GrowthStory() {
       if (err) console.warn("Growth story: 3D scene unavailable, showing posters.", err);
       teardown();
       if (!cancelled) setFallback(true);
+      window.dispatchEvent(new CustomEvent("gd:scene", { detail: "fallback" }));
     };
 
     const load = async () => {
@@ -332,7 +343,9 @@ export function GrowthStory() {
       },
       { rootMargin: "200px 0px" },
     );
-    near.observe(section);
+    // First visit: the preloader is already covering the page, so build the scene right away.
+    if (document.documentElement.dataset.preloader === "on") start();
+    else near.observe(section);
     return () => {
       cancelled = true;
       near.disconnect();

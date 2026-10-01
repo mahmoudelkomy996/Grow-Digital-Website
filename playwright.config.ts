@@ -16,7 +16,7 @@ export default defineConfig({
   expect: { timeout: 10_000 },
   use: {
     baseURL,
-    trace: "retain-on-failure",
+    trace: "on-first-retry",
   },
   projects: [
     {

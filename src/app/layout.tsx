@@ -4,7 +4,15 @@ import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
 import { Analytics } from "@/components/seo/Analytics";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { RouteProgress } from "@/components/layout/RouteProgress";
+import { Suspense } from "react";
 import "./globals.css";
+
+/**
+ * Runs before first paint: turns the homepage preloader on (<html data-preloader="on">) only on "/" and
+ * only once per browser session; everywhere else, and for no-JS visitors, CSS keeps #preloader hidden.
+ */
+const PRELOADER_BOOT = `(function(){var d=document.documentElement,on=location.pathname==="/";try{if(sessionStorage.getItem("gd:preloaded"))on=false}catch(e){}d.setAttribute("data-preloader",on?"on":"off")})()`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -39,8 +47,14 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={fontVariables}>
+    <html lang="en" className={fontVariables} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: PRELOADER_BOOT }} />
+      </head>
       <body className="min-h-dvh bg-paper text-ink">
+        <Suspense fallback={null}>
+          <RouteProgress />
+        </Suspense>
         <a
           href="#main"
           className="fixed top-3 left-3 z-[100] -translate-y-[150%] rounded-full bg-lime px-5 py-3 text-[0.9375rem] font-medium text-teal-950 transition-transform duration-300 focus-visible:translate-y-0 focus-visible:outline-teal-950"

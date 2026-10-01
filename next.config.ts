@@ -33,6 +33,13 @@ const legacyPages: [string, string][] = [
   ["/wp-login.php", "/"],
 ];
 
+/** A redirect for both `/x` and `/x/` (wildcard sources already match both). */
+const withSlash = (source: string, destination: string) =>
+  source.includes(":") ? [{ source, destination, permanent: true }] : [
+    { source, destination, permanent: true },
+    { source: `${source}/`, destination, permanent: true },
+  ];
+
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
@@ -47,10 +54,14 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
   },
   poweredByHeader: false,
+  // Old WordPress URLs end with a slash. Handle trailing slashes ourselves so every legacy URL is ONE 301 hop.
+  skipTrailingSlashRedirect: true,
   async redirects() {
     return [
-      ...legacyPosts.map((slug) => ({ source: `/${slug}`, destination: `/blog/${slug}`, permanent: true })),
-      ...legacyPages.map(([source, destination]) => ({ source, destination, permanent: true })),
+      ...legacyPosts.flatMap((slug) => withSlash(`/${slug}`, `/blog/${slug}`)),
+      ...legacyPages.flatMap(([source, destination]) => withSlash(source, destination)),
+      // Any other URL with a trailing slash → the same URL without it (what Next does by default)
+      { source: "/:path+/", destination: "/:path+", permanent: true },
     ];
   },
   async headers() {
