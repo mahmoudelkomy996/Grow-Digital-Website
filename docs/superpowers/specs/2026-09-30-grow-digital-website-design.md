@@ -168,7 +168,7 @@ The ramp is anchored on the logo teal, sampled as `#083B3B`.
 | `teal-900` | `#083B3B` | logo, primary brand, dark bands, primary buttons on paper |
 | `teal-800` | `#0D4B4A` | dark raised surfaces |
 | `teal-700` | `#145E5C` | secondary text on paper |
-| `teal-600` | `#1E7773` | links on paper |
+| `teal-600` | `#1C726E` | links on paper |
 | `teal-500` | `#2E948E` | accents, focus rings on paper |
 | `teal-400` | `#58B0A9` | muted text on dark |
 | `teal-300` | `#8FCDC6` | secondary text on dark |
