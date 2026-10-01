@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Grow Digital website
 
-## Getting Started
+The marketing site for Grow Digital, "The agile integrator". It covers one accountable team that consults, transforms, builds, operates, secures and grows, plus Grow Digital's own digital and AI solutions.
 
-First, run the development server:
+Built with Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4 and three.js for the homepage 3D growth story.
+
+## Run
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000
+npm run build && npm run start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Checks
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run typecheck    # next typegen + tsc
+npm run lint
+npm run test:unit    # content integrity (node --test)
+npx playwright install chromium
+npm run test:e2e     # builds, starts on :3100 and runs every e2e spec
+BASE_URL=http://localhost:3000 npx playwright test   # against a running server
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Pages
 
-## Learn More
+| Route | Content |
+|---|---|
+| `/` | 3D growth story (9 chapters), integrator statement, impact, pillars, use cases, solutions, industries, partners and clients, values |
+| `/pillars/[slug]` | consult, transform, build, operate, secure, solve, grow: services, deep dives and pillar-specific sections |
+| `/use-cases` | 12 AI and IoT use cases with URL-based filters |
+| `/partners` | Exclusive solution partners, data/AI and cloud partners, clients by sector, key projects, partner references |
+| `/about` | Who we are, mission and vision, lifecycle, values, KSA and UAE |
+| `/contact` | Contact form (Server Action) and details |
+| `/design-system` | Living style guide (noindex) |
 
-To learn more about Next.js, take a look at the following resources:
+## Editing content
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+All copy lives in typed modules in `src/content/`: `pillars.ts`, `use-cases.ts`, `partners.ts`, `clients.ts`, `solutions.ts`, `company.ts`, `story.ts` and others. Pages never hard-code copy.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- In headlines, wrap one word in `*asterisks*` to set it in the serif accent.
+- Sources are the deck (`docs/content/deck-text.txt`) and the services portfolio (`docs/content/services-portfolio.md`).
+- After editing, run `npm run test:unit`. It checks counts, cross-references, and that every image and logo file exists.
 
-## Deploy on Vercel
+## Images and logos
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Photography** is AI-generated with Magnific (Seedream 5 Pro, 2K).
+  - Prompts and alt text live in `src/content/images.ts`, along with the shared art-direction suffix `IMAGE_STYLE`.
+  - To replace an image, generate it with the same aspect, then run `node scripts/optimize-image.mjs <in> public/images/...` and `node scripts/check-images.mjs`.
+- **Logos** were extracted from the company deck with `scripts/extract-logos.mjs` into `public/logos/`.
+  - After adding or replacing a logo, run `node scripts/logo-meta.mjs` to refresh optical sizing.
+  - A partner without a `logo` field renders as a text wordmark.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contact form email
+
+Copy `.env.example` to `.env.local` and set `RESEND_API_KEY`, `CONTACT_TO` and `CONTACT_FROM`.
+
+- **Without them:** development logs submissions to the console, and production shows a friendly fallback pointing to info@growdigital.com.
+
+## Docs
+
+- Design spec: `docs/superpowers/specs/2026-09-30-grow-digital-website-design.md`
+- Implementation plan: `docs/superpowers/plans/2026-09-30-grow-digital-website.md`
+- Design system rules: `DESIGN.md`
+- The 3D concept prototypes (tree, city, arc) live in `prototypes/`; the tree was chosen. Serve them with `node prototypes/serve.js 5178`.

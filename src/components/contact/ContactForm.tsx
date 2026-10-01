@@ -72,10 +72,11 @@ export function ContactForm({ interests }: { interests: InterestOption[] }) {
   // After a failed submit, move focus to the first invalid field (or to the status message).
   useEffect(() => {
     if (state.status !== "error") return;
-    const first = ORDER.find((f) => errors[f]);
+    const fieldErrors = state.fieldErrors ?? {};
+    const first = ORDER.find((f) => fieldErrors[f]);
     const el = first ? formRef.current?.querySelector<HTMLElement>(`[name="${first}"]`) : null;
     (el ?? statusRef.current)?.focus();
-  }, [state, errors]);
+  }, [state]);
 
   if (state.status === "success") {
     return (
