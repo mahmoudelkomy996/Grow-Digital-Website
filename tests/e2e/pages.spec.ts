@@ -113,7 +113,10 @@ test.describe("contact", () => {
 test.describe("seo", () => {
   test("sitemap, robots and OG image", async ({ request }) => {
     const sitemap = await (await request.get("/sitemap.xml")).text();
-    expect(sitemap.match(/<loc>/g)?.length).toBe(12);
+    // The 12 core pages must be listed (blog posts and categories add more URLs on top).
+    for (const path of ["", "/about", "/use-cases", "/partners", "/contact", ...PILLAR_SLUGS.map((s) => `/pillars/${s}`)]) {
+      expect(sitemap, path || "/").toContain(`<loc>https://growdigital.com${path}</loc>`);
+    }
     const robots = await (await request.get("/robots.txt")).text();
     expect(robots).toContain("Disallow: /design-system");
     const og = await request.get("/opengraph-image");
