@@ -1,4 +1,4 @@
-import { SOLUTIONS } from "@/content";
+import { getI18n } from "@/i18n/server";
 import { ArrowLink } from "@/components/ui/ArrowLink";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -8,9 +8,10 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { SolutionCard } from "@/components/sections/SolutionCard";
 
 /** SOLVE showcase: our own three products, then the two partner platforms we represent. */
-export function SolutionsShowcase() {
-  const own = SOLUTIONS.filter((s) => s.kind === "own");
-  const partner = SOLUTIONS.filter((s) => s.kind === "partner");
+export async function SolutionsShowcase() {
+  const { c, t } = await getI18n();
+  const own = c.SOLUTIONS.filter((s) => s.kind === "own");
+  const partner = c.SOLUTIONS.filter((s) => s.kind === "partner");
   return (
     <Section tone="paper" aria-labelledby="solutions-title">
       <Container>
@@ -18,16 +19,16 @@ export function SolutionsShowcase() {
           <Reveal>
             <SectionHeading
               num="03"
-              eyebrow="Our products"
-              title="Our own platforms, built to *deliver*."
-              lead="Our own products for the sectors we know best, plus the partner platforms we exclusively represent in KSA and the UAE."
+              eyebrow={t.home.productsEyebrow}
+              title={t.home.productsTitle}
+              lead={t.home.productsLead}
               id="solutions-title"
             />
           </Reveal>
-          <ArrowLink href="/services/software-development#products">Software development</ArrowLink>
+          <ArrowLink href="/services/software-development#products">{t.home.productsLink}</ArrowLink>
         </div>
 
-        <Eyebrow className="mt-14 md:mt-20">Grow Digital solutions</Eyebrow>
+        <Eyebrow className="mt-14 md:mt-20">{t.home.ownSolutions}</Eyebrow>
         <ul className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {own.map((s, i) => (
             <Reveal as="li" key={s.id} delay={i * 100} className="flex">
@@ -36,7 +37,7 @@ export function SolutionsShowcase() {
           ))}
         </ul>
 
-        <Eyebrow className="mt-14">Partner solutions</Eyebrow>
+        <Eyebrow className="mt-14">{t.home.partnerSolutions}</Eyebrow>
         <ul className="mt-6 grid gap-4 md:grid-cols-2">
           {partner.map((s, i) => (
             <Reveal as="li" key={s.id} delay={i * 100} className="flex">

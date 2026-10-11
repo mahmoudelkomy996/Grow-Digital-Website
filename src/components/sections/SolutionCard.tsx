@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import { cn } from "@/lib/cn";
+import { useDict } from "@/i18n/LocaleProvider";
 import type { Solution } from "@/content/types";
 import { SmileArc } from "@/components/ui/SmileArc";
 
@@ -10,6 +13,7 @@ interface SolutionCardProps {
 
 /** Own product or partner platform: image, provenance, name, category, description and key features. */
 export function SolutionCard({ solution, className }: SolutionCardProps) {
+  const t = useDict();
   const own = solution.kind === "own";
   return (
     <article
@@ -28,15 +32,15 @@ export function SolutionCard({ solution, className }: SolutionCardProps) {
         />
         <span
           className={cn(
-            "eyebrow absolute top-4 left-4 rounded-full px-3 py-1.5",
+            "eyebrow absolute start-4 top-4 rounded-full px-3 py-1.5",
             own ? "bg-lime text-teal-950" : "bg-teal-950/70 text-paper backdrop-blur-sm",
           )}
         >
-          {own ? "Our solution" : "Partner solution"}
+          {own ? t.cards.ownSolution : t.cards.partnerSolution}
         </span>
       </div>
       <div className="flex flex-1 flex-col p-6 md:p-7">
-        <p className="eyebrow text-teal-600">{own ? "By Grow Digital" : `By ${solution.by}`}</p>
+        <p className="eyebrow text-teal-600">{own ? t.cards.byGrowDigital : t.cards.by(solution.by)}</p>
         <h3 className="mt-3 text-h3 text-teal-900">{solution.name}</h3>
         <p className="mt-1.5 text-small text-teal-700">{solution.category}</p>
         <p className="mt-4 text-[0.9375rem] leading-relaxed text-teal-800">{solution.description}</p>

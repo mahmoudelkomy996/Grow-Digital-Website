@@ -1,7 +1,8 @@
 import Image from "next/image";
-import Link from "next/link";
-import type { ServiceDetail, ServicePillar } from "@/content/services";
-import { SERVICES, serviceCount } from "@/content/services";
+import { Link } from "@/components/ui/Link";
+import type { ServiceDetail, ServicePillar } from "@/content/types";
+import { serviceCount } from "@/content";
+import { getI18n } from "@/i18n/server";
 import { cn } from "@/lib/cn";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -44,9 +45,9 @@ function ArcList({ items, dark = false }: { items: string[]; dark?: boolean }) {
 export function ServiceIntro({ pillar }: { pillar: ServicePillar }) {
   const [first, ...rest] = pillar.intro;
   return (
-    <Section tone="paper" aria-label={`About ${pillar.name}`}>
+    <Section tone="paper" aria-label={pillar.name}>
       <Container className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
-        <Reveal className="flex flex-col gap-6 lg:col-span-6 lg:pr-10">
+        <Reveal className="flex flex-col gap-6 lg:col-span-6 lg:pe-10">
           <Eyebrow num={pillar.num}>{pillar.role}</Eyebrow>
           <p className="text-h3 font-light text-teal-900">{first}</p>
           {rest.map((p) => (
@@ -66,7 +67,8 @@ export function ServiceIntro({ pillar }: { pillar: ServicePillar }) {
 }
 
 /** At-a-glance index of every service on the page, grouped (practices on Consultancy), linking to anchors. */
-export function ServiceOverview({ pillar }: { pillar: ServicePillar }) {
+export async function ServiceOverview({ pillar }: { pillar: ServicePillar }) {
+  const { t } = await getI18n();
   const many = pillar.groups.length > 1;
   return (
     <Section tone="paper-2" id="services" aria-labelledby="services-title" className="scroll-mt-20">
@@ -74,9 +76,9 @@ export function ServiceOverview({ pillar }: { pillar: ServicePillar }) {
         <Reveal>
           <SectionHeading
             num={pillar.num}
-            eyebrow={many ? "Practices" : "Services"}
-            title={many ? "Four practices, four *questions*." : "Everything we *deliver*."}
-            lead={`${serviceCount(pillar)} services${pillar.slug === "managed-services" ? " in ten areas. You choose the areas you need." : ", under one accountable team."}`}
+            eyebrow={many ? t.service.practices : t.service.breadcrumb}
+            title={many ? t.service.practicesTitle : t.service.everythingTitle}
+            lead={pillar.slug === "managed-services" ? t.service.countAreas(serviceCount(pillar)) : t.service.countTeam(serviceCount(pillar))}
             id="services-title"
           />
         </Reveal>
@@ -115,10 +117,10 @@ export function ServiceOverview({ pillar }: { pillar: ServicePillar }) {
   );
 }
 
-function ServiceArticle({ service, index }: { service: ServiceDetail; index: number }) {
+function ServiceArticle({ service, index, outcomeLabel }: { service: ServiceDetail; index: number; outcomeLabel: string }) {
   return (
     <article id={service.id} className="grid scroll-mt-28 gap-8 border-t border-line pt-12 lg:grid-cols-12 lg:gap-8 md:pt-16">
-      <div className="flex flex-col gap-5 lg:col-span-5 lg:pr-6">
+      <div className="flex flex-col gap-5 lg:col-span-5 lg:pe-6">
         <span className="eyebrow text-teal-600 tabular-nums">{String(index + 1).padStart(2, "0")}</span>
         <h3 className="text-h2 font-light text-teal-900">{service.name}</h3>
         {service.body.map((p) => (
@@ -130,7 +132,7 @@ function ServiceArticle({ service, index }: { service: ServiceDetail; index: num
           <div className="mt-2 flex items-start gap-4 rounded-[var(--radius-card)] bg-paper-2 p-5">
             <SmileArc strokeWidth={3} className="mt-1.5 w-5 shrink-0 text-teal-500" />
             <p className="text-[0.9375rem] text-teal-900">
-              <span className="eyebrow mb-1 block text-teal-600">The outcome</span>
+              <span className="eyebrow mb-1 block text-teal-600">{outcomeLabel}</span>
               {service.outcome}
             </p>
           </div>
@@ -154,10 +156,11 @@ function ServiceArticle({ service, index }: { service: ServiceDetail; index: num
 }
 
 /** Every service in full, grouped. */
-export function ServiceDetails({ pillar }: { pillar: ServicePillar }) {
+export async function ServiceDetails({ pillar }: { pillar: ServicePillar }) {
+  const { t } = await getI18n();
   const many = pillar.groups.length > 1;
   return (
-    <Section tone="paper" aria-label="Services in detail">
+    <Section tone="paper" aria-label={t.service.detailsLabel}>
       <Container className="flex flex-col gap-24 md:gap-32">
         {pillar.groups.map((g, gi) => (
           <div key={g.id} id={g.id} className="scroll-mt-24">
@@ -165,19 +168,19 @@ export function ServiceDetails({ pillar }: { pillar: ServicePillar }) {
               <div className="lg:col-span-7">
                 <SectionHeading
                   num={many ? String(gi + 1).padStart(2, "0") : undefined}
-                  eyebrow={many ? "Practice" : pillar.name}
+                  eyebrow={many ? t.service.practice : pillar.name}
                   title={g.name}
                   lead={g.intro}
                   id={`${g.id}-title`}
                 />
               </div>
               {g.question ? (
-                <p className="font-serif text-[1.5rem] leading-snug text-teal-700 italic lg:col-span-5 lg:self-end">“{g.question}”</p>
+                <p className="font-serif text-[1.5rem] leading-snug text-teal-700 italic lg:col-span-5 lg:self-end">{t.service.quote(g.question)}</p>
               ) : null}
             </Reveal>
             <div className="mt-12 flex flex-col gap-16 md:mt-16">
               {g.services.map((sv, i) => (
-                <ServiceArticle key={sv.id} service={sv} index={i} />
+                <ServiceArticle key={sv.id} service={sv} index={i} outcomeLabel={t.service.outcome} />
               ))}
             </div>
           </div>
@@ -188,14 +191,15 @@ export function ServiceDetails({ pillar }: { pillar: ServicePillar }) {
 }
 
 /** Pillar-specific sections: coverage/resourcing models, products, packages. */
-export function ServiceExtras({ pillar }: { pillar: ServicePillar }) {
+export async function ServiceExtras({ pillar }: { pillar: ServicePillar }) {
+  const { t } = await getI18n();
   return (
     <>
       {pillar.coverage ? (
         <Section tone="dark" id="models" aria-labelledby="models-title" className="scroll-mt-20">
           <Container>
             <Reveal>
-              <SectionHeading eyebrow="GrowShield™" title="Coverage and resourcing, your *way*." tone="dark" id="models-title" />
+              <SectionHeading eyebrow="GrowShield™" title={t.service.modelsTitle} tone="dark" id="models-title" />
             </Reveal>
             <div className="mt-14 grid gap-10 md:mt-20 lg:grid-cols-2">
               {pillar.coverage.map((m) => (
@@ -226,7 +230,7 @@ export function ServiceExtras({ pillar }: { pillar: ServicePillar }) {
         <Section tone="dark" id="products" aria-labelledby="products-title" className="scroll-mt-20">
           <Container>
             <Reveal>
-              <SectionHeading eyebrow="Our products" title="Built for the sectors we know *best*." lead={pillar.products.intro} tone="dark" id="products-title" />
+              <SectionHeading eyebrow={t.service.productsEyebrow} title={t.service.productsTitle} lead={pillar.products.intro} tone="dark" id="products-title" />
             </Reveal>
             <ul className="mt-14 grid gap-3 md:mt-20 md:grid-cols-2 xl:grid-cols-4">
               {pillar.products.items.map((p, i) => (
@@ -245,7 +249,7 @@ export function ServiceExtras({ pillar }: { pillar: ServicePillar }) {
         <Section tone="paper-2" id="packages" aria-labelledby="packages-title" className="scroll-mt-20">
           <Container>
             <Reveal>
-              <SectionHeading eyebrow="Packages" title="Pick the package that fits your *stage*." lead={pillar.packages.intro} id="packages-title" />
+              <SectionHeading eyebrow={t.service.packagesEyebrow} title={t.service.packagesTitle} lead={pillar.packages.intro} id="packages-title" />
             </Reveal>
             <ul className="mt-14 grid gap-3 md:mt-20 lg:grid-cols-3">
               {pillar.packages.items.map((p, i) => {
@@ -263,7 +267,7 @@ export function ServiceExtras({ pillar }: { pillar: ServicePillar }) {
                     <span className={cn("eyebrow", featured ? "text-lime" : "text-teal-600")}>{String(i + 1).padStart(2, "0")}</span>
                     <h3 className={cn("text-h2 font-light", featured ? "text-paper" : "text-teal-900")}>{p.name}</h3>
                     <p className={cn("text-[0.9375rem]", featured ? "text-teal-200" : "text-teal-700")}>
-                      <span className="eyebrow mb-1 block">Best for</span>
+                      <span className="eyebrow mb-1 block">{t.service.bestFor}</span>
                       {p.bestFor}
                     </p>
                     <p className={cn("border-t pt-5 text-[0.9375rem] leading-relaxed", featured ? "border-teal-300/15 text-teal-100" : "border-line text-teal-900")}>
@@ -282,12 +286,14 @@ export function ServiceExtras({ pillar }: { pillar: ServicePillar }) {
 }
 
 /** Previous / next pillar and the 01–04 rail. */
-export function ServiceNav({ current }: { current: ServicePillar }) {
+export async function ServiceNav({ current }: { current: ServicePillar }) {
+  const { c, t } = await getI18n();
+  const SERVICES = c.SERVICES;
   const i = SERVICES.findIndex((p) => p.slug === current.slug);
   const prev = SERVICES[(i - 1 + SERVICES.length) % SERVICES.length];
   const next = SERVICES[(i + 1) % SERVICES.length];
   return (
-    <nav aria-label="Service pillars" className="border-t border-line bg-paper-2 text-ink">
+    <nav aria-label={t.service.navLabel} className="border-t border-line bg-paper-2 text-ink">
       <div className="container-site py-14 md:py-20">
         <ol className="flex flex-wrap gap-x-6 gap-y-2 border-b border-line pb-4">
           {SERVICES.map((p) => (
@@ -305,18 +311,18 @@ export function ServiceNav({ current }: { current: ServicePillar }) {
         </ol>
         <div className="mt-8 grid gap-3 sm:grid-cols-2">
           {[
-            { p: prev, dir: "prev", label: "← Previous pillar" },
-            { p: next, dir: "next", label: "Next pillar →" },
+            { p: prev, dir: "prev", label: t.service.prev },
+            { p: next, dir: "next", label: t.service.next },
           ].map(({ p, dir, label }) => (
             <Link
               key={dir}
               href={`/services/${p.slug}`}
               rel={dir}
-              className={cn("group flex flex-col gap-2 rounded-[var(--radius-card)] border border-line bg-paper p-6 hover:border-teal-900/30", dir === "next" && "sm:items-end sm:text-right")}
+              className={cn("group flex flex-col gap-2 rounded-[var(--radius-card)] border border-line bg-paper p-6 hover:border-teal-900/30", dir === "next" && "sm:items-end sm:text-end")}
             >
               <span className="eyebrow text-teal-600">{label}</span>
               <span className="text-h3 font-light text-teal-900">
-                <span className="eyebrow mr-2 text-teal-600">{p.num}</span>
+                <span className="eyebrow me-2 text-teal-600">{p.num}</span>
                 {p.name}
               </span>
               <span className="text-small text-teal-700">{p.tagline}</span>

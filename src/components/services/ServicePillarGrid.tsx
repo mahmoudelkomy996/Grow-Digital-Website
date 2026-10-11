@@ -1,12 +1,17 @@
-import Link from "next/link";
+"use client";
+
+import { Link } from "@/components/ui/Link";
 import { ArrowUpRight } from "lucide-react";
-import type { ServicePillar } from "@/content/services";
-import { serviceCount } from "@/content/services";
+import type { ServicePillar } from "@/content/types";
+import { useDict } from "@/i18n/LocaleProvider";
 import { cn } from "@/lib/cn";
 import { SmileArc } from "@/components/ui/SmileArc";
 
 /** The four service pillars as cards (home page). The first card is dark and wide. */
+const serviceCount = (p: ServicePillar) => p.groups.reduce((n, g) => n + g.services.length, 0);
+
 export function ServicePillarGrid({ pillars, className }: { pillars: ServicePillar[]; className?: string }) {
+  const t = useDict();
   return (
     <ul className={cn("grid gap-3 md:grid-cols-2", className)}>
       {pillars.map((p, i) => {
@@ -27,11 +32,11 @@ export function ServicePillarGrid({ pillars, className }: { pillars: ServicePill
                 </p>
                 <span
                   className={cn(
-                    "grid size-9 place-items-center rounded-full border transition-transform duration-300 group-hover/card:-translate-y-0.5 group-hover/card:translate-x-0.5",
+                    "grid size-9 place-items-center rounded-full border transition-transform duration-300 group-hover/card:-translate-y-0.5 group-hover/card:translate-x-0.5 rtl:group-hover/card:-translate-x-0.5",
                     dark ? "border-teal-300/30" : "border-line",
                   )}
                 >
-                  <ArrowUpRight aria-hidden strokeWidth={1.5} className="size-4" />
+                  <ArrowUpRight aria-hidden strokeWidth={1.5} className="flip-rtl size-4" />
                 </span>
               </div>
               <div>
@@ -46,7 +51,7 @@ export function ServicePillarGrid({ pillars, className }: { pillars: ServicePill
                   </li>
                 ))}
               </ul>
-              <p className={cn("eyebrow", dark ? "text-teal-300" : "text-teal-600")}>{serviceCount(p)} services</p>
+              <p className={cn("eyebrow", dark ? "text-teal-300" : "text-teal-600")}>{t.cards.servicesCount(serviceCount(p))}</p>
             </Link>
           </li>
         );

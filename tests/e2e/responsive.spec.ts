@@ -1,10 +1,10 @@
 import { expect, test, type ConsoleMessage } from "@playwright/test";
-import { ROUTES } from "./routes";
+import { AR_ROUTES, ROUTES } from "./routes";
 
 const WIDTHS = [320, 390, 768, 1440];
 
 // Site-wide guarantees: no horizontal overflow, exactly one H1, no console errors, on every route and width.
-for (const route of ROUTES) {
+for (const route of [...ROUTES, ...AR_ROUTES]) {
   test.describe(`route ${route}`, () => {
     for (const width of WIDTHS) {
       test(`${width}px: one h1, no overflow, no console errors`, async ({ page }) => {

@@ -4,6 +4,7 @@ import { useActionState, useEffect, useRef, type ReactNode } from "react";
 import { submitContact, type ContactField, type ContactState } from "@/app/actions/contact";
 import { cn } from "@/lib/cn";
 import { SmileArc } from "@/components/ui/SmileArc";
+import { useDict, useLocale } from "@/i18n/LocaleProvider";
 
 export interface InterestOption {
   value: string;
@@ -34,6 +35,7 @@ function Field({
   hint?: string;
   children: ReactNode;
 }) {
+  const t = useDict();
   return (
     <div className="flex flex-col gap-2">
       <label htmlFor={id} className="text-[0.9375rem] font-medium text-teal-900">
@@ -44,7 +46,7 @@ function Field({
             *
           </span>
         ) : (
-          <span className="font-normal text-teal-700"> (optional)</span>
+          <span className="font-normal text-teal-700"> {t.contact.form.optional}</span>
         )}
       </label>
       {children}
@@ -64,6 +66,9 @@ function Field({
 
 export function ContactForm({ interests }: { interests: InterestOption[] }) {
   const [state, formAction, pending] = useActionState(submitContact, INITIAL);
+  const t = useDict();
+  const f = t.contact.form;
+  const locale = useLocale();
   const formRef = useRef<HTMLFormElement>(null);
   const statusRef = useRef<HTMLParagraphElement>(null);
   const errors = state.fieldErrors ?? {};
@@ -82,10 +87,8 @@ export function ContactForm({ interests }: { interests: InterestOption[] }) {
     return (
       <div role="status" className="flex flex-col items-start gap-6 rounded-[var(--radius-card)] bg-teal-900 p-8 text-teal-100 md:p-12">
         <SmileArc strokeWidth={3} className="w-12 text-lime" />
-        <h2 className="text-h2 font-light text-paper">Thank you. Your message is on its way.</h2>
-        <p className="max-w-lg text-body-l text-teal-200">
-          One of our team will get back to you at the email address you gave us.
-        </p>
+        <h2 className="text-h2 font-light text-paper">{f.successTitle}</h2>
+        <p className="max-w-lg text-body-l text-teal-200">{f.successBody}</p>
       </div>
     );
   }
@@ -95,6 +98,7 @@ export function ContactForm({ interests }: { interests: InterestOption[] }) {
 
   return (
     <form ref={formRef} action={formAction} noValidate className="flex flex-col gap-6" aria-describedby="form-status">
+      <input type="hidden" name="locale" value={locale} />
       <p
         id="form-status"
         ref={statusRef}
@@ -102,11 +106,11 @@ export function ContactForm({ interests }: { interests: InterestOption[] }) {
         role={state.status === "error" ? "alert" : undefined}
         className={cn("text-[0.9375rem] focus:outline-none", state.status === "error" ? "text-danger" : "sr-only")}
       >
-        {state.status === "error" ? state.message : "All fields marked with an asterisk are required."}
+        {state.status === "error" ? state.message : f.required}
       </p>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Field id="name" label="Name" required error={errors.name}>
+        <Field id="name" label={f.name} required error={errors.name}>
           <input
             id="name"
             name="name"
@@ -118,7 +122,7 @@ export function ContactForm({ interests }: { interests: InterestOption[] }) {
             className={cn(inputClass(!!errors.name), "h-12")}
           />
         </Field>
-        <Field id="company" label="Company" required error={errors.company}>
+        <Field id="company" label={f.company} required error={errors.company}>
           <input
             id="company"
             name="company"
@@ -130,7 +134,7 @@ export function ContactForm({ interests }: { interests: InterestOption[] }) {
             className={cn(inputClass(!!errors.company), "h-12")}
           />
         </Field>
-        <Field id="email" label="Work email" required error={errors.email}>
+        <Field id="email" label={f.email} required error={errors.email}>
           <input
             id="email"
             name="email"
@@ -138,6 +142,7 @@ export function ContactForm({ interests }: { interests: InterestOption[] }) {
             inputMode="email"
             autoComplete="email"
             placeholder="name@company.com"
+            dir="ltr"
             defaultValue={v.email}
             aria-invalid={!!errors.email}
             aria-describedby={describedBy("email")}
@@ -145,13 +150,14 @@ export function ContactForm({ interests }: { interests: InterestOption[] }) {
             className={cn(inputClass(!!errors.email), "h-12")}
           />
         </Field>
-        <Field id="phone" label="Phone" error={errors.phone}>
+        <Field id="phone" label={f.phone} error={errors.phone}>
           <input
             id="phone"
             name="phone"
             type="tel"
             autoComplete="tel"
-            placeholder="+966 5x xxx xxxx"
+            placeholder={f.phonePlaceholder}
+            dir="ltr"
             defaultValue={v.phone}
             aria-invalid={!!errors.phone}
             aria-describedby={describedBy("phone")}
@@ -160,20 +166,20 @@ export function ContactForm({ interests }: { interests: InterestOption[] }) {
         </Field>
       </div>
 
-      <Field id="interest" label="Area of interest" error={errors.interest}>
+      <Field id="interest" label={f.interest} error={errors.interest}>
         <select
           id="interest"
           name="interest"
           defaultValue={v.interest ?? ""}
           aria-invalid={!!errors.interest}
           aria-describedby={describedBy("interest")}
-          className={cn(inputClass(!!errors.interest), "h-12 appearance-none bg-[length:12px] bg-[right_1rem_center] bg-no-repeat pr-10")}
+          className={cn(inputClass(!!errors.interest), "h-12 appearance-none bg-[length:12px] bg-[right_1rem_center] bg-no-repeat pe-10 rtl:bg-[left_1rem_center]")}
           style={{
             backgroundImage:
               "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5 6 6.5l5-5' stroke='%23083b3b' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E\")",
           }}
         >
-          <option value="">Choose an area</option>
+          <option value="">{f.chooseArea}</option>
           {interests.map((o) => (
             <option key={o.value} value={o.value}>
               {o.label}
@@ -182,7 +188,7 @@ export function ContactForm({ interests }: { interests: InterestOption[] }) {
         </select>
       </Field>
 
-      <Field id="message" label="How can we help?" required error={errors.message} hint="A few lines about where you are today and what you want to achieve.">
+      <Field id="message" label={f.message} required error={errors.message} hint={f.messageHint}>
         <textarea
           id="message"
           name="message"
@@ -196,7 +202,7 @@ export function ContactForm({ interests }: { interests: InterestOption[] }) {
       </Field>
 
       {/* Honeypot for bots: hidden from people and assistive technology */}
-      <div aria-hidden className="absolute -left-[9999px] h-px w-px overflow-hidden">
+      <div aria-hidden className="absolute -start-[9999px] h-px w-px overflow-hidden">
         <label htmlFor="website">Website</label>
         <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
@@ -212,7 +218,7 @@ export function ContactForm({ interests }: { interests: InterestOption[] }) {
             className="mt-0.5 size-5 shrink-0 cursor-pointer rounded-[6px] border-line accent-teal-900"
           />
           <span>
-            I agree to be contacted about my enquiry. <span className="text-teal-600" aria-hidden>*</span>
+            {f.consent} <span className="text-teal-600" aria-hidden>*</span>
           </span>
         </label>
         {errors.consent ? (
@@ -229,10 +235,10 @@ export function ContactForm({ interests }: { interests: InterestOption[] }) {
           aria-disabled={pending}
           className="inline-flex h-14 items-center gap-2 rounded-full bg-teal-900 px-7 text-base font-medium text-paper transition-colors duration-300 hover:bg-teal-800 disabled:cursor-progress disabled:opacity-70"
         >
-          {pending ? "Sending…" : "Send message"}
-          {!pending ? <span aria-hidden>→</span> : null}
+          {pending ? f.sending : f.send}
+          {!pending ? <span aria-hidden className="flip-rtl inline-block">→</span> : null}
         </button>
-        <p className="text-small text-teal-700">Or email us at info@growdigital.com</p>
+        <p className="text-small text-teal-700">{f.orEmail}</p>
       </div>
     </form>
   );

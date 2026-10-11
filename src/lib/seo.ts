@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import type { ServicePillar } from "@/content/services";
+import type { ServicePillar } from "@/content/types";
+import { DEFAULT_LOCALE, LOCALES, LOCALE_META, hasPath, localizeHref, type Locale } from "@/i18n/config";
 
 export const SITE_URL = "https://growdigital.com";
 export const SITE_NAME = "Grow Digital";
 export const SITE_DESCRIPTION =
-  "Grow Digital is a business integrator for enterprises in KSA and the UAE: one accountable team to consult, transform, build, operate, secure and grow.";
+  "Grow Digital is a technology and growth partner for organizations in KSA and the UAE: one accountable team to advise, build, operate and market.";
 /** Last content update of the static pages (used as sitemap lastModified). */
 export const SITE_UPDATED = "2026-10-01";
 
@@ -13,17 +14,35 @@ const abs = (path: string) => (path.startsWith("http") ? path : `${SITE_URL}${pa
 interface PageMetaInput {
   title: string; // without the " · Grow Digital" suffix (the root layout template adds it)
   description: string;
-  path: string; // "/about"
+  path: string; // locale-free path, e.g. "/about"
+  locale?: Locale;
   noindex?: boolean;
 }
 
-/** Per-page metadata: title, description, canonical URL, Open Graph and Twitter cards. */
-export function pageMetadata({ title, description, path, noindex }: PageMetaInput): Metadata {
+/** hreflang alternates for a locale-free path: every locale that has the page, plus x-default (English). */
+export function languageAlternates(path: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const l of LOCALES) if (hasPath(l, path)) out[LOCALE_META[l].hreflang] = localizeHref(l, path);
+  out["x-default"] = localizeHref(DEFAULT_LOCALE, path);
+  return out;
+}
+
+/** Per-page metadata: title, description, canonical URL, hreflang alternates, Open Graph and Twitter cards. */
+export function pageMetadata({ title, description, path, locale = DEFAULT_LOCALE, noindex }: PageMetaInput): Metadata {
+  const url = localizeHref(locale, path);
   return {
     title,
     description,
-    alternates: { canonical: path },
-    openGraph: { title: `${title} · ${SITE_NAME}`, description, url: abs(path), siteName: SITE_NAME, type: "website", locale: "en_US" },
+    alternates: { canonical: url, languages: languageAlternates(path) },
+    openGraph: {
+      title: `${title} · ${SITE_NAME}`,
+      description,
+      url: abs(url),
+      siteName: SITE_NAME,
+      type: "website",
+      locale: LOCALE_META[locale].og,
+      alternateLocale: LOCALES.filter((l) => l !== locale && hasPath(l, path)).map((l) => LOCALE_META[l].og),
+    },
     twitter: { card: "summary_large_image", title: `${title} · ${SITE_NAME}`, description },
     ...(noindex ? { robots: { index: false, follow: false } } : {}),
   };
@@ -80,7 +99,7 @@ export function organizationJsonLd() {
   };
 }
 
-export function websiteJsonLd() {
+export function websiteJsonLd(locale: Locale = DEFAULT_LOCALE) {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -88,8 +107,9 @@ export function websiteJsonLd() {
     url: SITE_URL,
     name: SITE_NAME,
     description: SITE_DESCRIPTION,
-    inLanguage: "en",
+    inLanguage: LOCALES,
     publisher: { "@id": ORG_ID },
+    ...(locale !== DEFAULT_LOCALE ? { url: abs(localizeHref(locale, "/")) } : {}),
   };
 }
 
@@ -153,12 +173,13 @@ export function blogJsonLd(posts: { slug: string; title: string; date: string }[
   };
 }
 
-export function servicePillarJsonLd(p: ServicePillar) {
-  const url = `${SITE_URL}/services/${p.slug}`;
+export function servicePillarJsonLd(p: ServicePillar, locale: Locale = DEFAULT_LOCALE) {
+  const url = abs(localizeHref(locale, `/services/${p.slug}`));
   return {
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": `${url}#service`,
+    inLanguage: locale,
     name: p.name,
     description: p.intro[0],
     provider: { "@id": ORG_ID, "@type": "Organization", name: SITE_NAME, url: SITE_URL },

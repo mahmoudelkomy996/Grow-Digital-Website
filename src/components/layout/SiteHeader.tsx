@@ -1,16 +1,19 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { Link } from "@/components/ui/Link";
+import { usePublicPathname } from "@/i18n/LocaleProvider";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { NAV, NAV_CTA } from "@/content/navigation";
+import type { NavItem, NavLink } from "@/content/types";
+import { useDict, useLocale } from "@/i18n/LocaleProvider";
+import { localizeHref, splitLocale } from "@/i18n/config";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { SmileArc } from "@/components/ui/SmileArc";
 import { MegaMenu } from "./MegaMenu";
 import { MobileMenu } from "./MobileMenu";
+import { LanguageSwitch } from "./LanguageSwitch";
 
 const SCROLL_THRESHOLD = 24;
 const MEGA_ID = "mega-menu";
@@ -42,8 +45,14 @@ const getScrolledServer = () => false;
  * section is behind it) or while a dropdown is open. Each service pillar has its own header link with a dropdown
  * (hover, click, Enter/Space or ArrowDown); moving to another link switches menus; Esc closes.
  */
-export function SiteHeader() {
-  const pathname = usePathname();
+export function SiteHeader({ nav, cta }: { nav: NavItem[]; cta: NavLink }) {
+  const pathname = usePublicPathname();
+  const locale = useLocale();
+  const t = useDict();
+  const isActive = (href: string) => {
+    const h = localizeHref(locale, href);
+    return pathname === h || pathname.startsWith(`${h}/`);
+  };
   const scrolled = useSyncExternalStore(subscribeScroll, getScrolled, getScrolledServer);
 
   // Menus remember the path they were opened on, so any route change closes them without an effect.
@@ -91,7 +100,7 @@ export function SiteHeader() {
           e.preventDefault();
           trigger?.focus();
         } else if (active === links[links.length - 1] && !e.shiftKey) {
-          const navItems = Array.from(headerRef.current?.querySelectorAll<HTMLElement>("nav[aria-label='Main'] a, nav[aria-label='Main'] button") ?? []);
+          const navItems = Array.from(headerRef.current?.querySelectorAll<HTMLElement>("nav[data-main-nav] a, nav[data-main-nav] button") ?? []);
           const next = navItems[navItems.indexOf(trigger as HTMLElement) + 1];
           if (next) {
             e.preventDefault();
@@ -179,16 +188,16 @@ export function SiteHeader() {
               closeMobile();
             }}
           >
-            <Logo title="Grow Digital home" className="h-[26px] lg:h-7" />
+            <Logo title={t.common.homeLogo} className="h-[26px] lg:h-7" />
           </Link>
 
-          <nav aria-label="Main" className="hidden lg:block">
+          <nav aria-label={t.header.mainNav} data-main-nav className="hidden lg:block">
             <ul className="flex items-center gap-0.5 xl:gap-1">
-              {NAV.map((item) => {
+              {nav.map((item) => {
                 if (item.menu) {
                   const menuId = item.menu.id;
                   const isOpen = openId === menuId;
-                  const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                  const active = isActive(item.href);
                   return (
                     <li key={item.label}>
                       <button
@@ -220,7 +229,7 @@ export function SiteHeader() {
                     </li>
                   );
                 }
-                const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                const active = isActive(item.href);
                 return (
                   <li key={item.label}>
                     <Link
@@ -240,33 +249,34 @@ export function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <LanguageSwitch pathname={splitLocale(pathname).path} className="hidden lg:inline-flex" />
             <Button
-              href={NAV_CTA.href}
+              href={cta.href}
               variant={solid ? "primary" : "accent"}
               className="hidden sm:inline-flex"
               onClick={closeMega}
             >
-              {NAV_CTA.label}
+              {cta.label}
             </Button>
             <button
               ref={toggleRef}
               type="button"
               aria-expanded={mobileOpen}
               aria-controls={MOBILE_ID}
-              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+              aria-label={mobileOpen ? t.header.closeMenu : t.header.openMenu}
               onClick={() => setMobilePath(mobileOpen ? null : pathname)}
-              className="relative -mr-2 grid size-11 place-items-center rounded-full lg:hidden"
+              className="relative -me-2 grid size-11 place-items-center rounded-full lg:hidden"
             >
               <span aria-hidden className="relative block h-3 w-6">
                 <span
                   className={cn(
-                    "absolute left-0 h-[1.5px] w-6 rounded-full bg-current transition-[top,rotate] duration-500 ease-[var(--ease-out-expo)]",
+                    "absolute start-0 h-[1.5px] w-6 rounded-full bg-current transition-[top,rotate] duration-500 ease-[var(--ease-out-expo)]",
                     mobileOpen ? "top-[5px] rotate-45" : "top-0",
                   )}
                 />
                 <span
                   className={cn(
-                    "absolute left-0 h-[1.5px] rounded-full bg-current transition-[top,rotate,width] duration-500 ease-[var(--ease-out-expo)]",
+                    "absolute start-0 h-[1.5px] rounded-full bg-current transition-[top,rotate,width] duration-500 ease-[var(--ease-out-expo)]",
                     mobileOpen ? "top-[5px] w-6 -rotate-45" : "top-[10px] w-4",
                   )}
                 />
@@ -275,7 +285,7 @@ export function SiteHeader() {
           </div>
         </div>
 
-        <MegaMenu id={MEGA_ID} openId={openId} items={NAV} currentPath={pathname} triggerId={triggerId} onNavigate={closeMega} />
+        <MegaMenu id={MEGA_ID} openId={openId} items={nav} isActive={isActive} triggerId={triggerId} onNavigate={closeMega} />
       </header>
 
       {/* Dim the page behind the open mega menu (a pointerdown here counts as an outside click) */}
@@ -290,9 +300,10 @@ export function SiteHeader() {
       <MobileMenu
         id={MOBILE_ID}
         open={mobileOpen}
-        items={NAV}
-        cta={NAV_CTA}
-        currentPath={pathname}
+        items={nav}
+        cta={cta}
+        isActive={isActive}
+        pathname={splitLocale(pathname).path}
         onNavigate={closeMobile}
       />
     </>

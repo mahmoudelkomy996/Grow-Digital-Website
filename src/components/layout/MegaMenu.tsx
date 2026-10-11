@@ -1,7 +1,7 @@
-import Link from "next/link";
+import { Link } from "@/components/ui/Link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/cn";
-import type { NavItem, NavMenu } from "@/content/navigation";
+import type { NavItem, NavMenu } from "@/content/types";
 import { Headline } from "@/components/ui/SectionHeading";
 import { SmileArc } from "@/components/ui/SmileArc";
 
@@ -10,14 +10,15 @@ interface MegaMenuProps {
   /** The open dropdown's menu id, or null when closed */
   openId: string | null;
   items: NavItem[];
-  currentPath: string;
+  /** Whether an internal href is the current page (locale-aware) */
+  isActive: (href: string) => boolean;
   /** Id of the trigger button for a menu id (for aria-labelledby) */
   triggerId: (menuId: string) => string;
   /** Called when a link inside the panel is activated */
   onNavigate: () => void;
 }
 
-function MenuPane({ menu, current, onNavigate }: { menu: NavMenu; current: string; onNavigate: () => void }) {
+function MenuPane({ menu, isActive, onNavigate }: { menu: NavMenu; isActive: (href: string) => boolean; onNavigate: () => void }) {
   const multi = menu.groups.length > 1;
   return (
     <>
@@ -35,7 +36,7 @@ function MenuPane({ menu, current, onNavigate }: { menu: NavMenu; current: strin
           className="group/x flex shrink-0 items-center gap-2 border-b border-current pb-0.5 text-[0.9375rem] text-teal-900"
         >
           {menu.explore.label}
-          <ArrowRight aria-hidden strokeWidth={1.5} className="size-4 transition-transform group-hover/x:translate-x-0.5" />
+          <ArrowRight aria-hidden strokeWidth={1.5} className="flip-rtl size-4 transition-transform group-hover/x:translate-x-0.5 rtl:group-hover/x:-translate-x-0.5" />
         </Link>
       </div>
 
@@ -51,7 +52,7 @@ function MenuPane({ menu, current, onNavigate }: { menu: NavMenu; current: strin
                     <Link
                       href={l.href}
                       onClick={onNavigate}
-                      aria-current={current === l.href ? "page" : undefined}
+                      aria-current={isActive(l.href) ? "page" : undefined}
                       className="-mx-2.5 flex items-start gap-2.5 rounded-[10px] px-2.5 py-2 text-[0.9375rem] text-teal-900 transition-colors hover:bg-paper-2"
                     >
                       <SmileArc strokeWidth={3} className="mt-[0.5em] w-2.5 shrink-0 text-teal-500" />
@@ -75,7 +76,7 @@ function MenuPane({ menu, current, onNavigate }: { menu: NavMenu; current: strin
                     <SmileArc strokeWidth={3} className="w-2.5 shrink-0 text-teal-500" />
                     {l.label}
                   </span>
-                  {l.summary ? <span className="mt-0.5 pl-5 text-[0.8125rem] leading-snug text-teal-700">{l.summary}</span> : null}
+                  {l.summary ? <span className="mt-0.5 ps-5 text-[0.8125rem] leading-snug text-teal-700">{l.summary}</span> : null}
                 </Link>
               </li>
             ))}
@@ -103,7 +104,7 @@ function MenuPane({ menu, current, onNavigate }: { menu: NavMenu; current: strin
                 ))}
               </ul>
             ) : null}
-            <SmileArc strokeWidth={2.5} className="pointer-events-none absolute -right-8 -bottom-10 -z-10 w-40 text-teal-800" />
+            <SmileArc strokeWidth={2.5} className="pointer-events-none absolute -end-8 -bottom-10 -z-10 w-40 rtl:-scale-x-100 text-teal-800" />
           </div>
         ) : null}
       </div>
@@ -115,7 +116,7 @@ function MenuPane({ menu, current, onNavigate }: { menu: NavMenu; current: strin
  * Full-width dropdown under the header bar (desktop only). Every menu is rendered in the server HTML so the
  * links are crawlable; only the open one is visible. Hidden with `visibility` (and `inert`) while closed.
  */
-export function MegaMenu({ id, openId, items, currentPath, triggerId, onNavigate }: MegaMenuProps) {
+export function MegaMenu({ id, openId, items, isActive, triggerId, onNavigate }: MegaMenuProps) {
   const open = openId !== null;
   return (
     <div
@@ -138,7 +139,7 @@ export function MegaMenu({ id, openId, items, currentPath, triggerId, onNavigate
               aria-labelledby={triggerId(i.menu!.id)}
               hidden={openId !== i.menu!.id}
             >
-              <MenuPane menu={i.menu!} current={currentPath} onNavigate={onNavigate} />
+              <MenuPane menu={i.menu!} isActive={isActive} onNavigate={onNavigate} />
             </section>
           ))}
       </div>

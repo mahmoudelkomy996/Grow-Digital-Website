@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/ui/Link";
 import type { ServiceSlug } from "@/content";
 import { getService } from "@/content";
 import type { PostMeta } from "@/lib/blog";

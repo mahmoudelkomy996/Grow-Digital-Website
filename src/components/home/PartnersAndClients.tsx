@@ -1,4 +1,4 @@
-import { CLIENT_SECTORS, PARTNERS } from "@/content";
+import { getI18n } from "@/i18n/server";
 import { cn } from "@/lib/cn";
 import { ArrowLink } from "@/components/ui/ArrowLink";
 import { Container } from "@/components/ui/Container";
@@ -9,27 +9,28 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { LogoMarquee } from "@/components/sections/LogoMarquee";
 import { LogoWall } from "@/components/sections/LogoWall";
 
-export function PartnersAndClients() {
+export async function PartnersAndClients() {
+  const { c, t } = await getI18n();
   return (
     <Section tone="paper" aria-labelledby="partners-title">
       <Container>
         <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
           <Reveal>
             <SectionHeading
-              eyebrow="Partners and clients"
-              title="In good *company*."
-              lead="Global technology partners behind our delivery, and the organizations that trust us with theirs."
+              eyebrow={t.home.partnersEyebrow}
+              title={t.home.partnersTitle}
+              lead={t.home.partnersLead}
               id="partners-title"
             />
           </Reveal>
-          <ArrowLink href="/partners">All partners</ArrowLink>
+          <ArrowLink href="/partners">{t.home.allPartners}</ArrowLink>
         </div>
       </Container>
 
-      <LogoMarquee items={PARTNERS} label="Technology and solution partners" className="mt-14 md:mt-20" />
+      <LogoMarquee items={c.PARTNERS} label={t.home.partnersMarquee} className="mt-14 md:mt-20" />
 
       <Container className="mt-16 grid gap-x-8 gap-y-12 md:mt-24 lg:grid-cols-2">
-        {CLIENT_SECTORS.map((sector, i) => {
+        {c.CLIENT_SECTORS.map((sector, i) => {
           // Small sectors (two clients) sit side by side; larger ones take the full row.
           const small = sector.clients.length <= 2;
           return (

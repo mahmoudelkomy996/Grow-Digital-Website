@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/ui/Link";
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/cn";
@@ -9,7 +9,7 @@ export type ButtonSize = "md" | "lg";
 interface BaseProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
-  /** Trailing arrow that nudges right on hover */
+  /** Trailing arrow that nudges forward (right in LTR, left in RTL) on hover */
   arrow?: boolean;
   className?: string;
   children: ReactNode;
@@ -66,7 +66,7 @@ export function Button(props: ButtonProps) {
           aria-hidden
           strokeWidth={1.5}
           className={cn(
-            "shrink-0 transition-transform duration-300 ease-[var(--ease-out-expo)] group-hover/btn:translate-x-0.5 group-data-[demo=hover]/btn:translate-x-0.5",
+            "flip-rtl shrink-0 transition-transform duration-300 ease-[var(--ease-out-expo)] group-hover/btn:translate-x-0.5 group-data-[demo=hover]/btn:translate-x-0.5 rtl:group-hover/btn:-translate-x-0.5",
             size === "lg" ? "size-[18px]" : "size-4",
           )}
         />

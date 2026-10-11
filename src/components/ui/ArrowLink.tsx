@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/ui/Link";
 import type { ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/cn";
@@ -27,7 +27,7 @@ export function ArrowLink({ href, children, tone = "paper", className }: ArrowLi
       <ArrowRight
         aria-hidden
         strokeWidth={1.5}
-        className="size-4 shrink-0 transition-transform duration-300 ease-[var(--ease-out-expo)] group-hover/al:translate-x-1"
+        className="flip-rtl size-4 shrink-0 transition-transform duration-300 ease-[var(--ease-out-expo)] group-hover/al:translate-x-1 rtl:group-hover/al:-translate-x-1"
       />
     </>
   );

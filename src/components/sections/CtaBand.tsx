@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Headline } from "@/components/ui/SectionHeading";
 import { SmileArc } from "@/components/ui/SmileArc";
+import { getDict } from "@/i18n/server";
 
 export interface CtaAction {
   label: string;
@@ -21,22 +22,22 @@ interface CtaBandProps {
 }
 
 /** Closing call to action on every page (dark band). */
-export function CtaBand({
-  title = "Let's *grow* together.",
-  lead = "Tell us where you are today. One accountable team will take it from there.",
-  eyebrow = "Start the conversation",
-  primary = { label: "Talk to us", href: "/contact" },
-  secondary = { label: "info@growdigital.com", href: "mailto:info@growdigital.com" },
-}: CtaBandProps) {
+export async function CtaBand({ title, lead, eyebrow, primary, secondary }: CtaBandProps) {
+  const t = await getDict();
+  title ??= t.cta.title;
+  lead ??= t.cta.lead;
+  eyebrow ??= t.cta.eyebrow;
+  primary ??= { label: t.common.talkToUs, href: "/contact" };
+  if (secondary === undefined) secondary = { label: "info@growdigital.com", href: "mailto:info@growdigital.com" };
   return (
     <section className="surface-dark relative isolate overflow-hidden bg-teal-900 text-teal-100 section-y">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(70%_90%_at_100%_100%,var(--color-teal-800)_0%,transparent_60%)]"
+        className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(70%_90%_at_100%_100%,var(--color-teal-800)_0%,transparent_60%)] rtl:-scale-x-100"
       />
       <SmileArc
         strokeWidth={1}
-        className="pointer-events-none absolute -right-[12%] -bottom-[38%] -z-10 w-[min(980px,110vw)] text-teal-800"
+        className="pointer-events-none absolute -end-[12%] -bottom-[38%] -z-10 w-[min(980px,110vw)] text-teal-800"
       />
       <Container className="grid items-end gap-12 lg:grid-cols-12 lg:gap-8">
         <div className="flex flex-col gap-7 lg:col-span-8">

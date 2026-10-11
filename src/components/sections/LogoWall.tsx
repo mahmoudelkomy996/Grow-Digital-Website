@@ -24,14 +24,14 @@ export function LogoWall({ items, columns = 5, tone = "paper", className }: Logo
   return (
     <ul
       className={cn(
-        "grid grid-cols-2 border-t border-l",
+        "grid grid-cols-2 border-t border-s",
         cols[columns],
         dark ? "border-teal-300/15" : "border-line",
         className,
       )}
     >
       {items.map((item) => (
-        <li key={item.id} className={cn("border-r border-b", dark ? "border-teal-300/15" : "border-line")}>
+        <li key={item.id} className={cn("border-e border-b", dark ? "border-teal-300/15" : "border-line")}>
           <LogoTile item={item} tone={tone} />
         </li>
       ))}

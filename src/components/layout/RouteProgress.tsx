@@ -1,6 +1,7 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePublicPathname } from "@/i18n/LocaleProvider";
 import { useEffect, useRef } from "react";
 
 /**
@@ -12,7 +13,7 @@ import { useEffect, useRef } from "react";
  * clicks are ignored. A safety timeout completes it if the navigation never happens.
  */
 export function RouteProgress() {
-  const pathname = usePathname();
+  const pathname = usePublicPathname();
   const searchParams = useSearchParams();
   const barRef = useRef<HTMLDivElement>(null);
   const state = useRef({ active: false, value: 0, trickle: 0, hide: 0, safety: 0 });
@@ -104,7 +105,7 @@ export function RouteProgress() {
         ref={barRef}
         data-route-progress
         data-state="idle"
-        className="h-full origin-left bg-lime opacity-0 shadow-[0_0_10px_rgba(200,241,105,0.7),0_1px_0_rgba(8,59,59,0.25)]"
+        className="h-full origin-left bg-lime opacity-0 rtl:origin-right shadow-[0_0_10px_rgba(200,241,105,0.7),0_1px_0_rgba(8,59,59,0.25)]"
         style={{ transform: "scaleX(0)" }}
       />
     </div>

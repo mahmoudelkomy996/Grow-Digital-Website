@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/components/ui/Link";
 import { cn } from "@/lib/cn";
 import type { Tone } from "./Eyebrow";
 
@@ -10,14 +10,16 @@ export interface BreadcrumbItem {
 interface BreadcrumbProps {
   items: BreadcrumbItem[];
   tone?: Tone;
+  /** Accessible name of the nav (localized by the caller) */
+  label?: string;
   className?: string;
 }
 
 /** Trail of links; the last item is the current page. */
-export function Breadcrumb({ items, tone = "paper", className }: BreadcrumbProps) {
+export function Breadcrumb({ items, tone = "paper", label = "Breadcrumb", className }: BreadcrumbProps) {
   const dark = tone === "dark";
   return (
-    <nav aria-label="Breadcrumb" className={className}>
+    <nav aria-label={label} className={className}>
       <ol className={cn("eyebrow flex flex-wrap items-center gap-x-3 gap-y-1", dark ? "text-teal-300" : "text-teal-700")}>
         {items.map((item, i) => {
           const last = i === items.length - 1;

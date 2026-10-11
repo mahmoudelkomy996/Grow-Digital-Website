@@ -5,6 +5,7 @@ import type { ServiceSlug } from "@/content";
 import { getService } from "@/content";
 import { getAllPosts, getPostsByCategory, paginate } from "@/lib/blog";
 import { blogJsonLd, pageMetadata } from "@/lib/seo";
+import { BLOG_LOCALES } from "@/i18n/config";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { PageHero } from "@/components/sections/PageHero";
@@ -72,4 +73,12 @@ export function blogPageParams(category?: ServiceSlug) {
   const all = category ? getPostsByCategory(category) : getAllPosts();
   const { totalPages } = paginate(all, 1);
   return Array.from({ length: Math.max(0, totalPages - 1) }, (_, i) => String(i + 2));
+}
+
+/**
+ * Static params for a blog route, for the locales that have the blog only. The child segment returns the
+ * [lang] param itself: the parent's params are not passed down to these generateStaticParams.
+ */
+export function inBlogLocales<T extends object>(params: T[]): (T & { lang: string })[] {
+  return BLOG_LOCALES.flatMap((lang) => params.map((p) => ({ lang, ...p })));
 }

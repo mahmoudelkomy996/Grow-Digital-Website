@@ -1,7 +1,5 @@
 // Content model for the whole site. Pages render only from these typed modules.
 
-import type { ServiceSlug } from "./services.ts";
-
 export type IndustryId =
   | "healthcare"
   | "government"
@@ -111,4 +109,134 @@ export interface Metric {
   value: string; // "71%"
   label: string;
   source: string; // "Vehicle purchase prediction · Automotive retail"
+}
+
+// ── Service pillars ─────────────────────────────────────────────────────
+
+export type ServiceSlug = "consultancy" | "managed-services" | "software-development" | "digital-marketing";
+
+export interface ServiceDetail {
+  id: string; // anchor id on the pillar page
+  name: string;
+  /** One-line summary for menus and cards */
+  summary: string;
+  /** Full description paragraphs */
+  body: string[];
+  /** "What we deliver" | "What is included" | "What we assess" */
+  listTitle: string;
+  list: string[];
+  /** Additional titled lists (e.g. AI governance checks, what we assess + what we deliver) */
+  extras?: { title: string; intro?: string; items: string[] }[];
+  outcome?: string;
+}
+
+export interface ServiceGroup {
+  id: string;
+  name: string;
+  /** The leadership question the practice answers (consultancy) */
+  question?: string;
+  intro?: string;
+  services: ServiceDetail[];
+}
+
+export interface ModelRow {
+  name: string;
+  text: string;
+}
+
+export interface Product {
+  name: string;
+  text: string;
+  toConfirm?: boolean;
+}
+
+export interface Package {
+  name: string;
+  bestFor: string;
+  delivers: string;
+}
+
+export interface ServicePillar {
+  slug: ServiceSlug;
+  num: "01" | "02" | "03" | "04";
+  /** Short label for the header */
+  navLabel: string;
+  name: string;
+  /** "We advise" … — the role of the pillar in the journey */
+  role: string;
+  /** Short line under the name in menus and cards */
+  tagline: string;
+  /** Page H1, one word in *asterisks* */
+  headline: string;
+  intro: string[];
+  hero: ImageRef;
+  secondary: ImageRef;
+  groups: ServiceGroup[];
+  coverage?: { title: string; intro: string; rows: ModelRow[] }[];
+  products?: { intro: string; items: Product[] };
+  packages?: { intro: string; items: Package[]; note: string };
+  /** Aliases used by shared components (blog labels): verb = navLabel, oneLiner = tagline */
+  verb: string;
+  oneLiner: string;
+}
+
+// ── Homepage growth story ───────────────────────────────────────────────
+
+export interface GrowthChapter {
+  id: "intro" | ServiceSlug | "finale";
+  /** "We advise" etc.; "" for intro/finale */
+  role: string;
+  name: string;
+  full: string;
+  /** Headline with one word wrapped in *asterisks* for the serif accent */
+  title: string;
+  lead: string;
+  /** One caption per scene beat, for chapters that span two beats */
+  beats?: string[];
+  chips: string[];
+  /** Scene beats [from, to) this chapter owns, in story units s = p * 9 */
+  span: [number, number];
+  href?: string;
+}
+
+// ── Navigation ──────────────────────────────────────────────────────────
+
+export interface NavLink {
+  label: string;
+  href: string;
+  external?: boolean;
+}
+
+export interface NavMenuLink extends NavLink {
+  /** One-line description under the link (single-group menus) */
+  summary?: string;
+}
+
+export interface NavMenuGroup {
+  title?: string;
+  /** Consultancy practices: the leadership question each practice answers */
+  question?: string;
+  links: NavMenuLink[];
+}
+
+export interface NavMenu {
+  id: string; // "consultancy"
+  num?: string; // "01"
+  eyebrow: string;
+  /** Panel title; one word in *asterisks* gets the serif accent */
+  title: string;
+  intro: string;
+  explore: NavLink;
+  groups: NavMenuGroup[];
+  promo?: { eyebrow: string; title: string; body?: string; items?: { name: string; text: string; href?: string }[] };
+}
+
+export interface NavItem extends NavLink {
+  /** Present on items that open a dropdown panel */
+  menu?: NavMenu;
+}
+
+export interface FooterColumn {
+  title: string;
+  links: (NavLink & { prefix?: string })[];
 }

@@ -7,6 +7,8 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Headline } from "@/components/ui/SectionHeading";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { breadcrumbJsonLd } from "@/lib/seo";
+import { localizeHref } from "@/i18n/config";
+import { getI18n } from "@/i18n/server";
 
 interface PageHeroProps {
   eyebrow: ReactNode;
@@ -26,7 +28,7 @@ interface PageHeroProps {
 /** Concentric rings echoing the polar grid of the 3D stage. */
 function Rings() {
   return (
-    <svg aria-hidden viewBox="0 0 800 800" fill="none" className="pointer-events-none absolute -top-[30%] -right-[18%] -z-10 w-[min(1100px,120vw)] text-teal-300 opacity-[0.07]">
+    <svg aria-hidden viewBox="0 0 800 800" fill="none" className="pointer-events-none absolute -top-[30%] -end-[18%] -z-10 w-[min(1100px,120vw)] text-teal-300 opacity-[0.07]">
       {[120, 200, 280, 360, 440, 520].map((r) => (
         <circle key={r} cx="400" cy="400" r={r} stroke="currentColor" strokeWidth="1" />
       ))}
@@ -43,12 +45,13 @@ function Rings() {
  * and the image fills that height instead of dictating it; without an image it is shorter. On short
  * viewports (the `short:` variant, max-height 760px) spacing and the headline size tighten so nothing needs a scroll.
  */
-export function PageHero({ eyebrow, num, title, kicker, lead, image, breadcrumb, children }: PageHeroProps) {
+export async function PageHero({ eyebrow, num, title, kicker, lead, image, breadcrumb, children }: PageHeroProps) {
+  const { locale, t } = await getI18n();
   return (
     <section className="surface-dark relative isolate overflow-hidden bg-teal-900 text-teal-100">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(90%_70%_at_80%_0%,var(--color-teal-800)_0%,transparent_65%),radial-gradient(60%_50%_at_0%_100%,var(--color-stage)_0%,transparent_70%)]"
+        className="pointer-events-none absolute inset-0 -z-20 bg-[radial-gradient(90%_70%_at_80%_0%,var(--color-teal-800)_0%,transparent_65%),radial-gradient(60%_50%_at_0%_100%,var(--color-stage)_0%,transparent_70%)] rtl:-scale-x-100"
       />
       <Rings />
       <div
@@ -60,11 +63,11 @@ export function PageHero({ eyebrow, num, title, kicker, lead, image, breadcrumb,
             : "lg:min-h-[min(72svh,640px)]",
         )}
       >
-        <div className={cn("relative flex flex-col gap-7 short:gap-4", image ? "lg:col-span-7 lg:pr-8" : "lg:col-span-10")}>
+        <div className={cn("relative flex flex-col gap-7 short:gap-4", image ? "lg:col-span-7 lg:pe-8" : "lg:col-span-10")}>
           {breadcrumb?.length ? (
             <>
-              <Breadcrumb items={breadcrumb} tone="dark" />
-              <JsonLd data={breadcrumbJsonLd(breadcrumb)} />
+              <Breadcrumb items={breadcrumb} tone="dark" label={t.common.breadcrumb} />
+              <JsonLd data={breadcrumbJsonLd(breadcrumb.map((b) => ({ ...b, href: b.href && localizeHref(locale, b.href) })))} />
             </>
           ) : null}
           <Eyebrow tone="dark" num={num}>

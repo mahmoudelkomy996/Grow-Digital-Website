@@ -1,30 +1,36 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/components/ui/Link";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/cn";
-import type { NavItem, NavLink } from "@/content/navigation";
-import { CONTACT } from "@/content/navigation";
+import type { NavItem, NavLink } from "@/content/types";
+import { CONTACT } from "@/content/nav";
+import { useDict } from "@/i18n/LocaleProvider";
 import { Button } from "@/components/ui/Button";
+import { LanguageSwitch } from "./LanguageSwitch";
 
 interface MobileMenuProps {
   id: string;
   open: boolean;
   items: NavItem[];
   cta: NavLink;
-  currentPath: string;
+  /** Whether an internal href is the current page (locale-aware) */
+  isActive: (href: string) => boolean;
+  /** Current path without the locale prefix (for the language switch) */
+  pathname: string;
   onNavigate: () => void;
 }
 
 /** Full-screen dark menu for < 1024px: one accordion per dropdown. Scroll locking, Esc and focus return live in SiteHeader. */
-export function MobileMenu({ id, open, items, cta, currentPath, onNavigate }: MobileMenuProps) {
+export function MobileMenu({ id, open, items, cta, isActive, pathname, onNavigate }: MobileMenuProps) {
   const [expanded, setExpanded] = useState<string | null>(null);
+  const t = useDict();
   return (
     <div
       id={id}
       inert={!open}
-      aria-label="Site menu"
+      aria-label={t.header.siteMenu}
       role="region"
       className={cn(
         "surface-dark fixed inset-0 z-40 overflow-y-auto overscroll-contain bg-teal-950 text-teal-100 lg:hidden",
@@ -33,7 +39,10 @@ export function MobileMenu({ id, open, items, cta, currentPath, onNavigate }: Mo
       )}
     >
       <div className="container-site flex min-h-full flex-col pt-[calc(72px+1.5rem)] pb-10">
-        <p className="eyebrow text-lime">Menu</p>
+        <div className="flex items-center justify-between gap-4">
+          <p className="eyebrow text-lime">{t.header.menu}</p>
+          <LanguageSwitch pathname={pathname} className="-me-3 text-paper" />
+        </div>
         <ul className="mt-4 border-t border-teal-300/15">
           {items.map((item, i) => {
             const menu = item.menu;
@@ -55,13 +64,13 @@ export function MobileMenu({ id, open, items, cta, currentPath, onNavigate }: Mo
                       aria-expanded={isOpen}
                       aria-controls={panelId}
                       onClick={() => setExpanded(isOpen ? null : item.label)}
-                      className="flex w-full items-center gap-4 py-4 text-left"
+                      className="flex w-full items-center gap-4 py-4 text-start"
                     >
                       {menu.num ? <span className="eyebrow w-6 shrink-0 text-lime tabular-nums">{menu.num}</span> : null}
                       <span className="flex-1 text-[1.5rem] leading-tight font-light text-paper">{item.label}</span>
                       <Plus aria-hidden strokeWidth={1.5} className={cn("size-5 shrink-0 text-teal-300 transition-transform duration-300", isOpen && "rotate-45")} />
                     </button>
-                    <div id={panelId} hidden={!isOpen} className="pb-5 pl-10">
+                    <div id={panelId} hidden={!isOpen} className="pb-5 ps-10">
                       <Link href={menu.explore.href} onClick={onNavigate} className="mb-2 inline-block text-small text-mint underline underline-offset-4">
                         {menu.explore.label}
                       </Link>
@@ -74,7 +83,7 @@ export function MobileMenu({ id, open, items, cta, currentPath, onNavigate }: Mo
                                 <Link
                                   href={l.href}
                                   onClick={onNavigate}
-                                  aria-current={currentPath === l.href ? "page" : undefined}
+                                  aria-current={isActive(l.href) ? "page" : undefined}
                                   className="block py-2 text-[1.0625rem] text-teal-100 hover:text-mint"
                                 >
                                   {l.label}
@@ -84,9 +93,9 @@ export function MobileMenu({ id, open, items, cta, currentPath, onNavigate }: Mo
                           </ul>
                         </div>
                       ))}
-                      {menu.promo?.eyebrow === "Our products" && menu.promo.items ? (
+                      {menu.id === "software-development" && menu.promo?.items ? (
                         <>
-                          <p className="mt-4 mb-1 text-[0.8125rem] font-medium text-teal-300">Our products</p>
+                          <p className="mt-4 mb-1 text-[0.8125rem] font-medium text-teal-300">{t.header.ourProducts}</p>
                           <ul>
                             {menu.promo.items.map((x) => (
                               <li key={x.name}>
@@ -104,7 +113,7 @@ export function MobileMenu({ id, open, items, cta, currentPath, onNavigate }: Mo
                   <Link
                     href={item.href}
                     onClick={onNavigate}
-                    aria-current={currentPath === item.href ? "page" : undefined}
+                    aria-current={isActive(item.href) ? "page" : undefined}
                     className="block py-4 text-[1.5rem] leading-tight font-light text-paper hover:text-mint"
                   >
                     {item.label}
@@ -125,10 +134,10 @@ export function MobileMenu({ id, open, items, cta, currentPath, onNavigate }: Mo
           <a href={CONTACT.emailHref} className="self-start rounded-sm text-paper hover:text-mint">
             {CONTACT.email}
           </a>
-          <a href={CONTACT.phoneHref} className="self-start rounded-sm text-paper hover:text-mint">
+          <a href={CONTACT.phoneHref} dir="ltr" className="self-start rounded-sm text-paper hover:text-mint">
             {CONTACT.phone}
           </a>
-          <p className="mt-2">{CONTACT.markets}</p>
+          <p className="mt-2">{t.common.markets}</p>
         </div>
       </div>
     </div>

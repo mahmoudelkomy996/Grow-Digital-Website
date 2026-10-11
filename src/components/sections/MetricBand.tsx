@@ -17,7 +17,7 @@ export function MetricBand({ metrics, eyebrow = "Impact", title, id }: MetricBan
   return (
     <section
       id={id}
-      aria-label={title ? undefined : "Impact"}
+      aria-label={title ? undefined : typeof eyebrow === "string" ? eyebrow : "Impact"}
       aria-labelledby={title && id ? `${id}-title` : undefined}
       className="surface-dark relative isolate overflow-hidden bg-stage text-teal-100 section-y"
     >

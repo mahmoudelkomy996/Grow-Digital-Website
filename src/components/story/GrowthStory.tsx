@@ -3,11 +3,13 @@
 // The homepage growth story: a pinned 3D stage ("the digital tree") with the chapter copy as real HTML.
 // The scene module (three.js) is imported only when #story nears the viewport, so it never ships in a
 // route's initial bundle. Without WebGL, static poster frames are cross-faded by chapter instead.
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { getImageProps } from "next/image";
-import Link from "next/link";
+import { Link } from "@/components/ui/Link";
 import Lenis from "lenis";
-import { STORY, type GrowthChapter } from "@/content/story";
+import type { GrowthChapter } from "@/content/types";
+import { useDict } from "@/i18n/LocaleProvider";
+import type { Dictionary } from "@/i18n/dictionaries";
 import { accent } from "@/lib/accent";
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
@@ -23,9 +25,6 @@ declare global {
   }
 }
 
-const PILLARS = STORY.slice(1, -1);
-const SPANS = STORY.map((c) => c.span);
-const PANELS = STORY.length;
 
 function useMediaQuery(query: string) {
   return useSyncExternalStore(
@@ -76,7 +75,7 @@ function Poster({ i }: { i: number }) {
 const headingClass =
   "mb-[18px] text-[clamp(2.5rem,5.2vw,4.75rem)] leading-[1.02] tracking-[-0.02em] text-paper max-md:text-[2.375rem]";
 
-function PanelBody({ c, i }: { c: GrowthChapter; i: number }) {
+function PanelBody({ c, i, t }: { c: GrowthChapter; i: number; t: Dictionary["story"] }) {
   const finale = c.id === "finale";
   const title = accent(c.title, "text-mint");
   return (
@@ -93,7 +92,7 @@ function PanelBody({ c, i }: { c: GrowthChapter; i: number }) {
       ) : null}
       {i === 0 ? <h1 className={headingClass}>{title}</h1> : <h2 className={headingClass}>{title}</h2>}
       {c.beats ? (
-        <p className="relative -mt-1.5 mb-4 h-5 font-mono text-[12px] tracking-[0.08em] text-mint uppercase">
+        <p className="relative -mt-1.5 mb-4 h-5 font-mono text-[12px] tracking-[0.08em] text-mint uppercase rtl:text-[13px] rtl:normal-case">
           {c.beats.map((b, k) => (
             <span
               key={b}
@@ -107,7 +106,7 @@ function PanelBody({ c, i }: { c: GrowthChapter; i: number }) {
       ) : null}
       <p className="mb-[22px] max-w-[460px] text-[17px] leading-[1.6] text-teal-200 max-md:mb-4 max-md:text-[15px]">{c.lead}</p>
       {c.chips.length ? (
-        <ul className="mb-6 flex flex-wrap gap-2 max-md:mb-5" aria-label={`${c.name} services`}>
+        <ul className="mb-6 flex flex-wrap gap-2 max-md:mb-5" aria-label={`${c.name} ${t.services}`}>
           {c.chips.map((x) => (
             <li key={x}>
               <Chip tone="dark" size="sm">
@@ -119,15 +118,15 @@ function PanelBody({ c, i }: { c: GrowthChapter; i: number }) {
       ) : null}
       {i === 0 ? (
         <p className="eyebrow text-teal-300">
-          Scroll to begin the journey <span aria-hidden>↓</span>
+          {t.scrollHint} <span aria-hidden>↓</span>
         </p>
       ) : finale ? (
         <div className="mt-2 flex flex-wrap gap-3">
           <Button href={c.href ?? "/contact"} variant="accent" arrow>
-            Start the conversation
+            {t.start}
           </Button>
           <Button href="/#pillars" variant="ghost-dark">
-            See the four pillars
+            {t.seePillars}
           </Button>
         </div>
       ) : c.href ? (
@@ -135,14 +134,18 @@ function PanelBody({ c, i }: { c: GrowthChapter; i: number }) {
           href={c.href}
           className="border-b border-mint/40 pb-0.5 text-[15px] text-mint transition-colors duration-300 hover:border-mint"
         >
-          Explore {c.name} <span aria-hidden>→</span>
+          {t.explore} {c.name} <span aria-hidden className="flip-rtl inline-block">→</span>
         </Link>
       ) : null}
     </>
   );
 }
 
-export function GrowthStory() {
+export function GrowthStory({ story }: { story: GrowthChapter[] }) {
+  const t = useDict().story;
+  const PILLARS = story.slice(1, -1);
+  const SPANS = useMemo(() => story.map((c) => c.span), [story]);
+  const PANELS = story.length;
   const sectionRef = useRef<HTMLElement>(null);
   const hostRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
@@ -198,10 +201,10 @@ export function GrowthStory() {
     if (!el) return;
     const top = el.getBoundingClientRect().top + window.scrollY;
     // land on the chapter's first scene beat (its camera hold), not on a transition
-    const y = top + ((STORY[i].span[0] + 0.5) / N) * (el.offsetHeight - window.innerHeight);
+    const y = top + ((SPANS[i][0] + 0.5) / N) * (el.offsetHeight - window.innerHeight);
     if (lenisRef.current) lenisRef.current.scrollTo(y, { duration: 1.6 });
     else window.scrollTo({ top: y, behavior: reducedRef.current ? "auto" : "smooth" });
-  }, []);
+  }, [SPANS]);
 
   // ------------------------------------------------------------ frame loop (runs only while on screen)
   useEffect(() => {
@@ -275,7 +278,7 @@ export function GrowthStory() {
       cancelAnimationFrame(raf);
       raf = 0;
     };
-  }, [readProgress]);
+  }, [readProgress, PANELS, SPANS]);
 
   // ------------------------------------------------------------ 3D scene: lazy import, lifecycle, fallback
   useEffect(() => {
@@ -381,19 +384,20 @@ export function GrowthStory() {
       ref={sectionRef}
       id="story"
       data-header-transparent
-      aria-label="The growth story"
+      aria-label={t.label}
       className="surface-dark relative bg-stage text-teal-100"
       style={{ height: `${N * 110 + 100}vh` }}
     >
       <a
         href="#integrator"
-        className="absolute top-[88px] left-4 z-30 -translate-y-[300%] rounded-full bg-lime px-5 py-3 text-[0.9375rem] font-medium text-teal-950 transition-transform duration-300 focus-visible:translate-y-0 focus-visible:outline-teal-950"
+        className="absolute start-4 top-[88px] z-30 -translate-y-[300%] rounded-full bg-lime px-5 py-3 text-[0.9375rem] font-medium text-teal-950 transition-transform duration-300 focus-visible:translate-y-0 focus-visible:outline-teal-950"
       >
-        Skip the story
+        {t.skip}
       </a>
 
       <div className="sticky top-0 h-svh overflow-hidden">
-        <div ref={hostRef} aria-hidden className="absolute inset-0" />
+        {/* RTL: the scene is mirrored so the tree sits opposite the (right-aligned) text, as in LTR */}
+        <div ref={hostRef} aria-hidden className="absolute inset-0 rtl:-scale-x-100" />
 
         {/* Placeholder until the 3D scene is up: a soft glowing seed where the scene's seed appears */}
         <div
@@ -403,11 +407,11 @@ export function GrowthStory() {
             ready || fallback ? "opacity-0" : "opacity-100",
           )}
         >
-          <div className="absolute top-[34%] left-1/2 size-[clamp(120px,22vw,220px)] -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-[radial-gradient(circle,rgba(226,242,239,0.9)_0%,rgba(127,224,200,0.55)_28%,rgba(46,148,142,0.18)_55%,transparent_70%)] blur-[2px] md:top-1/2 md:left-[64%]" />
+          <div className="absolute top-[34%] left-1/2 size-[clamp(120px,22vw,220px)] -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full bg-[radial-gradient(circle,rgba(226,242,239,0.9)_0%,rgba(127,224,200,0.55)_28%,rgba(46,148,142,0.18)_55%,transparent_70%)] blur-[2px] md:top-1/2 md:left-[64%] rtl:md:left-[36%]" />
         </div>
 
         {fallback ? (
-          <div aria-hidden className="absolute inset-0" data-testid="story-fallback">
+          <div aria-hidden className="absolute inset-0 rtl:-scale-x-100" data-testid="story-fallback">
             {Array.from({ length: N }, (_, i) => (
               <div
                 key={i}
@@ -427,12 +431,12 @@ export function GrowthStory() {
         <div
           aria-hidden
           data-story-ui
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(5,38,38,0.72)_0%,rgba(5,38,38,0.25)_38%,rgba(5,38,38,0)_60%)] max-md:bg-[linear-gradient(0deg,rgba(5,38,38,0.92)_0%,rgba(5,38,38,0.6)_40%,rgba(5,38,38,0)_70%)]"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(5,38,38,0.72)_0%,rgba(5,38,38,0.25)_38%,rgba(5,38,38,0)_60%)] rtl:bg-[linear-gradient(270deg,rgba(5,38,38,0.72)_0%,rgba(5,38,38,0.25)_38%,rgba(5,38,38,0)_60%)] max-md:bg-[linear-gradient(0deg,rgba(5,38,38,0.92)_0%,rgba(5,38,38,0.6)_40%,rgba(5,38,38,0)_70%)]"
         />
 
         <div data-story-ui className="pointer-events-none absolute inset-0 z-[5] pt-[88px] pb-10 max-md:pt-[120px] max-md:pb-7">
           <div className="container-site grid h-full">
-            {STORY.map((c, i) => (
+            {story.map((c, i) => (
               <article
                 key={c.id}
                 ref={(el) => {
@@ -448,16 +452,16 @@ export function GrowthStory() {
                 )}
                 style={{ opacity: i === 0 ? 1 : 0, translate: i === 0 ? "0 0px" : "0 24px" }}
               >
-                <PanelBody c={c} i={i} />
+                <PanelBody c={c} i={i} t={t} />
               </article>
             ))}
           </div>
         </div>
 
         <nav
-          aria-label="Story chapters"
+          aria-label={t.chapters}
           data-story-ui
-          className="absolute top-1/2 right-[clamp(12px,3vw,40px)] z-[6] flex -translate-y-1/2 flex-col gap-1.5 max-md:top-[84px] max-md:right-4 max-md:translate-y-0 max-md:flex-row max-md:gap-0.5"
+          className="absolute end-[clamp(12px,3vw,40px)] top-1/2 z-[6] flex -translate-y-1/2 flex-col gap-1.5 max-md:end-4 max-md:top-[84px] max-md:translate-y-0 max-md:flex-row max-md:gap-0.5"
         >
           {PILLARS.map((c, k) => {
             const i = k + 1;
@@ -466,7 +470,7 @@ export function GrowthStory() {
               <button
                 key={c.id}
                 type="button"
-                aria-label={`Go to chapter: ${c.name}`}
+                aria-label={`${t.goTo} ${c.name}`}
                 aria-current={on ? "step" : undefined}
                 onClick={() => scrollToChapter(i)}
                 className={cn(
@@ -477,7 +481,7 @@ export function GrowthStory() {
                 <span
                   className={cn(
                     "transition-[opacity,translate] duration-300 [text-shadow:0_0_10px_var(--color-stage),0_0_3px_var(--color-stage)] max-md:hidden",
-                    on ? "opacity-100" : "translate-x-1.5 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100",
+                    on ? "opacity-100" : "translate-x-1.5 rtl:-translate-x-1.5 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100",
                   )}
                 >
                   {c.role} · {c.name}
@@ -494,7 +498,7 @@ export function GrowthStory() {
           })}
         </nav>
 
-        <div ref={barRef} aria-hidden data-story-ui className="absolute bottom-0 left-0 z-[6] h-0.5 w-0 bg-lime" />
+        <div ref={barRef} aria-hidden data-story-ui className="absolute start-0 bottom-0 z-[6] h-0.5 w-0 bg-lime" />
       </div>
     </section>
   );

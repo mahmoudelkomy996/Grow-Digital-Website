@@ -3,6 +3,8 @@
 import { headers } from "next/headers";
 import { Resend } from "resend";
 import { z } from "zod";
+import { DICTIONARIES } from "@/i18n/dictionaries";
+import { DEFAULT_LOCALE, isLocale } from "@/i18n/config";
 
 export type ContactField = "name" | "company" | "email" | "phone" | "interest" | "message" | "consent";
 
@@ -14,19 +16,22 @@ export interface ContactState {
   values?: Partial<Record<Exclude<ContactField, "consent">, string>>;
 }
 
-const schema = z.object({
-  name: z.string().trim().min(2, { error: "Enter your name." }).max(120),
-  company: z.string().trim().min(2, { error: "Enter your company or organization." }).max(160),
-  email: z.string().trim().max(200).pipe(z.email({ error: "Enter a valid work email." })),
-  phone: z
-    .string()
-    .trim()
-    .max(40)
-    .refine((v) => v === "" || /^[+()\d\s.-]{6,}$/.test(v), { error: "Enter a valid phone number, or leave it empty." }),
-  interest: z.string().trim().max(80),
-  message: z.string().trim().min(10, { error: "Tell us a little more (at least 10 characters)." }).max(4000),
-  consent: z.literal("on", { error: "Please agree so we can contact you about your enquiry." }),
-});
+type Errors = (typeof DICTIONARIES)["en"]["contact"]["errors"];
+
+const schemaFor = (e: Errors) =>
+  z.object({
+    name: z.string().trim().min(2, { error: e.name }).max(120),
+    company: z.string().trim().min(2, { error: e.company }).max(160),
+    email: z.string().trim().max(200).pipe(z.email({ error: e.email })),
+    phone: z
+      .string()
+      .trim()
+      .max(40)
+      .refine((v) => v === "" || /^[+()\d\s.-]{6,}$/.test(v), { error: e.phone }),
+    interest: z.string().trim().max(80),
+    message: z.string().trim().min(10, { error: e.message }).max(4000),
+    consent: z.literal("on", { error: e.consent }),
+  });
 
 // Basic in-memory rate limit: 5 submissions per IP per 10 minutes (per server instance).
 const WINDOW_MS = 10 * 60 * 1000;
@@ -41,9 +46,11 @@ function rateLimited(ip: string): boolean {
   return recent.length > LIMIT;
 }
 
-const FALLBACK = "We couldn't send your message right now. Email us at info@growdigital.com.";
-
 export async function submitContact(_prev: ContactState, formData: FormData): Promise<ContactState> {
+  const rawLocale = String(formData.get("locale") ?? "");
+  const locale = isLocale(rawLocale) ? rawLocale : DEFAULT_LOCALE;
+  const e = DICTIONARIES[locale].contact.errors;
+  const FALLBACK = e.fallback;
   const raw = {
     name: String(formData.get("name") ?? ""),
     company: String(formData.get("company") ?? ""),
@@ -59,20 +66,20 @@ export async function submitContact(_prev: ContactState, formData: FormData): Pr
     return { status: "success" };
   }
 
-  const parsed = schema.safeParse({ ...raw, consent: formData.get("consent") ?? "" });
+  const parsed = schemaFor(e).safeParse({ ...raw, consent: formData.get("consent") ?? "" });
   if (!parsed.success) {
     const fieldErrors: ContactState["fieldErrors"] = {};
     for (const issue of parsed.error.issues) {
       const key = issue.path[0] as ContactField;
       if (key && !fieldErrors[key]) fieldErrors[key] = issue.message;
     }
-    return { status: "error", message: "Please check the highlighted fields.", fieldErrors, values };
+    return { status: "error", message: e.check, fieldErrors, values };
   }
 
   const h = await headers();
   const ip = (h.get("x-forwarded-for") ?? "").split(",")[0].trim() || h.get("x-real-ip") || "unknown";
   if (rateLimited(ip)) {
-    return { status: "error", message: "Too many messages in a short time. Please try again in a few minutes.", values };
+    return { status: "error", message: e.rate, values };
   }
 
   const data = parsed.data;
@@ -82,6 +89,7 @@ export async function submitContact(_prev: ContactState, formData: FormData): Pr
     `Email: ${data.email}`,
     `Phone: ${data.phone || "—"}`,
     `Area of interest: ${data.interest || "—"}`,
+    `Language: ${locale}`,
     "",
     data.message,
   ].join("\n");

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Logo } from "@/components/ui/Logo";
 import { SMILE_PATH } from "@/components/ui/SmileArc";
+import { useDict } from "@/i18n/LocaleProvider";
 
 /**
  * First-visit preloader for the homepage.
@@ -35,6 +36,7 @@ const getActive = () => document.documentElement.dataset.preloader === "on";
 const getActiveServer = () => true;
 
 export function Preloader() {
+  const t = useDict();
   const active = useSyncExternalStore(subscribe, getActive, getActiveServer);
   const [exiting, setExiting] = useState(false);
   const arcRef = useRef<SVGPathElement>(null);
@@ -161,15 +163,15 @@ export function Preloader() {
 
       <div className={`container-site relative flex items-end justify-between gap-6 pb-6 transition-opacity duration-300 md:pb-9 ${exiting ? "opacity-0" : ""}`}>
         <p className="eyebrow text-teal-300">
-          It&apos;s time to <span className="text-lime">grow</span>
+          {t.preloader.line.split(/\*([^*]+)\*/).map((part, i) => (i % 2 ? <span key={i} className="text-lime">{part}</span> : part))}
         </p>
         <p className="font-mono text-[clamp(2.25rem,5vw,4rem)] leading-none font-light text-paper tabular-nums" aria-hidden>
           <span ref={countRef}>00</span>
-          <span className="ml-1 align-top text-[0.4em] text-teal-400">%</span>
+          <span className="ms-1 align-top text-[0.4em] text-teal-400">%</span>
         </p>
       </div>
       <div aria-hidden className="relative h-[2px] bg-teal-300/15">
-        <div ref={barRef} className="h-full origin-left bg-lime" style={{ transform: "scaleX(0)" }} />
+        <div ref={barRef} className="h-full origin-left bg-lime rtl:origin-right" style={{ transform: "scaleX(0)" }} />
       </div>
     </div>
   );

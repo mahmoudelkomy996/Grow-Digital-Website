@@ -36,7 +36,9 @@ export function LogoMarquee({ items, tone = "paper", label = "Partners", classNa
         className,
       )}
     >
+      {/* logos only: keep the track left-to-right in every locale so the -50% loop stays seamless */}
       <div
+        dir="ltr"
         className={cn(
           "flex w-max animate-marquee group-hover/mq:[animation-play-state:paused] group-focus-within/mq:[animation-play-state:paused]",
           "motion-reduce:w-full motion-reduce:animate-none",

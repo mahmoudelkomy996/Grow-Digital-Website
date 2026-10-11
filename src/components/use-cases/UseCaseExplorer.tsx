@@ -1,18 +1,16 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { usePublicPathname } from "@/i18n/LocaleProvider";
 import { useMemo } from "react";
 import type { Industry, UseCase } from "@/content/types";
 import { cn } from "@/lib/cn";
 import { UseCaseCard } from "@/components/sections/UseCaseCard";
+import { useDict } from "@/i18n/LocaleProvider";
 
 type Category = "all" | "ai" | "iot";
 
-const CATEGORIES: { id: Category; label: string }[] = [
-  { id: "all", label: "All" },
-  { id: "ai", label: "AI" },
-  { id: "iot", label: "IoT" },
-];
+const CATEGORIES: Category[] = ["all", "ai", "iot"];
 
 function FilterButton({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
   return (
@@ -38,8 +36,9 @@ function FilterButton({ active, onClick, children }: { active: boolean; onClick:
  */
 export function UseCaseExplorer({ useCases, industries }: { useCases: UseCase[]; industries: Industry[] }) {
   const router = useRouter();
-  const pathname = usePathname();
+  const pathname = usePublicPathname();
   const params = useSearchParams();
+  const t = useDict();
 
   const rawCategory = params.get("category");
   const category: Category = rawCategory === "ai" || rawCategory === "iot" ? rawCategory : "all";
@@ -69,19 +68,19 @@ export function UseCaseExplorer({ useCases, industries }: { useCases: UseCase[];
 
   return (
     <div className="flex flex-col gap-10">
-      <div className="flex flex-col gap-6 border-b border-line pb-8" role="group" aria-label="Filter use cases">
+      <div className="flex flex-col gap-6 border-b border-line pb-8" role="group" aria-label={t.useCases.filter}>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="eyebrow mr-3 w-20 text-teal-600">Type</span>
+          <span className="eyebrow me-3 w-20 text-teal-600">{t.useCases.type}</span>
           {CATEGORIES.map((c) => (
-            <FilterButton key={c.id} active={category === c.id} onClick={() => update({ category: c.id })}>
-              {c.label}
+            <FilterButton key={c} active={category === c} onClick={() => update({ category: c })}>
+              {c === "all" ? t.useCases.allFilter : c === "ai" ? "AI" : "IoT"}
             </FilterButton>
           ))}
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="eyebrow mr-3 w-20 text-teal-600">Industry</span>
+          <span className="eyebrow me-3 w-20 text-teal-600">{t.useCases.industry}</span>
           <FilterButton active={!industry} onClick={() => update({ industry: null })}>
-            All industries
+            {t.useCases.allIndustries}
           </FilterButton>
           {presentIndustries.map((ind) => (
             <FilterButton key={ind.id} active={industry === ind.id} onClick={() => update({ industry: ind.id })}>
@@ -92,7 +91,7 @@ export function UseCaseExplorer({ useCases, industries }: { useCases: UseCase[];
       </div>
 
       <p className="eyebrow text-teal-700" aria-live="polite">
-        {results.length} {results.length === 1 ? "use case" : "use cases"}
+        {t.useCases.count(results.length)}
       </p>
 
       {results.length ? (
@@ -105,13 +104,13 @@ export function UseCaseExplorer({ useCases, industries }: { useCases: UseCase[];
         </ul>
       ) : (
         <div className="flex flex-col items-start gap-5 rounded-[var(--radius-card)] border border-line bg-paper p-10">
-          <p className="text-h3 font-light text-teal-900">No use cases match these filters yet.</p>
+          <p className="text-h3 font-light text-teal-900">{t.useCases.empty}</p>
           <button
             type="button"
             onClick={() => update({ category: "all", industry: null })}
             className="text-[0.9375rem] text-teal-600 underline underline-offset-4"
           >
-            Clear the filters
+            {t.useCases.clear}
           </button>
         </div>
       )}

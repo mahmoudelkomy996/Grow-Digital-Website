@@ -1,6 +1,6 @@
 # Grow Digital website
 
-The marketing site for Grow Digital, "The agile integrator". It covers one accountable team that consults, transforms, builds, operates, secures and grows, plus Grow Digital's own digital and AI solutions.
+The marketing site for Grow Digital, "The agile integrator": four service pillars (we advise, build, operate and market) delivered by one accountable team, plus Grow Digital's own digital and AI products. In English and Arabic (RTL).
 
 Built with Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4 and three.js for the homepage 3D growth story.
 
@@ -35,11 +35,23 @@ BASE_URL=http://localhost:3000 npx playwright test   # against a running server
 | `/contact` | Contact form (Server Action) and details |
 | `/blog` | Insights: 47 articles migrated from the old WordPress blog, paginated (12 per page), with category pages `/blog/category/[pillar]` |
 | `/blog/[slug]` | Article: table of contents, share links, related posts, BlogPosting + BreadcrumbList JSON-LD, per-post OG image |
-| `/design-system` | Living style guide (noindex) |
+| `/design-system` | Living style guide (noindex, English only) |
+
+Every page except the blog and the design system also exists in Arabic under `/ar` (`/ar`, `/ar/about`, `/ar/services/consultancy`, …).
+
+## Languages (i18n)
+
+- **Locales** are configured in `src/i18n/config.ts` (`LOCALES`, `LOCALE_META` with direction and hreflang). English is the default and keeps unprefixed URLs; Arabic lives under `/ar`.
+- **Routing:** every route sits under `src/app/[lang]`. `src/proxy.ts` rewrites unprefixed URLs to `/en/…`, 308-redirects `/en/…` to the unprefixed URL, and redirects `/ar/blog/…` to the English blog (`BLOG_LOCALES`).
+- **Text:** long-form content per locale in `src/content/<locale>/` (same exports and shapes in every locale); UI and page strings in `src/i18n/dictionaries/<locale>.ts`. Server components read them with `getI18n()` from `@/i18n/server`; client components with `useDict()` / `useLocale()` from `@/i18n/LocaleProvider`.
+- **Links:** use `Link` from `@/components/ui/Link`; it adds the locale prefix. `LanguageSwitch` links to the same page in the other language.
+- **RTL:** `<html dir>` follows the locale. Use logical utilities (`ms-/me-`, `ps-/pe-`, `start-/end-`, `border-s/e`, `text-start/end`) and the `rtl:` variant; add `flip-rtl` to sideways icons. Arabic uses Readex Pro and Amiri (accent word), with no letter-spacing. The 3D story canvas is mirrored in RTL.
+- **SEO:** canonical per locale, hreflang alternates (plus `x-default`), `og:locale`, and sitemap entries with alternates (`pageMetadata` in `src/lib/seo.ts`).
+- **Adding a language:** add it to `LOCALES`/`LOCALE_META`, create `src/content/<locale>/` and `src/i18n/dictionaries/<locale>.ts`, register both in `src/content/index.ts` and `src/i18n/dictionaries/index.ts`. `tests/unit/i18n.test.ts` fails until every string, id and link is mirrored. Arabic terminology: `docs/content/arabic-glossary.md`.
 
 ## Editing content
 
-All copy lives in typed modules in `src/content/`: `pillars.ts`, `use-cases.ts`, `partners.ts`, `clients.ts`, `solutions.ts`, `company.ts`, `story.ts` and others. Pages never hard-code copy.
+All copy lives in typed modules: `src/content/<locale>/` (`services.ts`, `use-cases.ts`, `partners.ts`, `clients.ts`, `solutions.ts`, `company.ts`, `story.ts`, …) and `src/i18n/dictionaries/`. Pages never hard-code copy. Change a fact in English and in Arabic.
 
 - In headlines, wrap one word in `*asterisks*` to set it in the serif accent.
 - Sources are the deck (`docs/content/deck-text.txt`) and the services portfolio (`docs/content/services-portfolio.md`).
@@ -48,7 +60,7 @@ All copy lives in typed modules in `src/content/`: `pillars.ts`, `use-cases.ts`,
 ## Images and logos
 
 - **Photography** is AI-generated with Magnific (Seedream 5 Pro, 2K).
-  - Prompts and alt text live in `src/content/images.ts`, along with the shared art-direction suffix `IMAGE_STYLE`.
+  - Prompts and English alt text live in `src/content/images.ts` (with the shared style suffix); Arabic alt text in `src/content/ar/images.ts`.
   - To replace an image, generate it with the same aspect, then run `node scripts/optimize-image.mjs <in> public/images/...` and `node scripts/check-images.mjs`.
 - **Logos** were extracted from the company deck with `scripts/extract-logos.mjs` into `public/logos/`.
   - After adding or replacing a logo, run `node scripts/logo-meta.mjs` to refresh optical sizing.

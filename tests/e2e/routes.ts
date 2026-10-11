@@ -14,3 +14,13 @@ export const ROUTES = [
   "/blog/the-critical-importance-of-cybersecurity-for-modern-organizations",
   "/blog/2030-ksa-vision",
 ] as const;
+
+/** Arabic (RTL) routes: every localized page. The blog is English-only. */
+export const AR_ROUTES = [
+  "/ar",
+  "/ar/about",
+  ...SERVICE_SLUGS.map((s) => `/ar/services/${s}`),
+  "/ar/use-cases",
+  "/ar/partners",
+  "/ar/contact",
+] as const;

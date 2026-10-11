@@ -28,7 +28,7 @@ export function Headline({ text, tone = "paper", arc = false }: { text: string; 
           <em
             key={i}
             className={cn(
-              "accent-word pr-[0.04em]",
+              "accent-word pe-[0.04em]",
               tone === "dark" ? "text-mint" : "text-teal-600",
               arc && "relative inline-block",
             )}
@@ -39,7 +39,7 @@ export function Headline({ text, tone = "paper", arc = false }: { text: string; 
                 stretch
                 strokeWidth={2}
                 className={cn(
-                  "pointer-events-none absolute left-[10%] top-[92%] h-[0.2em] w-[80%]",
+                  "pointer-events-none absolute start-[10%] top-[92%] h-[0.2em] w-[80%]",
                   tone === "dark" ? "text-lime" : "text-teal-500",
                 )}
               />

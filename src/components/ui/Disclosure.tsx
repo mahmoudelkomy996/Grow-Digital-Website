@@ -39,7 +39,7 @@ export function Disclosure({
         aria-controls={panelId}
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "group/dc flex w-full items-center justify-between gap-6 rounded-sm py-4 text-left text-[0.9375rem] font-medium transition-colors duration-300",
+          "group/dc flex w-full items-center justify-between gap-6 rounded-sm py-4 text-start text-[0.9375rem] font-medium transition-colors duration-300",
           dark ? "text-paper hover:text-mint" : "text-teal-900 hover:text-teal-600",
           summaryClassName,
         )}
