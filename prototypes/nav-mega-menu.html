@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Services mega menu · Grow Digital (prototype)</title>
+<link rel="icon" href="data:,">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&family=Instrument+Serif:ital@1&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal-950:#041f1f; --teal-900:#083b3b; --teal-800:#0d4b4a; --teal-700:#145e5c; --teal-600:#1c726e;
+    --teal-500:#2e948e; --teal-300:#8fcdc6; --teal-200:#c2e5e0; --teal-100:#e2f2ef;
+    --paper:#f6f5f0; --paper-2:#edebe3; --line:#d9d6cc; --ink:#0e1c1c; --lime:#c8f169; --mint:#7fe0c8;
+    --ease:cubic-bezier(.16,1,.3,1);
+  }
+  * { box-sizing:border-box; margin:0; }
+  body { font-family:Outfit,system-ui,sans-serif; background:var(--paper); color:var(--ink); -webkit-font-smoothing:antialiased; }
+  a { color:inherit; text-decoration:none; }
+  button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+  .mono { font-family:"JetBrains Mono",monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; }
+  .wrap { max-width:1344px; margin:0 auto; padding:0 clamp(16px,4vw,32px); }
+
+  /* page backdrop (dark hero, like every page) */
+  .hero { background:radial-gradient(90% 70% at 80% 0%, var(--teal-800), transparent 65%), var(--teal-900); color:var(--teal-100); min-height:100vh; padding-top:200px; }
+  .hero h1 { font-weight:300; font-size:clamp(44px,6vw,84px); line-height:1.02; letter-spacing:-.03em; color:var(--paper); max-width:14ch; }
+  .hero em { font-family:"Instrument Serif",serif; color:var(--mint); }
+  .hero p { margin-top:20px; max-width:520px; color:var(--teal-200); font-size:18px; line-height:1.6; }
+
+  /* header */
+  header { position:fixed; inset:0 0 auto; z-index:50; transition:background .3s, color .3s; color:var(--paper); }
+  header.solid { background:var(--paper); color:var(--teal-900); border-bottom:1px solid var(--line); }
+  .bar { height:72px; display:flex; align-items:center; justify-content:space-between; gap:24px; }
+  .logo { width:140px; height:28px; background:currentColor; -webkit-mask:url(shared/logo-teal.png) left/contain no-repeat; mask:url(shared/logo-teal.png) left/contain no-repeat; }
+  nav.main ul { display:flex; gap:4px; list-style:none; padding:0; }
+  nav.main a, nav.main button { display:flex; align-items:center; gap:6px; height:40px; padding:0 16px; border-radius:99px; font-size:15px; }
+  nav.main button svg { transition:transform .3s var(--ease); }
+  nav.main button[aria-expanded=true] svg { transform:rotate(180deg); }
+  nav.main button[aria-expanded=true] { position:relative; }
+  nav.main button[aria-expanded=true]::after { content:""; position:absolute; left:50%; bottom:2px; width:14px; height:7px; translate:-50% 0; border:1.5px solid var(--teal-500); border-top:0; border-radius:0 0 14px 14px; }
+  .cta { height:40px; padding:0 18px; border-radius:99px; background:var(--lime); color:var(--teal-950); font-size:15px; font-weight:500; display:inline-flex; align-items:center; }
+  header.solid .cta { background:var(--teal-900); color:var(--paper); }
+  .burger { display:none; }
+
+  /* mega panel */
+  .mega { position:absolute; left:0; right:0; top:100%; background:var(--paper); color:var(--teal-900); border-bottom:1px solid var(--line);
+          box-shadow:0 30px 60px -30px rgba(4,31,31,.35); opacity:0; visibility:hidden; translate:0 -8px; transition:opacity .25s, translate .35s var(--ease), visibility 0s .35s; }
+  .mega.open { opacity:1; visibility:visible; translate:0 0; transition:opacity .25s, translate .35s var(--ease); }
+  .mega-grid { display:grid; grid-template-columns:300px 1fr; min-height:440px; }
+
+  /* left: the four pillars */
+  .pillars { border-right:1px solid var(--line); padding:28px 24px 28px 0; display:flex; flex-direction:column; gap:4px; }
+  .pillars .label { padding:0 14px 12px; color:var(--teal-600); }
+  .ptab { text-align:left; display:grid; grid-template-columns:28px 1fr 16px; align-items:start; gap:8px; padding:14px; border-radius:14px; transition:background .2s; }
+  .ptab .n { color:var(--teal-600); padding-top:4px; }
+  .ptab .t { font-size:17px; line-height:1.25; }
+  .ptab .d { grid-column:2; font-size:13px; color:var(--teal-700); line-height:1.45; margin-top:4px; }
+  .ptab .arr { opacity:0; transition:opacity .2s, translate .2s; padding-top:4px; }
+  .ptab:hover, .ptab:focus-visible { background:var(--paper-2); outline:none; }
+  .ptab[aria-selected=true] { background:var(--teal-900); color:var(--paper); }
+  .ptab[aria-selected=true] .n, .ptab[aria-selected=true] .d { color:var(--teal-200); }
+  .ptab[aria-selected=true] .n { color:var(--lime); }
+  .ptab[aria-selected=true] .arr { opacity:1; translate:3px 0; color:var(--lime); }
+  .all { margin:auto 14px 0; padding-top:20px; border-top:1px solid var(--line); font-size:14px; display:flex; justify-content:space-between; }
+  .all:hover { color:var(--teal-600); }
+
+  /* right: services of the selected pillar */
+  .pane { padding:28px 0 28px 40px; display:none; }
+  .pane.active { display:flex; flex-direction:column; animation:fade .35s var(--ease); }
+  @keyframes fade { from { opacity:0; translate:6px 0; } }
+  .pane-head { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; padding-bottom:20px; border-bottom:1px solid var(--line); }
+  .pane-head h3 { font-weight:300; font-size:28px; letter-spacing:-.02em; }
+  .pane-head h3 em { font-family:"Instrument Serif",serif; color:var(--teal-600); }
+  .pane-head p { font-size:14px; color:var(--teal-700); max-width:520px; margin-top:6px; line-height:1.5; }
+  .pane-head a { font-size:14px; white-space:nowrap; border-bottom:1px solid currentColor; padding-bottom:2px; }
+  .groups { display:grid; gap:28px 32px; padding-top:22px; }
+  .groups.g4 { grid-template-columns:repeat(4,1fr); }
+  .groups.g2 { grid-template-columns:1.6fr 1fr; }
+  .group h4 { font-weight:500; font-size:14px; }
+  .group .q { font-size:12.5px; color:var(--teal-700); margin:4px 0 10px; line-height:1.4; font-style:italic; font-family:"Instrument Serif",serif; font-size:15px; }
+  .links { list-style:none; padding:0; display:grid; gap:2px; }
+  .links.cols2 { grid-template-columns:1fr 1fr; column-gap:24px; }
+  .links a { display:block; padding:8px 10px; margin:0 -10px; border-radius:10px; transition:background .2s; }
+  .links a:hover, .links a:focus-visible { background:var(--paper-2); outline:none; }
+  .links .s { font-size:14.5px; display:flex; align-items:center; gap:8px; }
+  .links .s::before { content:""; width:9px; height:5px; border:1.5px solid var(--teal-500); border-top:0; border-radius:0 0 9px 9px; flex:none; }
+  .links .b { display:block; font-size:12.5px; color:var(--teal-700); line-height:1.45; margin:2px 0 0 17px; }
+  .promo { border-radius:18px; background:var(--teal-900); color:var(--teal-100); padding:22px; display:flex; flex-direction:column; gap:10px; position:relative; overflow:hidden; }
+  .promo .mono { color:var(--lime); }
+  .promo strong { font-weight:400; font-size:20px; color:var(--paper); line-height:1.25; }
+  .promo p { font-size:13px; line-height:1.5; color:var(--teal-200); }
+  .promo ul { list-style:none; padding:0; display:grid; gap:8px; margin-top:4px; }
+  .promo li { font-size:13.5px; padding:10px 12px; border:1px solid rgba(143,205,198,.18); border-radius:12px; }
+  .promo li b { font-weight:500; color:var(--paper); display:block; }
+  .promo li span { color:var(--teal-300); font-size:12.5px; }
+  .promo svg { position:absolute; right:-30px; bottom:-40px; width:160px; color:var(--teal-800); z-index:0; }
+  .promo > *:not(svg) { position:relative; z-index:1; }
+  .promo li { background:var(--teal-900); }
+  .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:auto; padding-top:18px; }
+  .chips span { font-size:12px; padding:5px 10px; border-radius:99px; border:1px solid var(--line); color:var(--teal-700); }
+
+  /* mobile */
+  @media (max-width:1023px) {
+    nav.main, .bar > .cta { display:none; }
+    .burger { display:inline-flex; width:44px; height:44px; align-items:center; justify-content:center; }
+    .mobile { position:fixed; inset:0; z-index:60; background:var(--teal-950); color:var(--teal-100); overflow-y:auto; padding:0 16px 40px; display:none; }
+    .mobile.open { display:block; }
+    .mobile .bar .logo { background:var(--paper); }
+    .acc { border-top:1px solid rgba(143,205,198,.15); }
+    .acc > button { width:100%; display:flex; justify-content:space-between; align-items:center; padding:18px 0; text-align:left; }
+    .acc > button .t { font-size:22px; font-weight:300; color:var(--paper); }
+    .acc > button .n { color:var(--lime); margin-right:12px; }
+    .acc > button svg { transition:transform .3s; }
+    .acc > button[aria-expanded=true] svg { transform:rotate(45deg); }
+    .acc .body { display:none; padding:0 0 18px 28px; }
+    .acc .body.open { display:block; }
+    .acc h5 { font-weight:500; font-size:13px; color:var(--teal-300); margin:14px 0 6px; }
+    .acc .body a { display:block; padding:8px 0; font-size:16px; color:var(--teal-100); }
+    .mobile .flat a { display:block; padding:18px 0; border-top:1px solid rgba(143,205,198,.15); font-size:22px; font-weight:300; color:var(--paper); }
+    .mobile .cta { margin-top:24px; height:52px; width:100%; justify-content:center; }
+  }
+  @media (min-width:1024px) { .mobile { display:none !important; } }
+  .note { position:fixed; left:16px; bottom:16px; z-index:70; background:rgba(4,31,31,.85); color:var(--teal-200); font-size:12px; padding:8px 12px; border-radius:10px; max-width:340px; line-height:1.5; }
+</style>
+</head>
+<body>
+
+<header id="hdr">
+  <div class="wrap bar">
+    <a href="#" class="logo" aria-label="Grow Digital"></a>
+    <nav class="main" aria-label="Main">
+      <ul>
+        <li><button id="svc-btn" aria-expanded="false" aria-controls="mega">Services
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button></li>
+        <li><a href="#">Products</a></li>
+        <li><a href="#">Use cases</a></li>
+        <li><a href="#">Partners</a></li>
+        <li><a href="#">Insights</a></li>
+        <li><a href="#">About</a></li>
+      </ul>
+    </nav>
+    <a href="#" class="cta">Talk to us</a>
+    <button class="burger" id="burger" aria-label="Open menu" aria-expanded="false">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 8h16M4 16h16"/></svg></button>
+  </div>
+
+  <div class="mega" id="mega" role="region" aria-label="Services">
+    <div class="wrap mega-grid">
+      <div class="pillars" role="tablist" aria-orientation="vertical" aria-label="Service pillars">
+        <span class="mono label">Four pillars · one team</span>
+        <button class="ptab" role="tab" aria-selected="true" aria-controls="p-consult" id="t-consult">
+          <span class="mono n">01</span><span class="t">Consultancy &amp; Digital Transformation</span><span class="arr">→</span>
+          <span class="d">We advise: where to invest, and in what order.</span></button>
+        <button class="ptab" role="tab" aria-selected="false" aria-controls="p-managed" id="t-managed">
+          <span class="mono n">02</span><span class="t">Managed Services</span><span class="arr">→</span>
+          <span class="d">We operate: GrowShield™ protection, stability, support.</span></button>
+        <button class="ptab" role="tab" aria-selected="false" aria-controls="p-software" id="t-software">
+          <span class="mono n">03</span><span class="t">Software Development</span><span class="arr">→</span>
+          <span class="d">We build: mobile, web, applications and AI.</span></button>
+        <button class="ptab" role="tab" aria-selected="false" aria-controls="p-marketing" id="t-marketing">
+          <span class="mono n">04</span><span class="t">Digital Marketing</span><span class="arr">→</span>
+          <span class="d">We market: presence, leads and sales growth.</span></button>
+        <a href="#" class="all">All services <span>→</span></a>
+      </div>
+
+      <!-- 01 Consultancy: four practices, each answering a leadership question -->
+      <section class="pane active" id="p-consult" role="tabpanel" aria-labelledby="t-consult">
+        <div class="pane-head">
+          <div><h3>Consultancy &amp; Digital <em>Transformation</em></h3>
+          <p>Decide where to invest in digital, then stay with it until the investment pays back. Four practices, each answering a leadership question.</p></div>
+          <a href="#">Explore consultancy →</a>
+        </div>
+        <div class="groups g4">
+          <div class="group"><h4>Strategy &amp; Transformation</h4><p class="q">Where should we invest, and in what order?</p>
+            <ul class="links"><li><a href="#"><span class="s">Digital Transformation</span></a></li><li><a href="#"><span class="s">Data &amp; AI Strategy</span></a></li><li><a href="#"><span class="s">AI Ideation Workshop (AI Lab)</span></a></li><li><a href="#"><span class="s">Digital Product &amp; Growth Strategy</span></a></li></ul></div>
+          <div class="group"><h4>Governance &amp; Delivery</h4><p class="q">How do we keep delivery under control and bring our people with us?</p>
+            <ul class="links"><li><a href="#"><span class="s">Project Management Office (PMO)</span></a></li><li><a href="#"><span class="s">Project Quality Assurance</span></a></li><li><a href="#"><span class="s">Change Management</span></a></li><li><a href="#"><span class="s">Capability Building &amp; Talent Development</span></a></li></ul></div>
+          <div class="group"><h4>Operations &amp; Technology</h4><p class="q">How do we run technology better, safer and at lower cost?</p>
+            <ul class="links"><li><a href="#"><span class="s">IT Operating Model &amp; Shared Services</span></a></li><li><a href="#"><span class="s">ERP &amp; Business Systems Advisory</span></a></li><li><a href="#"><span class="s">Process Improvement &amp; Automation</span></a></li><li><a href="#"><span class="s">Vendor &amp; Contract Optimization</span></a></li><li><a href="#"><span class="s">Cybersecurity Consultancy</span></a></li></ul></div>
+          <div class="group"><h4>Industry Advisory</h4><p class="q">What does good look like in our sector?</p>
+            <ul class="links"><li><a href="#"><span class="s">Healthcare IT Consultancy</span></a></li><li><a href="#"><span class="s">Healthcare AI &amp; Data Readiness</span></a></li><li><a href="#"><span class="s">Real Estate &amp; PropTech Advisory</span></a></li><li><a href="#"><span class="s">Smart City &amp; Digital Government</span></a></li></ul></div>
+        </div>
+      </section>
+
+      <!-- 02 Managed services: ten service areas + GrowShield promo -->
+      <section class="pane" id="p-managed" role="tabpanel" aria-labelledby="t-managed">
+        <div class="pane-head">
+          <div><h3>GrowShield™ Managed <em>Services</em></h3>
+          <p>Built on three commitments: protection, stability and proactive support, across ten service areas.</p></div>
+          <a href="#">Explore managed services →</a>
+        </div>
+        <div class="groups g2">
+          <ul class="links cols2">
+            <li><a href="#"><span class="s">Service Desk &amp; End-user Support</span><span class="b">A single point of contact for IT support.</span></a></li>
+            <li><a href="#"><span class="s">Business Applications</span><span class="b">ERP, CRM, HR and industry apps, kept current.</span></a></li>
+            <li><a href="#"><span class="s">Oracle Applications &amp; Technology</span><span class="b">The full Oracle landscape, apps to engineered systems.</span></a></li>
+            <li><a href="#"><span class="s">Databases &amp; Data Platforms</span><span class="b">Available, fast and recoverable data.</span></a></li>
+            <li><a href="#"><span class="s">Infrastructure &amp; Data Center</span><span class="b">Servers, storage and operating systems.</span></a></li>
+            <li><a href="#"><span class="s">Cloud Operations</span><span class="b">Public, private and hybrid, cost under control.</span></a></li>
+            <li><a href="#"><span class="s">Network &amp; Connectivity</span><span class="b">Sites, users and systems connected and protected.</span></a></li>
+            <li><a href="#"><span class="s">Cybersecurity Operations</span><span class="b">Monitoring, vulnerabilities and incident response.</span></a></li>
+            <li><a href="#"><span class="s">Websites, Portals &amp; Mobile Apps</span><span class="b">Digital channels online, secure and current.</span></a></li>
+            <li><a href="#"><span class="s">IT Vendor &amp; Asset Management</span><span class="b">Contracts, licenses and renewals under control.</span></a></li>
+          </ul>
+          <div class="promo">
+            <span class="mono">GrowShield™</span>
+            <strong>Protection. Stability. Proactive support.</strong>
+            <p>Flexible coverage and resourcing models, from business-hours support to round-the-clock operations.</p>
+            <ul><li><b>Coverage models</b><span>Choose the hours and service levels you need</span></li><li><b>Resourcing models</b><span>Managed service, dedicated or blended teams</span></li></ul>
+            <svg viewBox="0 0 28 16" fill="none"><path d="M2 2C2 10 8 14 14 14S26 10 26 2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 Software development: four services + own products -->
+      <section class="pane" id="p-software" role="tabpanel" aria-labelledby="t-software">
+        <div class="pane-head">
+          <div><h3>Software <em>Development</em></h3>
+          <p>The full range of software development: mobile, web, business applications and artificial intelligence.</p></div>
+          <a href="#">Explore software development →</a>
+        </div>
+        <div class="groups g2">
+          <div class="group"><h4>Development services</h4>
+            <ul class="links cols2" style="margin-top:10px">
+              <li><a href="#"><span class="s">Mobile Development</span><span class="b">iOS and Android apps customers and employees want to use.</span></a></li>
+              <li><a href="#"><span class="s">Web Development</span><span class="b">Websites, portals, e-commerce and content platforms.</span></a></li>
+              <li><a href="#"><span class="s">Application Development</span><span class="b">Custom business apps that fit the way you work.</span></a></li>
+              <li><a href="#"><span class="s">Artificial Intelligence</span><span class="b">AI where it delivers a measurable business result.</span></a></li>
+            </ul></div>
+          <div class="promo">
+            <span class="mono">Our products</span>
+            <strong>Built for the sectors we know best.</strong>
+            <ul>
+              <li><b>Grow Bot</b><span>WhatsApp chatbot for customers and patients</span></li>
+              <li><b>Athar</b><span>Electronic medical record (EMR)</span></li>
+              <li><b>Medical Decision Support System</b><span>Decision support for healthcare providers</span></li>
+              <li><b>Patient Mobile App</b><span>Connects patients with their provider</span></li>
+            </ul>
+            <svg viewBox="0 0 28 16" fill="none"><path d="M2 2C2 10 8 14 14 14S26 10 26 2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04 Digital marketing: eight services -->
+      <section class="pane" id="p-marketing" role="tabpanel" aria-labelledby="t-marketing">
+        <div class="pane-head">
+          <div><h3>Digital <em>Marketing</em></h3>
+          <p>Build presence, generate leads and grow sales. Every program starts with an audit and a plan; every month you see what your budget delivered.</p></div>
+          <a href="#">Explore digital marketing →</a>
+        </div>
+        <div class="groups g2">
+          <ul class="links cols2">
+            <li><a href="#"><span class="s">Strategy &amp; Planning</span><span class="b">The plan the whole program follows.</span></a></li>
+            <li><a href="#"><span class="s">Social Media Management</span><span class="b">Active, consistent and responsive, every day.</span></a></li>
+            <li><a href="#"><span class="s">Content &amp; Creative</span><span class="b">Design, copy, video and photo, Arabic and English.</span></a></li>
+            <li><a href="#"><span class="s">Paid Media</span><span class="b">Campaigns tested continuously for return.</span></a></li>
+            <li><a href="#"><span class="s">Search &amp; Website</span><span class="b">Help customers find you, and act when they arrive.</span></a></li>
+            <li><a href="#"><span class="s">Email, Messaging &amp; Automation</span><span class="b">Timely messages and automated follow-up.</span></a></li>
+            <li><a href="#"><span class="s">Influencer Marketing</span><span class="b">The right voices, from brief to results.</span></a></li>
+            <li><a href="#"><span class="s">Analytics &amp; Reporting</span><span class="b">Tracking, a live dashboard and agreed KPIs.</span></a></li>
+          </ul>
+          <div class="promo">
+            <span class="mono">Packages</span>
+            <strong>Start with an audit. Grow every month.</strong>
+            <p>Monthly packages that combine the services you need, with a live dashboard and agreed KPIs.</p>
+            <svg viewBox="0 0 28 16" fill="none"><path d="M2 2C2 10 8 14 14 14S26 10 26 2" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</header>
+
+<!-- mobile menu -->
+<div class="mobile" id="mobile" aria-label="Menu">
+  <div class="bar"><span class="logo"></span><button class="burger" id="close" aria-label="Close menu" style="display:inline-flex">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <p class="mono" style="color:var(--teal-300);margin:20px 0 6px">Services</p>
+  <div id="acc"></div>
+  <div class="flat"><a href="#">Products</a><a href="#">Use cases</a><a href="#">Partners</a><a href="#">Insights</a><a href="#">About</a></div>
+  <a href="#" class="cta">Talk to us</a>
+</div>
+
+<main class="hero">
+  <div class="wrap">
+    <p class="mono" style="color:var(--lime);margin-bottom:18px">Prototype · Services navigation</p>
+    <h1>Four pillars. One accountable <em>team</em>.</h1>
+    <p>Open "Services" in the header (click, or Enter / Space). Hover or arrow keys switch pillars; Esc closes. Below 1024px the same structure becomes an accordion.</p>
+  </div>
+</main>
+<div style="height:120vh;background:var(--paper)"></div>
+<p class="note">Content from "Grow Digital Services Listing and Descriptions" (Oct 2026). Links are placeholders.</p>
+
+<script>
+  const hdr = document.getElementById("hdr"), btn = document.getElementById("svc-btn"), mega = document.getElementById("mega");
+  const tabs = [...document.querySelectorAll(".ptab")];
+  const setSolid = () => hdr.classList.toggle("solid", scrollY > 24 || btn.getAttribute("aria-expanded") === "true");
+  addEventListener("scroll", setSolid, { passive: true });
+  function open(v) { btn.setAttribute("aria-expanded", v); mega.classList.toggle("open", v); setSolid(); }
+  btn.addEventListener("click", () => open(btn.getAttribute("aria-expanded") !== "true"));
+  function select(tab, focus) {
+    tabs.forEach(t => { const on = t === tab; t.setAttribute("aria-selected", on); t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute("aria-controls")).classList.toggle("active", on); });
+    if (focus) tab.focus();
+  }
+  tabs.forEach((t, i) => {
+    t.addEventListener("mouseenter", () => select(t));
+    t.addEventListener("click", () => select(t));
+    t.addEventListener("keydown", e => {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); select(tabs[(i + (e.key === "ArrowDown" ? 1 : tabs.length - 1)) % tabs.length], true); }
+    });
+  });
+  select(tabs[0]);
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && btn.getAttribute("aria-expanded") === "true") { open(false); btn.focus(); } });
+  document.addEventListener("pointerdown", e => { if (!hdr.contains(e.target)) open(false); });
+
+  // mobile accordion built from the desktop panes
+  const acc = document.getElementById("acc");
+  tabs.forEach((t, i) => {
+    const pane = document.getElementById(t.getAttribute("aria-controls"));
+    const groups = [...pane.querySelectorAll(".group")].filter(g => g.querySelector("h4"));
+    let body = "";
+    if (groups.length > 1) groups.forEach(g => { body += `<h5>${g.querySelector("h4").innerHTML}</h5>` + [...g.querySelectorAll(".s")].map(s => `<a href="#">${s.innerHTML}</a>`).join(""); });
+    else body = [...pane.querySelectorAll(".links .s")].map(s => `<a href="#">${s.innerHTML}</a>`).join("");
+    const promo = pane.querySelector(".promo li b") && pane.querySelector(".promo .mono").textContent === "Our products";
+    if (promo) body += `<h5>Our products</h5>` + [...pane.querySelectorAll(".promo li b")].map(b => `<a href="#">${b.textContent}</a>`).join("");
+    acc.insertAdjacentHTML("beforeend", `<div class="acc"><button aria-expanded="false"><span><span class="mono n">0${i + 1}</span><span class="t">${t.querySelector(".t").innerHTML}</span></span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button><div class="body">${body}</div></div>`);
+  });
+  acc.querySelectorAll(".acc > button").forEach(b => b.addEventListener("click", () => {
+    const on = b.getAttribute("aria-expanded") !== "true"; b.setAttribute("aria-expanded", on); b.nextElementSibling.classList.toggle("open", on);
+  }));
+  const mob = document.getElementById("mobile"), burger = document.getElementById("burger");
+  burger.addEventListener("click", () => { mob.classList.add("open"); document.body.style.overflow = "hidden"; });
+  document.getElementById("close").addEventListener("click", () => { mob.classList.remove("open"); document.body.style.overflow = ""; });
+  if (location.hash === "#open") open(true);
+</script>
+</body>
+</html>
