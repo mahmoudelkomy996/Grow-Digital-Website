@@ -5,10 +5,10 @@
       "name": "prototypes",
       "runtimeExecutable": "node",
       "runtimeArgs": [
-        "prototypes/serve.js",
-        "5178"
+        "prototypes/serve.js"
       ],
-      "port": 5178
+      "port": 5178,
+      "autoPort": true
     },
     {
       "name": "site",

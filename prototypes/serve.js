@@ -1,6 +1,6 @@
 // Tiny static server for the prototypes (throwaway). Usage: node serve.js [port]
 const http = require("http"), fs = require("fs"), path = require("path");
-const root = __dirname, port = +process.argv[2] || 5178;
+const root = __dirname, port = +process.env.PORT || +process.argv[2] || 5178;
 const types = { ".html": "text/html", ".js": "text/javascript", ".mjs": "text/javascript", ".css": "text/css", ".png": "image/png", ".jpg": "image/jpeg", ".svg": "image/svg+xml", ".json": "application/json", ".glb": "model/gltf-binary" };
 http.createServer((req, res) => {
   let p = decodeURIComponent(req.url.split("?")[0]);
