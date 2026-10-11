@@ -4,7 +4,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import matter from "gray-matter";
 
 const DIR = "content/blog";
-const PILLARS = ["consult", "transform", "build", "operate", "secure", "solve", "grow"];
+const PILLARS = ["consultancy", "managed-services", "software-development", "digital-marketing"];
 const files = readdirSync(DIR).filter((f) => f.endsWith(".md"));
 
 test("every post has valid frontmatter, an existing cover and clean markdown", () => {

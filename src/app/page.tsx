@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { METRICS, PILLARS, VALUES } from "@/content";
+import { METRICS, SERVICES, SERVICES_INTRO, VALUES } from "@/content";
 import { organizationJsonLd, pageMetadata, websiteJsonLd } from "@/lib/seo";
 import { getAllPosts } from "@/lib/blog";
 import { LatestPosts } from "@/components/blog/LatestPosts";
@@ -12,7 +12,7 @@ import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { CtaBand } from "@/components/sections/CtaBand";
 import { MetricBand } from "@/components/sections/MetricBand";
-import { PillarGrid } from "@/components/sections/PillarGrid";
+import { ServicePillarGrid } from "@/components/services/ServicePillarGrid";
 import { ValuesGrid } from "@/components/sections/ValuesGrid";
 import { FeaturedUseCases } from "@/components/home/FeaturedUseCases";
 import { IndustryTiles } from "@/components/home/IndustryTiles";
@@ -43,13 +43,13 @@ export default function Home() {
         <Container>
           <Reveal>
             <SectionHeading
-              eyebrow="Seven pillars"
-              title="Seven pillars. One accountable *team*."
-              lead="Consult, transform, build, operate, secure, solve and grow: every stage of the lifecycle, under one contract and one outcome."
+              eyebrow="Our services"
+              title="Four pillars. One accountable *team*."
+              lead={SERVICES_INTRO.pillars}
               id="pillars-title"
             />
           </Reveal>
-          <PillarGrid pillars={PILLARS} className="mt-14 md:mt-20" />
+          <ServicePillarGrid pillars={SERVICES} className="mt-14 md:mt-20" />
         </Container>
       </Section>
 

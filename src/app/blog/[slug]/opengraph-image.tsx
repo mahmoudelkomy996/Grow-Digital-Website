@@ -1,4 +1,4 @@
-import { getPillar } from "@/content";
+import { getService as getPillar } from "@/content";
 import { getAllPosts } from "@/lib/blog";
 import { ogImage, OG_SIZE } from "@/lib/og";
 

@@ -7,7 +7,7 @@ export const COMPANY: Company = {
   tagline: "It's time to grow.",
   positioning: "The agile integrator",
   statement:
-    "We help organizations consult, transform, build, operate, secure and grow, supported by our own digital and AI solutions.",
+    "We advise, we build, we market and we operate: four pillars covering the full journey from the first idea to daily operations.",
   intro:
     "Grow Digital is a business integrator, not another vendor in the stack. One accountable team designs, builds, operates, and markets your systems — so you stop managing five contracts and start managing one outcome.",
   // Supporting line under the home integrator statement ("A business integrator, not another vendor in the stack.").

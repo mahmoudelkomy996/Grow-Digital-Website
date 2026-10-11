@@ -9,7 +9,7 @@ test.describe("blog listing", () => {
     await expect(page.locator("h1")).toHaveCount(1);
     await expect(page.locator("main article")).toHaveCount(12);
     await expect(page.getByRole("navigation", { name: "Pagination" }).getByRole("link", { name: "Page 2" })).toHaveAttribute("href", "/blog/page/2");
-    await expect(page.getByRole("navigation", { name: "Blog categories" }).getByRole("link")).toHaveCount(7);
+    await expect(page.getByRole("navigation", { name: "Blog categories" }).getByRole("link")).toHaveCount(5);
     await expect(page.locator('link[rel="alternate"][type="application/rss+xml"]')).toHaveAttribute("href", /\/blog\/rss\.xml$/);
     const ld = await page.locator('script[type="application/ld+json"]').allTextContents();
     expect(ld.some((t) => JSON.parse(t)["@type"] === "Blog")).toBe(true);
@@ -19,8 +19,8 @@ test.describe("blog listing", () => {
     expect((await page.goto("/blog/page/2"))?.status()).toBe(200);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/blog\/page\/2$/);
     expect((await page.goto("/blog/page/99"))?.status()).toBe(404);
-    expect((await page.goto("/blog/category/secure"))?.status()).toBe(200);
-    for (const eyebrow of await page.locator("main article .eyebrow").allTextContents()) expect(eyebrow).toContain("Secure");
+    expect((await page.goto("/blog/category/managed-services"))?.status()).toBe(200);
+    for (const eyebrow of await page.locator("main article .eyebrow").allTextContents()) expect(eyebrow).toContain("Managed Services");
     expect((await page.goto("/blog/category/unknown"))?.status()).toBe(404);
   });
 });
@@ -53,7 +53,7 @@ test.describe("seo plumbing", () => {
     for (const [from, to] of [
       ["/ecommerce-benefits", "/blog/ecommerce-benefits"],
       ["/contact-us", "/contact"],
-      ["/cybersecurity-unit", "/pillars/secure"],
+      ["/cybersecurity-unit", "/services/managed-services"],
       ["/gemini-is-powering-the-future-of-ai-2", "/blog/gemini-is-powering-the-future-of-ai"],
       ["/category/ecommerce", "/blog"],
       ["/feed", "/blog/rss.xml"],
@@ -70,12 +70,14 @@ test.describe("seo plumbing", () => {
     expect((await rss.text()).match(/<item>/g)?.length).toBeGreaterThanOrEqual(40);
     const llms = await (await request.get("/llms.txt")).text();
     expect(llms).toContain("# Grow Digital");
-    expect(llms).toContain("/pillars/consult");
+    expect(llms).toContain("/services/consultancy");
     const manifest = await (await request.get("/manifest.webmanifest")).json();
     expect(manifest.short_name).toBe("Grow Digital");
     const sitemap = await (await request.get("/sitemap.xml")).text();
     expect(sitemap).toContain(`/blog/${POST}`);
-    expect(sitemap).toContain("/blog/category/grow");
+    expect(sitemap).toContain("/blog/category/digital-marketing");
+    expect(sitemap).toContain("/services/consultancy");
+    expect(sitemap).not.toContain("/pillars/");
   });
 
   test("security headers", async ({ request }) => {

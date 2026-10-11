@@ -3,7 +3,7 @@ title: "Influencer Marketing Unveiled: Navigating Authentic Connections in the D
 description: "In the dynamic realm of digital marketing, influencer marketing has emerged as a powerful strategy, revolutionizing the way brands connect with their target audiences. This unique approach involves collaborating with influential individuals, often with a substantial social media following, to promote products or services. The essence of influencer marketing lies in building authentic and relatable"
 date: "2024-01-10"
 updated: "2024-01-10"
-category: "grow"
+category: "digital-marketing"
 cover: "/blog/influencer-marketing-unveiled-navigating-authentic-connections-in-the-digital-landscape.jpg"
 coverAlt: "Influencer Marketing Unveiled: Navigating Authentic Connections in the Digital Landscape"
 author: "Grow Digital Team"

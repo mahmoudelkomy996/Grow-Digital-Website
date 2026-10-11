@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { cn } from "@/lib/cn";
 import type { IndustryId, UseCase } from "@/content/types";
-import { NAV_PILLARS } from "@/content/navigation";
 import { Disclosure } from "@/components/ui/Disclosure";
 
 /** Short industry labels for card eyebrows (kept local so cards do not depend on the content index). */
@@ -24,7 +23,6 @@ interface UseCaseCardProps {
 
 /** Use case: image, industry, title, summary, 1–4 result metrics and an optional full-project disclosure. */
 export function UseCaseCard({ useCase, expandable = false, className }: UseCaseCardProps) {
-  const pillar = NAV_PILLARS.find((p) => p.slug === useCase.pillar);
   const results = useCase.results.slice(0, 4);
   return (
     <article
@@ -50,7 +48,6 @@ export function UseCaseCard({ useCase, expandable = false, className }: UseCaseC
       <div className="flex flex-1 flex-col p-6 md:p-7">
         <p className="eyebrow text-teal-600">
           {INDUSTRY_LABEL[useCase.industry]}
-          {pillar ? <span className="text-teal-700"> · {pillar.num} {pillar.name}</span> : null}
         </p>
         <h3 className="mt-3 text-h3 text-teal-900">{useCase.title}</h3>
         <p className="mt-3 text-[0.9375rem] leading-relaxed text-teal-700">{useCase.summary}</p>

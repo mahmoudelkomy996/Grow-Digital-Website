@@ -8,30 +8,52 @@ test.describe("home", () => {
     for (const id of ["integrator-title", "pillars-title", "use-cases-title", "solutions-title", "industries-title", "partners-title", "values-title"]) {
       await expect(page.locator(`#${id}`)).toBeAttached();
     }
-    const pillarLinks = page.locator("#pillars a[href^='/pillars/']");
-    await expect(pillarLinks).toHaveCount(7);
+    const pillarLinks = page.locator("#pillars a[href^='/services/']");
+    await expect(pillarLinks).toHaveCount(4);
     const ld = await page.locator('script[type="application/ld+json"]').first().textContent();
     expect(JSON.parse(ld ?? "{}")["@type"]).toBe("Organization");
   });
 });
 
-test.describe("pillars", () => {
+test.describe("service pillars", () => {
+  const counts: Record<string, number> = { consultancy: 17, "managed-services": 10, "software-development": 4, "digital-marketing": 8 };
   for (const slug of PILLAR_SLUGS) {
-    test(`/pillars/${slug} renders hero, every service and pillar nav`, async ({ page }) => {
-      const res = await page.goto(`/pillars/${slug}`);
+    test(`/services/${slug} renders hero, every service in the index and in detail`, async ({ page }) => {
+      const res = await page.goto(`/services/${slug}`);
       expect(res?.status()).toBe(200);
       await expect(page.locator("h1")).toHaveCount(1);
-      const services = page.locator("#services [data-service]");
-      expect(await services.count()).toBeGreaterThanOrEqual(5);
-      await expect(page.getByRole("navigation", { name: "Pillars" }).last()).toBeVisible();
+      await expect(page.locator("#services [data-service]")).toHaveCount(counts[slug]);
+      await expect(page.locator("main article[id]")).toHaveCount(counts[slug]);
+      await expect(page.getByRole("navigation", { name: "Service pillars" })).toBeVisible();
       await expect(page).toHaveTitle(/· Grow Digital$/);
     });
   }
 
-  test("unknown pillar is a 404 with the custom page", async ({ page }) => {
-    const res = await page.goto("/pillars/unknown");
+  test("pillar-specific sections", async ({ page }) => {
+    await page.goto("/services/managed-services");
+    await expect(page.locator("#models")).toContainText("Co-managed Services");
+    await page.goto("/services/software-development");
+    await expect(page.locator("#products")).toContainText("Athar");
+    await page.goto("/services/digital-marketing");
+    await expect(page.locator("#packages")).toContainText("Premium");
+  });
+
+  test("unknown service is a 404 with the custom page", async ({ page }) => {
+    const res = await page.goto("/services/unknown");
     expect(res?.status()).toBe(404);
     await expect(page.getByRole("heading", { level: 1 })).toContainText("grown");
+  });
+
+  test("old 7-pillar URLs redirect permanently", async ({ request }) => {
+    for (const [from, to] of [
+      ["/pillars/consult", "/services/consultancy"],
+      ["/pillars/secure", "/services/managed-services"],
+      ["/pillars/grow", "/services/digital-marketing"],
+    ]) {
+      const res = await request.get(from, { maxRedirects: 0 });
+      expect([301, 308]).toContain(res.status());
+      expect(res.headers()["location"]).toMatch(new RegExp(`${to}$`));
+    }
   });
 });
 
@@ -39,7 +61,7 @@ test.describe("about", () => {
   test("values and lifecycle", async ({ page }) => {
     await page.goto("/about");
     await expect(page.locator("h1")).toContainText("team");
-    await expect(page.getByRole("list", { name: "The Grow Digital lifecycle" }).getByRole("link")).toHaveCount(7);
+    await expect(page.getByRole("list", { name: "The Grow Digital journey" }).getByRole("link")).toHaveCount(4);
   });
 });
 
@@ -114,7 +136,7 @@ test.describe("seo", () => {
   test("sitemap, robots and OG image", async ({ request }) => {
     const sitemap = await (await request.get("/sitemap.xml")).text();
     // The 12 core pages must be listed (blog posts and categories add more URLs on top).
-    for (const path of ["", "/about", "/use-cases", "/partners", "/contact", ...PILLAR_SLUGS.map((s) => `/pillars/${s}`)]) {
+    for (const path of ["", "/about", "/use-cases", "/partners", "/contact", ...PILLAR_SLUGS.map((s) => `/services/${s}`)]) {
       expect(sitemap, path || "/").toContain(`<loc>https://growdigital.com${path}</loc>`);
     }
     const robots = await (await request.get("/robots.txt")).text();
@@ -125,7 +147,7 @@ test.describe("seo", () => {
 
   test("unique titles and canonicals", async ({ page }) => {
     const titles = new Set<string>();
-    for (const route of ["/", "/about", "/use-cases", "/partners", "/contact", "/pillars/consult"]) {
+    for (const route of ["/", "/about", "/use-cases", "/partners", "/contact", "/services/consultancy"]) {
       await page.goto(route);
       titles.add(await page.title());
       await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);

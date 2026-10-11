@@ -3,7 +3,7 @@ title: "The Power of Brand Values: Creating Meaningful Content in Digital Market
 description: "In today's digital age, where consumers are inundated with countless messages and choices, creating content that reflects a brand's values has become essential for digital marketing success. Beyond promoting products or services, aligning content with core brand values fosters authenticity, builds trust, and cultivates meaningful connections with audiences. Let's explore why integrating brand values into"
 date: "2024-04-23"
 updated: "2024-04-23"
-category: "grow"
+category: "digital-marketing"
 cover: "/blog/the-power-of-brand-values-creating-meaningful-content-in-digital-marketing.jpg"
 coverAlt: "The Power of Brand Values: Creating Meaningful Content in Digital Marketing"
 author: "Grow Digital Team"

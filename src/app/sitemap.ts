@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { PILLARS } from "@/content";
+import { SERVICES } from "@/content";
 import { getAllPosts, getBlogCategories, getPostsByCategory, paginate } from "@/lib/blog";
 import { SITE_UPDATED, SITE_URL } from "@/lib/seo";
 
@@ -24,7 +24,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     at("", SITE_UPDATED, 1, "weekly"),
-    ...PILLARS.map((p) => at(`/pillars/${p.slug}`, SITE_UPDATED, 0.9)),
+    ...SERVICES.map((p) => at(`/services/${p.slug}`, SITE_UPDATED, 0.9)),
     at("/about", SITE_UPDATED, 0.7),
     at("/use-cases", SITE_UPDATED, 0.8),
     at("/partners", SITE_UPDATED, 0.7),

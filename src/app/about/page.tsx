@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { COMPANY, IMAGES, PARTNERS, PILLARS, VALUES } from "@/content";
+import { COMPANY, IMAGES, PARTNERS, SERVICES, SERVICES_INTRO, VALUES } from "@/content";
 import { pageMetadata } from "@/lib/seo";
 import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
@@ -80,13 +80,13 @@ export default function AboutPage() {
             <SectionHeading
               eyebrow="How we work"
               title="From the first question to measurable *growth*."
-              lead="Seven pillars, one lifecycle: we consult, transform, build, operate, secure and grow, supported by our own digital and AI solutions."
+              lead={SERVICES_INTRO.pillars}
               tone="dark"
               id="lifecycle-title"
             />
           </Reveal>
           <div className="mt-14 md:mt-20">
-            <LifecycleDiagram pillars={PILLARS} />
+            <LifecycleDiagram pillars={SERVICES} />
           </div>
         </Container>
       </Section>

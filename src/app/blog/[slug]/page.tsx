@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getPillar } from "@/content";
+import { getService as getPillar } from "@/content";
 import { formatDate, getAdjacentPosts, getAllPosts, getPost, getRelatedPosts, metaDescription } from "@/lib/blog";
 import { SITE_NAME, SITE_URL, blogPostingJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -156,7 +156,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
                       </Eyebrow>
                       <p className="max-w-md text-h3 font-light text-paper">{pillar.oneLiner}</p>
                     </div>
-                    <ArrowLink href={`/pillars/${pillar.slug}`} tone="dark">
+                    <ArrowLink href={`/services/${pillar.slug}`} tone="dark">
                       Explore {pillar.verb}
                     </ArrowLink>
                   </div>

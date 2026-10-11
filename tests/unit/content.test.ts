@@ -48,8 +48,8 @@ test("partners resolve and logo files exist", () => {
 
 test("company, values, solutions, industries, metrics", () => {
   assert.equal(VALUES.length, 7);
-  assert.equal(SOLUTIONS.length, 5);
-  assert.equal(SOLUTIONS.filter((s) => s.kind === "own").length, 3);
+  assert.equal(SOLUTIONS.length, 6);
+  assert.equal(SOLUTIONS.filter((s) => s.kind === "own").length, 4);
   assert.equal(INDUSTRIES.length, 7);
   assert.equal(METRICS.length, 5);
   assert.equal(COMPANY.email, "info@growdigital.com");

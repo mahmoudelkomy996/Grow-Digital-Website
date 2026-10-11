@@ -3,7 +3,7 @@ title: "The Crucial Role of E-commerce and Digital Marketing in Our Digital Gene
 description: "In the increasingly interconnected and technologically advanced world, we live in now, the importance of e-commerce and digital marketing cannot be overstated. The digital revolution has transformed the way businesses operate and how consumers engage with brands. Embracing these transformative tools has become crucial for organizations seeking success in today's competitive landscape. One"
 date: "2023-05-30"
 updated: "2023-05-30"
-category: "grow"
+category: "digital-marketing"
 cover: "/blog/the-crucial-role-of-e-commerce-and-digital-marketing-in-our-digital-generation.jpg"
 coverAlt: "The Crucial Role of E-commerce and Digital Marketing in Our Digital Generation"
 author: "Grow Digital Team"

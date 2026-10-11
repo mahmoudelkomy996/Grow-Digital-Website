@@ -3,7 +3,7 @@ title: "Fostering Success: The Strategic Impact of Employee Benefit Platforms on
 description: "In the modern corporate landscape, Employee Benefit Platforms have become essential tools, reshaping how organizations approach employee welfare. These platforms, often leveraging advanced technology, offer a myriad of benefits not only for employees but also for the overall health and productivity of the company.\n\nComprehensive Wellness Programs are a hallmark of these platforms, extending beyond traditional"
 date: "2024-01-17"
 updated: "2024-01-17"
-category: "consult"
+category: "consultancy"
 cover: "/blog/fostering-success-the-strategic-impact-of-employee-benefit-platforms-on-modern-organizations.jpg"
 coverAlt: "Fostering Success: The Strategic Impact of Employee Benefit Platforms on Modern Organizations"
 author: "Grow Digital Team"

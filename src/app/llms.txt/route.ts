@@ -1,4 +1,4 @@
-import { COMPANY, PILLARS, SOLUTIONS } from "@/content";
+import { COMPANY, SERVICES, SERVICES_INTRO } from "@/content";
 import { getAllPosts } from "@/lib/blog";
 import { SITE_URL } from "@/lib/seo";
 
@@ -13,13 +13,15 @@ export function GET() {
 
 ${COMPANY.statement} Markets: ${COMPANY.markets.join(", ")}. Contact: ${COMPANY.email}, ${COMPANY.phone}.
 
-## Pillars
+## Services
 
-${PILLARS.map((p) => `- [${p.num} ${p.verb} — ${p.name}](${SITE_URL}/pillars/${p.slug}): ${p.oneLiner}`).join("\n")}
+${SERVICES_INTRO.pillars}
 
-## Solutions
+${SERVICES.map((p) => `### [${p.num} ${p.name}](${SITE_URL}/services/${p.slug})\n\n${p.intro[0]}\n\n${p.groups.flatMap((g) => g.services).map((sv) => `- [${sv.name}](${SITE_URL}/services/${p.slug}#${sv.id}): ${sv.summary}`).join("\n")}`).join("\n\n")}
 
-${SOLUTIONS.map((s) => `- ${s.name} (${s.by}): ${s.category}`).join("\n")}
+## Products
+
+${(SERVICES.find((p) => p.products)?.products?.items ?? []).map((x) => `- ${x.name}: ${x.text}`).join("\n")}
 
 ## Company
 

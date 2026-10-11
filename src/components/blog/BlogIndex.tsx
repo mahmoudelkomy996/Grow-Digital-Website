@@ -1,6 +1,6 @@
 import Link from "next/link";
-import type { PillarSlug } from "@/content/types";
-import { getPillar } from "@/content";
+import type { ServiceSlug as PillarSlug } from "@/content";
+import { getService as getPillar } from "@/content";
 import type { PostMeta } from "@/lib/blog";
 import { getAllPosts, getBlogCategories } from "@/lib/blog";
 import { cn } from "@/lib/cn";

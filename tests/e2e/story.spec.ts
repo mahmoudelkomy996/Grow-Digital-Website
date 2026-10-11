@@ -57,7 +57,7 @@ test.describe("growth story (WebGL)", () => {
     await secure.click();
     await expect(panel(page, "secure")).toHaveAttribute("data-active", "true", { timeout: 15_000 });
     await expect(secure).toHaveAttribute("aria-current", "step");
-    await expect(panel(page, "secure").getByRole("link", { name: /Explore Secure/ })).toHaveAttribute("href", "/pillars/secure");
+    await expect(panel(page, "secure").getByRole("link", { name: /Explore Secure/ })).toHaveAttribute("href", "/services/managed-services");
   });
 });
 

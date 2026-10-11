@@ -1,0 +1,444 @@
+Our Services
+Service listing and descriptions for the website
+Consultancy and Digital Transformation  |  Managed Services
+Software Development  |  Digital Marketing
+October 2026
+[Heading1] Our Services
+Grow Digital is a technology and growth partner established in the UAE, serving organizations across the Gulf with a dedicated focus on the Kingdom of Saudi Arabia.
+Our services are organized into four pillars. Together they cover the full journey from the first idea to daily operations: we advise, we build, we market and we operate.
+[Heading2] Service Listing
+Pillar
+Services
+Consultancy and Digital Transformation
+Strategy and Transformation: Digital Transformation, Data and AI Strategy, AI Ideation Workshop (AI Lab), Digital Product and Growth Strategy. Governance and Delivery: Project Management Office (PMO), Project Quality Assurance, Change Management, Capability Building and Talent Development. Operations and Technology: IT Operating Model and Shared Services, ERP and Business Systems Advisory, Process Improvement and Automation, Vendor and Contract Optimization, Cybersecurity Consultancy. Industry Advisory: Healthcare IT Consultancy, Healthcare AI and Data Readiness Assessment, Real Estate and PropTech Advisory, Smart City and Digital Government Advisory.
+Managed Services
+Service Desk and End-user Support, Business Applications, Oracle Applications and Technology, Databases and Data Platforms, Infrastructure and Data Center, Cloud Operations, Network and Connectivity, Cybersecurity Operations, Websites, Portals and Mobile Applications, IT Vendor and Asset Management.
+Software Development
+Mobile Development, Web Development, Application Development, Artificial Intelligence. Our products: Grow Bot, Athar, Medical Decision Support System, Patient Mobile App.
+Digital Marketing
+Strategy and Planning, Social Media Management, Content and Creative, Paid Media, Search and Website, Email, Messaging and Automation, Influencer Marketing, Analytics and Reporting. Packages: Starter, Growth, Premium.
+[Heading1] Consultancy and Digital Transformation
+Grow Digital helps organizations across the Gulf decide where to invest in digital, then stays with them until that investment pays back.
+Our consultants work side by side with our software, marketing and managed services teams, so every recommendation is tested against what can actually be delivered. You get a direction you can explain to your board, a plan your teams can follow, and results you can measure.
+Our consulting services are organized into four practices. Each practice answers a different leadership question.
+Practice
+Services
+The question we answer
+Strategy and Transformation
+Digital Transformation, Data and AI Strategy, AI Ideation Workshop (AI Lab), Digital Product and Growth Strategy
+Where should we invest, and in what order?
+Governance and Delivery
+Project Management Office (PMO), Project Quality Assurance, Change Management, Capability Building and Talent Development
+How do we keep delivery under control and bring our people with us?
+Operations and Technology
+IT Operating Model and Shared Services, ERP and Business Systems Advisory, Process Improvement and Automation, Vendor and Contract Optimization, Cybersecurity Consultancy
+How do we run technology better, safer and at lower cost?
+Industry Advisory
+Healthcare IT Consultancy, Healthcare AI and Data Readiness Assessment, Real Estate and PropTech Advisory, Smart City and Digital Government Advisory
+What does good look like in our sector?
+[Heading2] Strategy and Transformation
+For leaders who need a clear direction before they commit budget.
+[Heading3] Digital Transformation
+We turn business priorities into a practical transformation program. We assess where you stand today, define the target operating model, and build a prioritized roadmap with quick wins, owners and measurable outcomes.
+What we deliver
+[ListParagraph] • Current state and digital maturity assessment
+[ListParagraph] • Transformation strategy and prioritized roadmap
+[ListParagraph] • Operating model, governance and KPI framework
+[ListParagraph] • Quick wins and hands-on support during execution
+The outcome: one agreed plan that links every digital initiative to a business result.
+[Heading3] Data and AI Strategy
+We help leadership decide where data and AI will create real value, and what it takes to get there. That covers data foundations, governance, skills and a portfolio of use cases, each with its own business case.
+What we deliver
+[ListParagraph] • AI and data readiness assessment
+[ListParagraph] • Use case portfolio and prioritization
+[ListParagraph] • Data governance and responsible AI guidelines
+[ListParagraph] • Roadmap and business case
+The outcome: AI investment focused on the few use cases that matter most, with the risks understood upfront.
+[Heading3] AI Ideation Workshop (AI Lab)
+The AI Lab is a facilitated workshop where your business and technology leaders discover, shape and prioritize AI opportunities for your own organization. Your team moves from awareness to a shortlist of validated use cases and a plan for the first pilot.
+What we deliver
+[ListParagraph] • AI awareness session for executives and teams
+[ListParagraph] • Use case ideation by function or process
+[ListParagraph] • Scoring of ideas by value, feasibility and risk
+[ListParagraph] • Outline of a prototype or proof of concept
+[ListParagraph] • Pilot plan with owners and success measures
+AI governance built into the methodology
+Governance is part of how we take each use case from idea to live operation. It is built into the implementation methodology from the first step, so every use case passes through eight checks in order.
+[ListParagraph] • Use case classification. We classify each use case by its purpose and its level of risk.
+[ListParagraph] • Data assessment. We confirm the data is available, of sufficient quality and approved for this use.
+[ListParagraph] • Clinical risk. For healthcare use cases, we assess the potential impact on patient safety and care decisions.
+[ListParagraph] • Privacy. We check how personal data is used and protected, in line with applicable regulations.
+[ListParagraph] • Cybersecurity. We define the security controls needed around the model, the data and the integrations.
+[ListParagraph] • Human oversight. We agree who reviews AI outputs and who remains accountable for decisions.
+[ListParagraph] • Validation. We test accuracy, reliability and fairness before go-live.
+[ListParagraph] • Monitoring. We track performance after go-live and act when results drift.
+The outcome: a shortlist of AI use cases your own team believes in, and a pilot that is ready to start.
+[Heading3] Digital Product and Growth Strategy
+For technology, proptech and entertainment businesses, we shape the digital product, the business model and the path to market. Your platform launches with a clear proposition and a plan to grow users and revenue.
+What we deliver
+[ListParagraph] • Market and customer analysis
+[ListParagraph] • Product proposition and business model
+[ListParagraph] • Go-to-market and growth plan
+[ListParagraph] • Product roadmap and KPIs
+The outcome: a product that enters the market with a reason to win and a plan to scale.
+[Heading2] Governance and Delivery
+For organizations with programs under way that need control, assurance and adoption.
+[Heading3] Project Management Office (PMO)
+We set up and run Project Management Offices that give leadership control over projects, vendors and benefits. We can establish your PMO, operate it on your behalf, or manage a single strategic program such as an ERP or hospital information system implementation.
+What we deliver
+[ListParagraph] • PMO setup: governance, processes, templates and tools
+[ListParagraph] • Portfolio and program management
+[ListParagraph] • Vendor and contract follow-up
+[ListParagraph] • Executive dashboards and status reporting
+[ListParagraph] • Risk, issue and change control
+The outcome: leadership sees the true status of every project and can act before delays become losses.
+[Heading3] Project Quality Assurance
+We provide independent assurance on projects delivered by vendors or internal teams. You know whether a project is on track, and what to correct before problems become costly.
+What we deliver
+[ListParagraph] • Project health checks and stage-gate reviews
+[ListParagraph] • Review of vendor deliverables against the contract and requirements
+[ListParagraph] • Testing and go-live readiness assessment
+[ListParagraph] • Recommendations and follow-up of corrective actions
+The outcome: an objective view of project health from a team that sits on your side of the table.
+[Heading3] Change Management
+Transformation succeeds when people adopt it. We plan and manage the human side of change, so new systems, processes and structures are understood, accepted and used.
+What we deliver
+[ListParagraph] • Change impact and readiness assessment
+[ListParagraph] • Stakeholder engagement and communication plan
+[ListParagraph] • Training plan and support for its delivery
+[ListParagraph] • A network of change champions
+[ListParagraph] • Adoption tracking after go-live
+The outcome: teams that use what was built, and a return on the investment behind it.
+[Heading3] Capability Building and Talent Development
+We help you build the skills and leadership needed to sustain transformation long after the consultants leave. Our support runs from capability assessment through to mentoring and hiring.
+What we deliver
+[ListParagraph] • Capability and skills gap assessment
+[ListParagraph] • Identification of high-potential talent
+[ListParagraph] • Mentoring for leaders and teams
+[ListParagraph] • Support for hiring strategy and role definition
+The outcome: an organization that can carry its own transformation forward.
+[Heading2] Operations and Technology
+For IT and operations leaders who need technology to run better, safer and at lower cost.
+[Heading3] IT Operating Model and Shared Services
+We redesign how IT is organized, governed and delivered, including shared services across group companies. The aim is less duplication, better service quality and tighter cost control.
+What we deliver
+[ListParagraph] • IT organization, roles and governance design
+[ListParagraph] • Shared services model and centralization strategy
+[ListParagraph] • IT service management practices
+[ListParagraph] • Transition plan
+The outcome: an IT function that is structured around the business it serves.
+[Heading3] ERP and Business Systems Advisory
+We guide the selection, implementation and optimization of core business systems such as ERP, CRM and HR. We act on your side from requirements through to go-live.
+What we deliver
+[ListParagraph] • Business requirements and process design
+[ListParagraph] • Request for proposal preparation and vendor evaluation
+[ListParagraph] • Implementation oversight
+[ListParagraph] • Stabilization and optimization of existing systems
+The outcome: the right system, chosen for the right reasons, and delivered to what was agreed.
+[Heading3] Process Improvement and Automation
+We simplify and automate priority business processes. That removes manual work, shortens cycle times and improves control.
+What we deliver
+[ListParagraph] • Process mapping and analysis
+[ListParagraph] • Process redesign and standardization
+[ListParagraph] • Identification of automation opportunities
+[ListParagraph] • Policies, procedures and KPIs
+The outcome: leaner processes your teams can follow and your managers can measure.
+[Heading3] Vendor and Contract Optimization
+We review your technology vendors, contracts and licenses to reduce cost and remove overlap. We also strengthen service levels and the way vendors are governed.
+What we deliver
+[ListParagraph] • Vendor landscape and spend analysis
+[ListParagraph] • License and contract optimization
+[ListParagraph] • Service level framework
+[ListParagraph] • Vendor governance model
+The outcome: lower technology spend and vendors who are held to clear commitments.
+[Heading3] Cybersecurity Consultancy
+Our cybersecurity specialists help you understand your exposure, test your defenses and prepare for incidents. We also build a security-aware workforce, because many incidents start with people, not technology.
+What we deliver
+[ListParagraph] • Vulnerability assessments
+[ListParagraph] • Penetration testing
+[ListParagraph] • Strategic incident response planning
+[ListParagraph] • Cybersecurity awareness programs for employees and executives
+The outcome: known risks, tested defenses and employees who recognize a threat when they see one.
+[Heading2] Industry Advisory
+For organizations that want advisors who already understand their sector.
+[Heading3] Healthcare IT Consultancy
+We advise hospitals and healthcare providers on the systems and processes that connect clinical care, administration and revenue. Our consultants combine knowledge of healthcare operations with technology expertise.
+What we deliver
+[ListParagraph] • Assessment, selection and implementation oversight of hospital information systems
+[ListParagraph] • Revenue cycle and payer integration, including readiness for NPHIES
+[ListParagraph] • Patient experience: mobile applications, chatbots and portals
+[ListParagraph] • Improvement of clinical and operational workflows
+[ListParagraph] • Healthcare data, AI and regulatory alignment
+The outcome: systems that support clinicians, protect revenue and improve the patient journey.
+[Heading3] Healthcare AI and Data Readiness Assessment
+Before a healthcare provider invests in AI, it needs to know whether its data and systems can support it. This focused assessment, designed for healthcare organizations in Saudi Arabia, reviews your foundations and identifies the AI use cases worth pursuing first. It is the natural first step before a larger AI program.
+What we assess
+[ListParagraph] • Interoperability. How well your clinical, administrative and payer systems exchange information.
+[ListParagraph] • APIs. The availability, standards and security of the interfaces that AI solutions will depend on.
+[ListParagraph] • Data quality. The completeness, accuracy and consistency of your clinical and operational data.
+[ListParagraph] • Clinical terminology. The use of standard coding and terminology across your systems.
+[ListParagraph] • Cybersecurity. The protection of patient data and the controls needed around AI.
+[ListParagraph] • Governance. Data ownership, policies and alignment with the Kingdom&apos;s data and AI regulations.
+[ListParagraph] • Priority AI use cases. The opportunities with the strongest value, ranked by feasibility and risk.
+What we deliver
+[ListParagraph] • Readiness report with findings for each area
+[ListParagraph] • Gap analysis and remediation plan
+[ListParagraph] • Shortlist of priority AI use cases
+[ListParagraph] • Roadmap to your first AI project
+The outcome: a clear view of what is ready, what must be fixed first and which AI projects to start with.
+[Heading3] Real Estate and PropTech Advisory
+We help developers, contractors and proptech companies digitize the full property cycle. That runs from sales and customer management to construction controls, handover and community services.
+What we deliver
+[ListParagraph] • Digital strategy for developers and contractors
+[ListParagraph] • ERP, CRM and project controls advisory
+[ListParagraph] • Customer journey, sales and community platforms
+[ListParagraph] • PropTech product and platform strategy
+The outcome: faster sales cycles, tighter project control and a better experience for buyers and residents.
+[Heading3] Smart City and Digital Government Advisory
+We support municipalities and government entities in improving citizen services, running transformation programs and building national capabilities.
+What we deliver
+[ListParagraph] • Design of digital services and citizen experience
+[ListParagraph] • Smart city platform strategy
+[ListParagraph] • Program management for government initiatives
+[ListParagraph] • Capability development programs
+The outcome: services citizens find easy to use, delivered through programs that stay on track.
+[Heading1] Managed Services
+GrowShield™ Managed Services is Grow Digital&apos;s managed services offering. It is built on three commitments: protection, stability and proactive support.
+You can hand over your IT operations in full, or in part. Under full coverage, we operate your entire IT environment as your IT operations partner. Under partial coverage, we take responsibility for selected systems, service areas or support levels, and work alongside your IT team and vendors for the rest.
+In both cases, the service provides seamless IT operations, improved system performance and optimized cost, so your team can focus on business growth.
+[Heading2] Service Areas
+GrowShield™ is organized into ten service areas that together cover the full IT landscape. You choose the areas you need.
+[Heading3] Service Desk and End-user Support
+Your users get a single point of contact for IT support. We handle incidents and requests quickly, so your people stay productive.
+What is included
+[ListParagraph] • Single point of contact for all users
+[ListParagraph] • Incident and service request handling
+[ListParagraph] • User onboarding and offboarding
+[ListParagraph] • Device and workplace application support
+[ListParagraph] • Knowledge base for common issues
+[Heading3] Business Applications
+We keep the applications your business runs on available, up to date and aligned with the way you work. The service covers ERP, CRM, HR, industry and custom applications.
+What is included
+[ListParagraph] • Application monitoring
+[ListParagraph] • Functional and technical support
+[ListParagraph] • Patching and upgrades
+[ListParagraph] • Minor enhancements
+[ListParagraph] • Integrations and release management
+[Heading3] Oracle Applications and Technology
+Our Oracle specialists support the full Oracle landscape, from business applications to databases and engineered systems.
+What is included
+[ListParagraph] • Support of E-Business Suite, Fusion Applications, Database, Exadata, Fusion Middleware, Analytics and EPM
+[ListParagraph] • Administration, patching and upgrades
+[ListParagraph] • Performance tuning
+[ListParagraph] • Cloning and migration
+[ListParagraph] • Backup and recovery
+[ListParagraph] • High availability and disaster recovery
+[Heading3] Databases and Data Platforms
+We administer the database technologies you use and keep your data available, fast and recoverable.
+What is included
+[ListParagraph] • Database administration
+[ListParagraph] • Performance and query tuning
+[ListParagraph] • Backup and recovery
+[ListParagraph] • High availability
+[ListParagraph] • Regular health checks
+[ListParagraph] • Support of data warehouse and reporting platforms
+[Heading3] Infrastructure and Data Center
+We operate the servers, storage and operating systems that every other system depends on.
+What is included
+[ListParagraph] • Administration of servers, storage, virtualization and operating systems
+[ListParagraph] • Monitoring and patching
+[ListParagraph] • Backup
+[ListParagraph] • Capacity planning
+[ListParagraph] • Coordination of hardware vendors
+[Heading3] Cloud Operations
+We run your public, private and hybrid cloud environments, and keep their cost and governance under control.
+What is included
+[ListParagraph] • Cloud administration
+[ListParagraph] • Cost optimization
+[ListParagraph] • Cloud governance
+[ListParagraph] • Migration support
+[ListParagraph] • Resilience
+[Heading3] Network and Connectivity
+We keep your sites, users and systems connected and protected.
+What is included
+[ListParagraph] • Local and wide area networks and wireless
+[ListParagraph] • Firewalls and remote access
+[ListParagraph] • Monitoring
+[ListParagraph] • Configuration and troubleshooting
+[ListParagraph] • Coordination of connectivity providers
+[Heading3] Cybersecurity Operations
+We watch over your environment, close vulnerabilities and respond when an incident occurs.
+What is included
+[ListParagraph] • Security monitoring
+[ListParagraph] • Vulnerability and patch management
+[ListParagraph] • Identity and access management
+[ListParagraph] • Endpoint protection
+[ListParagraph] • Incident response
+[ListParagraph] • Compliance reporting
+[Heading3] Websites, Portals and Mobile Applications
+We keep your digital channels online, secure and current.
+What is included
+[ListParagraph] • Hosting operations
+[ListParagraph] • Availability monitoring
+[ListParagraph] • Technical and security updates
+[ListParagraph] • Content support
+[ListParagraph] • App store releases
+[Heading3] IT Vendor and Asset Management
+We manage your technology vendors and assets on your behalf, so that contracts, licenses and renewals stay under control.
+What is included
+[ListParagraph] • Coordination of third-party vendors
+[ListParagraph] • Tracking of licenses, support contracts and renewals
+[ListParagraph] • IT asset register
+[Heading2] Coverage Models
+GrowShield™ can cover your IT systems fully or partially.
+Coverage model
+How it works
+Full Managed Services
+Grow Digital operates and supports the entire IT environment and is accountable for all service levels.
+Partial Managed Services
+Grow Digital is responsible for selected systems or service areas. Your IT team or other vendors keep the rest.
+Co-managed Services
+Responsibility is shared within the same systems. For example, Grow Digital provides specialist or after-hours support behind your own service desk.
+[Heading2] Resourcing Models
+Resourcing model
+How it works
+Dedicated Managed Services
+A full-time support team assigned to your organization.
+Shared Managed Services
+A cost-effective model in which a shared team supports several customers.
+On-Demand Support
+Pay-as-you-go support for ad hoc services and escalations.
+Hybrid Model
+A combination of dedicated and shared services for cost efficiency.
+[Heading1] Software Development
+Grow Digital covers the full range of software development: mobile, web, business applications and artificial intelligence.
+All four are delivered through the same disciplined approach, from discovery and design, through iterative build and quality assurance, to go-live and support. A solution that combines several of them is designed and delivered as one.
+[Heading2] Development Services
+[Heading3] Mobile Development
+We design and build mobile applications for iOS and Android that customers and employees want to use. Depending on your requirement, we develop native applications for the best performance and device integration, or cross-platform applications that share one code base to reduce cost and time to market.
+Every application is designed for Arabic and English, including right-to-left layouts, and is connected securely to your back-end systems.
+What we deliver
+[ListParagraph] • User experience and interface design for mobile, tested with real users
+[ListParagraph] • Native applications for iOS and Android
+[ListParagraph] • Cross-platform applications built on one code base
+[ListParagraph] • Arabic and English interfaces, including right-to-left layouts
+[ListParagraph] • Secure integration with your back-end systems
+[ListParagraph] • Publication on the app stores
+[ListParagraph] • Monitoring and improvement after launch
+[Heading3] Web Development
+We design and build websites, portals, e-commerce and content platforms that are fast, secure and easy to manage. Every site works on any device, is built to be found by search engines and is accessible to all users.
+What we deliver
+[ListParagraph] • Corporate websites and landing pages
+[ListParagraph] • Customer, partner and employee portals
+[ListParagraph] • E-commerce platforms
+[ListParagraph] • Content management platforms
+[ListParagraph] • Responsive design for every device
+[ListParagraph] • Search optimization, accessibility and security built in
+[ListParagraph] • Arabic and English content
+[Heading3] Application Development
+We build custom business applications that fit the way you work. These include workflow and approval systems, operational platforms, management dashboards and integrations between existing systems such as ERP, CRM and core business applications.
+We start from the business process, design the solution with the people who will use it, and deliver in short iterations, so you see working software early.
+What we deliver
+[ListParagraph] • Business analysis, process design and functional specification
+[ListParagraph] • Custom web-based and cloud-based business applications
+[ListParagraph] • Workflow automation, approval cycles and business rules engines
+[ListParagraph] • Integration with ERP, CRM, government platforms and legacy systems through secure interfaces
+[ListParagraph] • Data migration, reporting and management dashboards
+[ListParagraph] • Role-based access, audit trail and deployment in the cloud or on your premises
+[ListParagraph] • Modernization of legacy applications
+[Heading3] Artificial Intelligence
+We apply artificial intelligence where it delivers a measurable business result, such as faster decisions, lower processing cost or better customer service. Our AI solutions range from assistants and chatbots built on large language models, to document processing, prediction and recommendation models.
+Every AI solution is designed with human oversight, traceable outputs and data protection built in, so that it can be trusted and audited.
+What we deliver
+[ListParagraph] • Assessment of AI use cases and their business case
+[ListParagraph] • Generative AI assistants and chatbots in Arabic and English, grounded in your own knowledge and documents
+[ListParagraph] • Intelligent document processing: extraction, classification and summarization
+[ListParagraph] • Predictive, scoring and recommendation models built on your data
+[ListParagraph] • Integration of AI into existing applications and workflows
+[ListParagraph] • Model evaluation, monitoring and governance, with human confirmation for decisions that matter
+[ListParagraph] • Data residency and privacy by design, in line with the applicable data protection law
+[Heading2] Our Products
+Alongside custom development, we build our own products for the sectors we know best.
+Product
+Description
+Grow Bot
+A WhatsApp chatbot that lets customers and patients reach your services in the channel they already use.
+Athar
+An electronic medical record (EMR) system for healthcare providers.
+Medical Decision Support System
+A decision support platform for healthcare providers. [One-line description to confirm.]
+Patient Mobile App
+A mobile application that connects patients with their healthcare provider. [Main features to confirm.]
+[Heading1] Digital Marketing
+We help businesses across the Gulf build their presence, generate leads and grow sales. Every program starts with a marketing audit and a plan, and every month ends with a clear report on what your budget delivered.
+Our services are available in three packages, so the level of service matches your stage of growth and your budget.
+[Heading2] Marketing Services
+[Heading3] Strategy and Planning
+We start by understanding your market, your customers and your current results. Then we build the plan that the whole program follows.
+What is included
+[ListParagraph] • Marketing audit and strategy
+[ListParagraph] • Quarterly and annual marketing plans
+[ListParagraph] • Monthly content calendar
+[ListParagraph] • Competitor monitoring
+[ListParagraph] • Campaign concepts
+[Heading3] Social Media Management
+We manage your social media platforms day to day, so your brand stays active, consistent and responsive.
+What is included
+[ListParagraph] • Management of your social media platforms
+[ListParagraph] • Regular posts and stories
+[ListParagraph] • Community management and replies to your audience
+[Heading3] Content and Creative
+We produce the content that carries your brand: designs, copy, videos and photography, in Arabic and English.
+What is included
+[ListParagraph] • Graphic design for posts and advertisements
+[ListParagraph] • Copywriting in Arabic and English
+[ListParagraph] • Short videos and reels
+[ListParagraph] • Photo and video shoots
+[ListParagraph] • Campaign key visuals
+[Heading3] Paid Media
+We plan, run and optimize paid campaigns on the platforms your customers use. We test continuously to improve the return on your media budget.
+What is included
+[ListParagraph] • Paid media management across platforms
+[ListParagraph] • Always-on and seasonal campaigns
+[ListParagraph] • Audience and creative testing
+[Heading3] Search and Website
+We help customers find you, and act when they arrive.
+What is included
+[ListParagraph] • On-page and technical search engine optimization
+[ListParagraph] • Search-optimized articles
+[ListParagraph] • Landing pages
+[ListParagraph] • Conversion rate optimization
+[Heading3] Email, Messaging and Automation
+We keep your leads and customers engaged with timely, relevant messages, and we automate the follow-up.
+What is included
+[ListParagraph] • Email and messaging campaigns
+[ListParagraph] • Lead nurturing journeys
+[ListParagraph] • Lead scoring
+[ListParagraph] • Integration with your CRM
+[Heading3] Influencer Marketing
+We match your brand with the right voices and manage the campaign from brief to results.
+What is included
+[ListParagraph] • Influencer selection
+[ListParagraph] • Campaign management
+[ListParagraph] • Reporting on campaign results
+[Heading3] Analytics and Reporting
+You see what your budget delivered. We set up tracking, give you a live dashboard and report on the KPIs we agreed.
+What is included
+[ListParagraph] • Tracking setup, conversion tracking and attribution
+[ListParagraph] • Live dashboard
+[ListParagraph] • Weekly progress and monthly performance reports
+[ListParagraph] • Quarterly strategy review
+[Heading2] Our Packages
+Package
+Best for
+What it delivers
+Starter
+Businesses building a consistent digital presence
+The essentials: managed social media, core content, basic paid promotion and a monthly report.
+Growth
+Businesses that want measurable growth in leads and sales
+Everything in Starter, plus multi-platform paid media, SEO, video content, email campaigns and a dedicated Growth Advisor.
+Premium
+Businesses that need a complete marketing function
+Everything in Growth, plus a dedicated team, always-on campaigns, marketing automation, influencer management and advanced analytics.
+You can move to a larger package as your business grows.

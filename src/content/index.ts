@@ -29,3 +29,5 @@ export { METRICS } from "./metrics.ts";
 export { STORY } from "./story.ts";
 export { IMAGES, IMAGE_STYLE, img } from "./images.ts";
 export type { ImageId, ImageSpec, Aspect } from "./images.ts";
+export { SERVICES, SERVICES_INTRO, SERVICE_SLUGS, getService, serviceHref, serviceCount } from "./services.ts";
+export type { ServicePillar, ServiceSlug, ServiceDetail } from "./services.ts";

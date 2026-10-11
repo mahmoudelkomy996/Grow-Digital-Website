@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { Pillar } from "@/content/types";
+import type { ServicePillar } from "@/content/services";
 
 export const SITE_URL = "https://growdigital.com";
 export const SITE_NAME = "Grow Digital";
@@ -168,5 +169,34 @@ export function blogJsonLd(posts: { slug: string; title: string; date: string }[
     inLanguage: "en",
     publisher: { "@id": ORG_ID },
     blogPost: posts.map((p) => ({ "@type": "BlogPosting", headline: p.title, url: `${SITE_URL}/blog/${p.slug}`, datePublished: p.date })),
+  };
+}
+
+export function servicePillarJsonLd(p: ServicePillar) {
+  const url = `${SITE_URL}/services/${p.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": `${url}#service`,
+    name: p.name,
+    description: p.intro[0],
+    provider: { "@id": ORG_ID, "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+    areaServed: [
+      { "@type": "Country", name: "Saudi Arabia" },
+      { "@type": "Country", name: "United Arab Emirates" },
+    ],
+    url,
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: p.name,
+      itemListElement: p.groups.map((g) => ({
+        "@type": "OfferCatalog",
+        name: g.name,
+        itemListElement: g.services.map((sv) => ({
+          "@type": "Offer",
+          itemOffered: { "@type": "Service", name: sv.name, description: sv.body[0], url: `${url}#${sv.id}` },
+        })),
+      })),
+    },
   };
 }

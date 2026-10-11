@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { NAV, NAV_CTA, NAV_PILLARS, NAV_PROMO } from "@/content/navigation";
+import { NAV, NAV_CTA } from "@/content/navigation";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { SmileArc } from "@/components/ui/SmileArc";
@@ -14,7 +14,8 @@ import { MobileMenu } from "./MobileMenu";
 
 const SCROLL_THRESHOLD = 24;
 const MEGA_ID = "mega-menu";
-const MEGA_TRIGGER_ID = "mega-menu-trigger";
+const triggerId = (menuId: string) => `nav-trigger-${menuId}`;
+const CLOSE_DELAY = 220;
 const MOBILE_ID = "mobile-menu";
 
 function subscribeScroll(cb: () => void) {
@@ -38,48 +39,63 @@ const getScrolledServer = () => false;
 /**
  * Fixed 72px header. Transparent with paper text over the dark hero every page starts with; switches to a
  * paper background, teal text and a hairline border after 24px of scroll (unless a [data-header-transparent]
- * section is behind it) or while the mega menu is open.
+ * section is behind it) or while a dropdown is open. Each service pillar has its own header link with a dropdown
+ * (hover, click, Enter/Space or ArrowDown); moving to another link switches menus; Esc closes.
  */
 export function SiteHeader() {
   const pathname = usePathname();
   const scrolled = useSyncExternalStore(subscribeScroll, getScrolled, getScrolledServer);
 
   // Menus remember the path they were opened on, so any route change closes them without an effect.
-  const [megaPath, setMegaPath] = useState<string | null>(null);
+  const [menu, setMenu] = useState<{ id: string; path: string } | null>(null);
   const [mobilePath, setMobilePath] = useState<string | null>(null);
-  const megaOpen = megaPath === pathname;
+  const openId = menu && menu.path === pathname ? menu.id : null;
+  const megaOpen = openId !== null;
   const mobileOpen = mobilePath === pathname;
 
   const headerRef = useRef<HTMLElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
+  const closeTimer = useRef(0);
+  const triggerFor = (id: string | null) => (id ? document.getElementById(triggerId(id)) : null);
   const toggleRef = useRef<HTMLButtonElement>(null);
 
-  const closeMega = useCallback(() => setMegaPath(null), []);
+  const closeMega = useCallback(() => setMenu(null), []);
+  const openMenu = useCallback(
+    (id: string) => {
+      window.clearTimeout(closeTimer.current);
+      setMenu({ id, path: pathname });
+    },
+    [pathname],
+  );
+  const scheduleClose = () => {
+    window.clearTimeout(closeTimer.current);
+    closeTimer.current = window.setTimeout(() => setMenu(null), CLOSE_DELAY);
+  };
   const closeMobile = useCallback(() => setMobilePath(null), []);
 
-  // Mega menu: Esc (focus back to trigger) and outside click.
+  // Dropdowns: Tab into / out of the open panel, Esc (focus back to its trigger), outside click or focus.
   useEffect(() => {
-    if (!megaOpen) return;
+    if (!openId) return;
+    const trigger = triggerFor(openId);
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Tab") {
-        // The panel is rendered after the nav in the DOM; route Tab from the trigger into the panel and
-        // from the panel's last link back to the nav item after the trigger, like an inline disclosure.
-        const panel = document.getElementById(MEGA_ID);
+        // The panel sits after the nav in the DOM; route Tab from the trigger into it and from its last link
+        // back to the next header item, like an inline disclosure.
+        const panel = document.getElementById(`${MEGA_ID}-${openId}`);
         const links = panel ? Array.from(panel.querySelectorAll<HTMLElement>("a[href], button")) : [];
         const active = document.activeElement;
         if (!links.length) return;
-        if (active === triggerRef.current && !e.shiftKey) {
+        if (active === trigger && !e.shiftKey) {
           e.preventDefault();
           links[0].focus();
         } else if (active === links[0] && e.shiftKey) {
           e.preventDefault();
-          triggerRef.current?.focus();
+          trigger?.focus();
         } else if (active === links[links.length - 1] && !e.shiftKey) {
           const navItems = Array.from(headerRef.current?.querySelectorAll<HTMLElement>("nav[aria-label='Main'] a, nav[aria-label='Main'] button") ?? []);
-          const next = navItems[navItems.indexOf(triggerRef.current as HTMLElement) + 1];
+          const next = navItems[navItems.indexOf(trigger as HTMLElement) + 1];
           if (next) {
             e.preventDefault();
-            setMegaPath(null);
+            setMenu(null);
             next.focus();
           }
         }
@@ -87,14 +103,14 @@ export function SiteHeader() {
       }
       if (e.key !== "Escape") return;
       e.preventDefault();
-      setMegaPath(null);
-      triggerRef.current?.focus();
+      setMenu(null);
+      trigger?.focus();
     };
     const onPointer = (e: PointerEvent) => {
-      if (!headerRef.current?.contains(e.target as Node)) setMegaPath(null);
+      if (!headerRef.current?.contains(e.target as Node)) setMenu(null);
     };
     const onFocus = (e: FocusEvent) => {
-      if (e.target instanceof Node && !headerRef.current?.contains(e.target)) setMegaPath(null);
+      if (e.target instanceof Node && !headerRef.current?.contains(e.target)) setMenu(null);
     };
     document.addEventListener("keydown", onKey);
     document.addEventListener("pointerdown", onPointer);
@@ -104,7 +120,7 @@ export function SiteHeader() {
       document.removeEventListener("pointerdown", onPointer);
       document.removeEventListener("focusin", onFocus);
     };
-  }, [megaOpen]);
+  }, [openId]);
 
   // Mobile menu: lock body scroll, make the page behind inert, Esc closes, close when resized to desktop.
   useEffect(() => {
@@ -134,12 +150,13 @@ export function SiteHeader() {
   }, [mobileOpen]);
 
   const solid = (scrolled || megaOpen) && !mobileOpen;
-  const pillarsActive = pathname.startsWith("/pillars/") && pathname !== "/pillars/solve";
 
   return (
     <>
       <header
         ref={headerRef}
+        onPointerLeave={(e) => e.pointerType === "mouse" && megaOpen && scheduleClose()}
+        onPointerEnter={() => window.clearTimeout(closeTimer.current)}
         className={cn(
           "fixed inset-x-0 top-0 z-50 h-[72px] border-b transition-[background-color,border-color,color] duration-300",
           solid ? "border-line bg-paper text-teal-900" : "surface-dark border-transparent bg-transparent text-paper",
@@ -166,30 +183,39 @@ export function SiteHeader() {
           </Link>
 
           <nav aria-label="Main" className="hidden lg:block">
-            <ul className="flex items-center gap-1">
+            <ul className="flex items-center gap-0.5 xl:gap-1">
               {NAV.map((item) => {
-                if (item.children) {
+                if (item.menu) {
+                  const menuId = item.menu.id;
+                  const isOpen = openId === menuId;
+                  const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
                   return (
                     <li key={item.label}>
                       <button
-                        ref={triggerRef}
-                        id={MEGA_TRIGGER_ID}
+                        id={triggerId(menuId)}
                         type="button"
-                        aria-expanded={megaOpen}
-                        aria-controls={MEGA_ID}
-                        onClick={() => setMegaPath(megaOpen ? null : pathname)}
-                        className="group/nav relative flex h-10 items-center gap-1.5 rounded-full px-4 text-[0.9375rem]"
+                        aria-expanded={isOpen}
+                        aria-controls={`${MEGA_ID}-${menuId}`}
+                        onClick={() => (isOpen ? closeMega() : openMenu(menuId))}
+                        onPointerEnter={(e) => e.pointerType === "mouse" && openMenu(menuId)}
+                        onKeyDown={(e) => {
+                          if (e.key === "ArrowDown") {
+                            e.preventDefault();
+                            openMenu(menuId);
+                            requestAnimationFrame(() =>
+                              document.querySelector<HTMLElement>(`#${MEGA_ID}-${menuId} a[href]`)?.focus(),
+                            );
+                          }
+                        }}
+                        className="group/nav relative flex h-10 items-center gap-1.5 rounded-full px-3.5 text-[0.9375rem] xl:px-4"
                       >
                         {item.label}
                         <ChevronDown
                           aria-hidden
                           strokeWidth={1.5}
-                          className={cn(
-                            "size-4 transition-transform duration-300 ease-[var(--ease-out-expo)]",
-                            megaOpen && "rotate-180",
-                          )}
+                          className={cn("size-4 transition-transform duration-300 ease-[var(--ease-out-expo)]", isOpen && "rotate-180")}
                         />
-                        <NavIndicator active={pillarsActive || megaOpen} solid={solid} />
+                        <NavIndicator active={active || isOpen} solid={solid} />
                       </button>
                     </li>
                   );
@@ -201,7 +227,8 @@ export function SiteHeader() {
                       href={item.href}
                       aria-current={active ? "page" : undefined}
                       onClick={closeMega}
-                      className="group/nav relative flex h-10 items-center rounded-full px-4 text-[0.9375rem]"
+                      onPointerEnter={(e) => e.pointerType === "mouse" && megaOpen && closeMega()}
+                      className="group/nav relative flex h-10 items-center rounded-full px-3.5 text-[0.9375rem] xl:px-4"
                     >
                       {item.label}
                       <NavIndicator active={active} solid={solid} />
@@ -248,15 +275,7 @@ export function SiteHeader() {
           </div>
         </div>
 
-        <MegaMenu
-          id={MEGA_ID}
-          labelledBy={MEGA_TRIGGER_ID}
-          open={megaOpen}
-          pillars={NAV_PILLARS}
-          promo={NAV_PROMO}
-          currentPath={pathname}
-          onNavigate={closeMega}
-        />
+        <MegaMenu id={MEGA_ID} openId={openId} items={NAV} currentPath={pathname} triggerId={triggerId} onNavigate={closeMega} />
       </header>
 
       {/* Dim the page behind the open mega menu (a pointerdown here counts as an outside click) */}
@@ -271,7 +290,6 @@ export function SiteHeader() {
       <MobileMenu
         id={MOBILE_ID}
         open={mobileOpen}
-        pillars={NAV_PILLARS}
         items={NAV}
         cta={NAV_CTA}
         currentPath={pathname}

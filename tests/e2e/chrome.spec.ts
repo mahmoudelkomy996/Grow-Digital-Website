@@ -33,38 +33,43 @@ test.describe("site chrome", () => {
     await expect(footer.locator('a[href^="tel:"]')).toHaveCount(1);
     await expect(footer.getByText("It's time to grow.")).toBeVisible();
     await expect(footer.getByText("© 2026 Grow Digital. All rights reserved.")).toBeVisible();
-    await expect(footer.locator('a[href^="/pillars/"]')).toHaveCount(7);
+    await expect(footer.locator('a[href^="/services/"]')).toHaveCount(4);
   });
 });
 
-test.describe("mega menu (desktop)", () => {
+test.describe("service dropdowns (desktop)", () => {
   test.beforeEach(({}, testInfo) => {
     test.skip(testInfo.project.name !== "chromium-desktop", "desktop navigation only");
   });
 
-  test("opens with Enter, lists 7 pillars, closes on Esc and returns focus", async ({ page }) => {
+  test("each pillar has its own header link and dropdown", async ({ page }) => {
     await page.goto(PAGE);
-    const trigger = page.getByRole("button", { name: "Pillars" });
-    const panel = page.locator("#mega-menu");
+    for (const name of ["Consultancy", "Managed Services", "Software", "Digital Marketing", "Company"]) {
+      await expect(page.getByRole("navigation", { name: "Main" }).getByRole("button", { name, exact: true })).toBeVisible();
+    }
+    await expect(page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Insights" })).toHaveAttribute("href", "/blog");
+  });
 
+  test("opens with Enter, Tab enters the panel, Esc closes and returns focus", async ({ page }) => {
+    await page.goto(PAGE);
+    const trigger = page.getByRole("button", { name: "Consultancy", exact: true });
+    const panel = page.locator("#mega-menu-consultancy");
     await expect(trigger).toHaveAttribute("aria-expanded", "false");
-    await expect(trigger).toHaveAttribute("aria-controls", "mega-menu");
+    await expect(trigger).toHaveAttribute("aria-controls", "mega-menu-consultancy");
     await expect(panel).toBeHidden();
 
     await trigger.focus();
     await page.keyboard.press("Enter");
     await expect(trigger).toHaveAttribute("aria-expanded", "true");
     await expect(panel).toBeVisible();
-    await expect(panel.locator("[data-pillar]")).toHaveCount(7);
-    await expect(panel.getByRole("list", { name: "Pillars" }).getByRole("link")).toHaveCount(7);
-    await expect(panel.getByRole("link", { name: "See how the pillars connect" })).toHaveAttribute("href", "/#story");
+    // 4 practices, 17 services
+    await expect(panel.locator('a[href^="/services/consultancy#"]')).toHaveCount(17);
+    await expect(panel.getByRole("link", { name: /Explore consultancy/ })).toHaveAttribute("href", "/services/consultancy");
 
-    // The header turns solid while the menu is open, even at the top of the page.
     await expect
       .poll(() => page.getByRole("banner").evaluate((el) => getComputedStyle(el).backgroundColor))
       .toBe("rgb(246, 245, 240)");
 
-    // Tab moves into the panel.
     await page.keyboard.press("Tab");
     await expect(panel.locator("a").first()).toBeFocused();
 
@@ -74,27 +79,25 @@ test.describe("mega menu (desktop)", () => {
     await expect(trigger).toBeFocused();
   });
 
-  test("opens with Space and closes on outside click", async ({ page }) => {
+  test("hovering another link switches menus; outside click closes", async ({ page }) => {
     await page.goto(PAGE);
-    const trigger = page.getByRole("button", { name: "Pillars" });
-    await trigger.focus();
-    await page.keyboard.press("Space");
-    await expect(trigger).toHaveAttribute("aria-expanded", "true");
-    await page.mouse.click(700, 700);
-    await expect(trigger).toHaveAttribute("aria-expanded", "false");
-    await expect(page.locator("#mega-menu")).toBeHidden();
+    await page.getByRole("button", { name: "Software", exact: true }).hover();
+    await expect(page.locator("#mega-menu-software-development")).toBeVisible();
+    await expect(page.locator("#mega-menu-software-development").getByText("Patient Mobile App")).toBeVisible();
+    await page.getByRole("button", { name: "Digital Marketing", exact: true }).hover();
+    await expect(page.locator("#mega-menu-software-development")).toBeHidden();
+    await expect(page.locator("#mega-menu-digital-marketing")).toBeVisible();
+    await page.mouse.click(700, 850);
+    await expect(page.locator("#mega-menu-digital-marketing")).toBeHidden();
   });
 
   test("closes on route change", async ({ page }) => {
     await page.goto(PAGE);
-    await page.getByRole("button", { name: "Pillars" }).click();
-    const panel = page.locator("#mega-menu");
+    await page.getByRole("button", { name: "Managed Services", exact: true }).click();
+    const panel = page.locator("#mega-menu-managed-services");
     await expect(panel).toBeVisible();
-    const href = await panel.getByRole("list", { name: "Pillars" }).getByRole("link").first().getAttribute("href");
-    expect(href).toBe("/pillars/consult");
-    // history.pushState is integrated with the App Router, so usePathname() changes without a reload.
     await page.evaluate(() => window.history.pushState(null, "", "/design-system/route-change"));
-    await expect(page.getByRole("button", { name: "Pillars" })).toHaveAttribute("aria-expanded", "false");
+    await expect(page.getByRole("button", { name: "Managed Services", exact: true })).toHaveAttribute("aria-expanded", "false");
     await expect(panel).toBeHidden();
   });
 });
@@ -108,14 +111,16 @@ test.describe("mobile menu", () => {
     await page.goto(PAGE);
     const toggle = page.getByRole("button", { name: "Open menu" });
     const menu = page.locator("#mobile-menu");
-    await expect(page.getByRole("button", { name: "Pillars" })).toBeHidden();
+    await expect(page.getByRole("button", { name: "Consultancy", exact: true })).toBeHidden();
     await expect(menu).toBeHidden();
 
     await toggle.click();
     const close = page.getByRole("button", { name: "Close menu" });
     await expect(close).toHaveAttribute("aria-expanded", "true");
     await expect(menu).toBeVisible();
-    await expect(menu.locator('a[href^="/pillars/"]')).toHaveCount(8); // 7 pillars + Solutions
+    await expect(menu.getByRole("button", { name: /Consultancy/ })).toBeVisible();
+    await menu.getByRole("button", { name: /Consultancy/ }).click();
+    await expect(menu.locator('a[href^="/services/consultancy"]').first()).toBeVisible();
     await expect(menu.getByRole("link", { name: "Talk to us" })).toBeVisible();
     expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).toBe("hidden");
 

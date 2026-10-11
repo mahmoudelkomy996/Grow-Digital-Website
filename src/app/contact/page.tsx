@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { COMPANY, IMAGES, PILLARS } from "@/content";
+import { COMPANY, IMAGES, SERVICES } from "@/content";
 import { pageMetadata } from "@/lib/seo";
 import { Container } from "@/components/ui/Container";
 import { Eyebrow } from "@/components/ui/Eyebrow";
@@ -16,7 +16,7 @@ export const metadata: Metadata = pageMetadata({
 
 export default function ContactPage() {
   const interests = [
-    ...PILLARS.map((p) => ({ value: `${p.verb} — ${p.name}`, label: `${p.num} ${p.verb} — ${p.name}` })),
+    ...SERVICES.map((p) => ({ value: p.name, label: `${p.num} ${p.name}` })),
     { value: "Not sure yet", label: "Not sure yet" },
   ];
   return (

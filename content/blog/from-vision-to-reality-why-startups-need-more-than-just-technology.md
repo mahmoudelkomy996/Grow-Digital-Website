@@ -3,7 +3,7 @@ title: "“From Vision to Reality” Why Startups Need More Than Just Technology
 description: "Scaling a startup from its inception to a thriving business is a complex journey that requires more than just a good idea and passion. While technology is often at the forefront of a startup’s operations, success is built on a multifaceted foundation that includes a solid business plan, an effective market strategy, the right team,"
 date: "2024-08-25"
 updated: "2024-08-25"
-category: "consult"
+category: "consultancy"
 cover: "/blog/from-vision-to-reality-why-startups-need-more-than-just-technology.jpg"
 coverAlt: "“From Vision to Reality” Why Startups Need More Than Just Technology?"
 author: "Grow Digital Team"

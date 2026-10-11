@@ -28,7 +28,7 @@ BASE_URL=http://localhost:3000 npx playwright test   # against a running server
 | Route | Content |
 |---|---|
 | `/` | 3D growth story (9 chapters), integrator statement, impact, pillars, use cases, solutions, industries, partners and clients, values |
-| `/pillars/[slug]` | consult, transform, build, operate, secure, solve, grow: services, deep dives and pillar-specific sections |
+| `/services/[slug]` | The four service pillars (consultancy, managed-services, software-development, digital-marketing): every service with its deliverables and outcome, plus coverage models, products and packages. Content: `src/content/services.ts` (from the October 2026 services document). Old `/pillars/*` URLs 301-redirect here. |
 | `/use-cases` | 12 AI and IoT use cases with URL-based filters |
 | `/partners` | Exclusive solution partners, data/AI and cloud partners, clients by sector, key projects, partner references |
 | `/about` | Who we are, mission and vision, lifecycle, values, KSA and UAE |
@@ -64,7 +64,7 @@ title: "Article title"
 description: "One or two sentences (used as meta description, max ~158 chars shown)"
 date: "2026-10-01"
 updated: "2026-10-01"
-category: "transform"   # consult | transform | build | operate | secure | solve | grow
+category: "software-development"   # consultancy | managed-services | software-development | digital-marketing
 cover: "/blog/<slug>.jpg"  # optional; put the original in assets-src/blog-covers/ and run node scripts/grade-covers.mjs
 coverAlt: "What the cover shows"
 author: "Grow Digital Team"

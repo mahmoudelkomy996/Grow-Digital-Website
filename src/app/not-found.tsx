@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PILLARS } from "@/content";
+import { SERVICES } from "@/content";
 import { Button } from "@/components/ui/Button";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Headline } from "@/components/ui/SectionHeading";
@@ -30,9 +30,9 @@ export default function NotFound() {
         </div>
         <nav aria-label="Pillars" className="mt-6 border-t border-teal-300/15 pt-8">
           <ul className="flex flex-wrap gap-x-8 gap-y-3">
-            {PILLARS.map((p) => (
+            {SERVICES.map((p) => (
               <li key={p.slug}>
-                <Link href={`/pillars/${p.slug}`} className="group inline-flex items-baseline gap-2 text-paper">
+                <Link href={`/services/${p.slug}`} className="group inline-flex items-baseline gap-2 text-paper">
                   <span className="eyebrow text-lime">{p.num}</span>
                   <span className="underline-offset-4 group-hover:underline">{p.verb}</span>
                 </Link>

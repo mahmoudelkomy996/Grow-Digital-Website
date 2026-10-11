@@ -12,11 +12,11 @@ import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
 import { visit } from "unist-util-visit";
 import type { Element, Root } from "hast";
-import type { PillarSlug } from "@/content/types";
+import type { ServiceSlug as PillarSlug } from "@/content";
 
 const DIR = join(process.cwd(), "content/blog");
 export const POSTS_PER_PAGE = 12;
-const PILLAR_SLUGS: PillarSlug[] = ["consult", "transform", "build", "operate", "secure", "solve", "grow"];
+const PILLAR_SLUGS: PillarSlug[] = ["consultancy", "managed-services", "software-development", "digital-marketing"];
 
 export interface PostMeta {
   slug: string;
@@ -60,7 +60,7 @@ function words(md: string) {
 function parseFile(file: string): { meta: PostMeta; body: string } {
   const slug = file.replace(/\.md$/, "");
   const { data, content } = matter(readFileSync(join(DIR, file), "utf8"));
-  const category = (PILLAR_SLUGS as string[]).includes(str(data.category)) ? (str(data.category) as PillarSlug) : "consult";
+  const category = (PILLAR_SLUGS as string[]).includes(str(data.category)) ? (str(data.category) as PillarSlug) : "consultancy";
   const wordCount = words(content);
   const date = str(data.date);
   return {

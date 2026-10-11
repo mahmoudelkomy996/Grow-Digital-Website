@@ -5,39 +5,46 @@ import { img } from "./images.ts";
 import type { Solution } from "./types.ts";
 
 export const SOLUTIONS: Solution[] = [
-  // ── Grow Digital solutions ─────────────────────────────────────────────
+  // ── Grow Digital products (services document, Oct 2026) ───────────────
   {
     id: "grow-bot",
     name: "Grow Bot",
     by: "Grow Digital",
     kind: "own",
-    category: "Enterprise AI Assistant & Conversational AI Platform",
-    description:
-      "Grow Bot is an enterprise AI assistant and conversational AI platform, built by Grow Digital. It is designed for enterprises in KSA and the UAE.",
-    features: ["Enterprise AI assistant", "Conversational AI platform", "Built for enterprises in KSA and the UAE"],
+    category: "WhatsApp chatbot",
+    description: "A WhatsApp chatbot that lets customers and patients reach your services in the channel they already use.",
+    features: ["Built on WhatsApp", "For customers and patients", "Arabic and English"],
     image: img("sol-growbot"),
   },
   {
-    id: "medical-decision",
-    name: "Medical Decision & Approval Intelligence Platform",
+    id: "athar-emr",
+    name: "Athar",
     by: "Grow Digital",
     kind: "own",
-    category: "AI-enabled healthcare decision and approval automation",
-    description:
-      "The Medical Decision & Approval Intelligence Platform is Grow Digital's solution for AI-enabled healthcare decision and approval automation. It brings AI to healthcare decision and approval workflows.",
-    features: ["AI-enabled healthcare decisions", "Approval automation", "Built by Grow Digital"],
+    category: "Electronic medical record (EMR)",
+    description: "An electronic medical record (EMR) system for healthcare providers.",
+    features: ["Electronic medical record", "For healthcare providers"],
+    image: img("sol-athar"),
+  },
+  {
+    id: "medical-decision",
+    name: "Medical Decision Support System",
+    by: "Grow Digital",
+    kind: "own",
+    category: "Clinical decision support",
+    description: "A decision support platform for healthcare providers.",
+    features: ["Decision support", "For healthcare providers"],
     image: img("sol-medical-decision"),
   },
   {
-    id: "athar-emr",
-    name: "ATHAR Electronic Medical Record",
+    id: "patient-app",
+    name: "Patient Mobile App",
     by: "Grow Digital",
     kind: "own",
-    category: "Digital healthcare and patient record platform",
-    description:
-      "ATHAR Electronic Medical Record is Grow Digital's digital healthcare and patient record platform. It brings healthcare and patient records into a digital platform.",
-    features: ["Electronic medical record", "Patient record platform", "Digital healthcare"],
-    image: img("sol-athar"),
+    category: "Patient mobile application",
+    description: "A mobile application that connects patients with their healthcare provider.",
+    features: ["Mobile application", "Connects patients and providers"],
+    image: img("uc-healthcare-assistant"),
   },
 
   // ── Partner solutions ──────────────────────────────────────────────────

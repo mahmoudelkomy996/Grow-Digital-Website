@@ -1,8 +1,8 @@
 // Shared rendering + metadata for the blog listing routes (/blog, /blog/page/[n], /blog/category/[c](/page/[n])).
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import type { PillarSlug } from "@/content/types";
-import { getPillar } from "@/content";
+import type { ServiceSlug as PillarSlug } from "@/content";
+import { getService as getPillar } from "@/content";
 import { getAllPosts, getPostsByCategory, paginate } from "@/lib/blog";
 import { blogJsonLd, pageMetadata } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
