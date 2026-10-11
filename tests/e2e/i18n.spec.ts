@@ -98,7 +98,13 @@ test.describe("language switch", () => {
   test("mobile menu has the switch", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "chromium-mobile", "mobile menu only");
     await page.goto("/ar/about");
-    await page.getByRole("button", { name: "افتح القائمة" }).click();
+    // the header switch is desktop-only, so the menu button stays fully on screen
+    await expect(page.locator('header a[hreflang="en"]')).toBeHidden();
+    const toggle = page.getByRole("button", { name: "افتح القائمة" });
+    const box = (await toggle.boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+    await toggle.click();
     await expect(page.locator('#mobile-menu a[hreflang="en"]')).toHaveAttribute("href", "/about");
   });
 });

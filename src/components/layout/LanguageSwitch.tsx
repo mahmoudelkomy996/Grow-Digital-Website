@@ -8,7 +8,8 @@ import { useDict, useLocale } from "@/i18n/LocaleProvider";
  * Link to the same page in the other language (or that language's home when the page does not exist there,
  * e.g. the English-only blog). A full page load on purpose: <html lang/dir> and fonts change with the locale.
  */
-export function LanguageSwitch({ pathname, className }: { pathname: string; className?: string }) {
+/** `className` must include the display utility (e.g. "inline-flex" or "hidden lg:inline-flex"). */
+export function LanguageSwitch({ pathname, className }: { pathname: string; className: string }) {
   const locale = useLocale();
   const t = useDict();
   const other = LOCALES.find((l) => l !== locale)!;
@@ -20,7 +21,7 @@ export function LanguageSwitch({ pathname, className }: { pathname: string; clas
       lang={other}
       aria-label={t.common.switchToLabel}
       className={cn(
-        "inline-flex h-10 items-center rounded-full px-3 text-[0.9375rem] underline decoration-transparent underline-offset-[6px] transition-[text-decoration-color] duration-300 hover:decoration-current",
+        "h-10 items-center rounded-full px-3 text-[0.9375rem] underline decoration-transparent underline-offset-[6px] transition-[text-decoration-color] duration-300 hover:decoration-current",
         className,
       )}
     >

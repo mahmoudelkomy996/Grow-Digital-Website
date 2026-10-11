@@ -41,7 +41,7 @@ export function MobileMenu({ id, open, items, cta, isActive, pathname, onNavigat
       <div className="container-site flex min-h-full flex-col pt-[calc(72px+1.5rem)] pb-10">
         <div className="flex items-center justify-between gap-4">
           <p className="eyebrow text-lime">{t.header.menu}</p>
-          <LanguageSwitch pathname={pathname} className="-me-3 text-paper" />
+          <LanguageSwitch pathname={pathname} className="-me-3 inline-flex text-paper" />
         </div>
         <ul className="mt-4 border-t border-teal-300/15">
           {items.map((item, i) => {
