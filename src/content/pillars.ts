@@ -5,7 +5,7 @@
 //   and figure is kept as stated in the deck.
 // - `headline` and `featured` are read from the homepage story (story.ts) so they never drift.
 import { img } from "./images.ts";
-import { STORY } from "./story.ts";
+import { LEGACY_STORY as STORY } from "./story.ts";
 import type { Pillar, PillarSlug, StoryChapter } from "./types.ts";
 
 function chapter(id: PillarSlug): StoryChapter {

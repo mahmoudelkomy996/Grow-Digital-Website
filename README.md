@@ -27,7 +27,7 @@ BASE_URL=http://localhost:3000 npx playwright test   # against a running server
 
 | Route | Content |
 |---|---|
-| `/` | 3D growth story (9 chapters), integrator statement, impact, pillars, use cases, solutions, industries, partners and clients, values |
+| `/` | 3D growth story (the 4 service pillars over the tree's 9 scene beats), integrator statement, impact, pillars, use cases, solutions, industries, partners and clients, values |
 | `/services/[slug]` | The four service pillars (consultancy, managed-services, software-development, digital-marketing): every service with its deliverables and outcome, plus coverage models, products and packages. Content: `src/content/services.ts` (from the October 2026 services document). Old `/pillars/*` URLs 301-redirect here. |
 | `/use-cases` | 12 AI and IoT use cases with URL-based filters |
 | `/partners` | Exclusive solution partners, data/AI and cloud partners, clients by sector, key projects, partner references |

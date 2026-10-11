@@ -37,27 +37,27 @@ test.describe("growth story (WebGL)", () => {
     await expect(page.locator("#story canvas")).toHaveAttribute("aria-hidden", "true");
   });
 
-  test("the middle of the story shows the Operate chapter", async ({ page }) => {
+  test("the middle of the story shows the Managed Services chapter", async ({ page }) => {
     await page.goto("/");
     await expect(panel(page, "intro")).toHaveAttribute("data-active", "true");
     await scrollToProgress(page, 0.5);
-    await expect(panel(page, "operate")).toHaveAttribute("data-active", "true", { timeout: 15_000 });
-    await expect(panel(page, "operate")).not.toHaveAttribute("inert");
-    await expect(panel(page, "operate").getByRole("heading", { level: 2 })).toHaveText("Systems that never sleep.");
+    await expect(panel(page, "managed-services")).toHaveAttribute("data-active", "true", { timeout: 15_000 });
+    await expect(panel(page, "managed-services")).not.toHaveAttribute("inert");
+    await expect(panel(page, "managed-services").getByRole("heading", { level: 2 })).toHaveText("IT operations you can hand over.");
     await expect(panel(page, "intro")).toHaveAttribute("aria-hidden", "true");
-    await expect(page.getByRole("button", { name: "Go to chapter: Operate" })).toHaveAttribute("aria-current", "step");
+    await expect(page.getByRole("button", { name: "Go to chapter: Managed Services" })).toHaveAttribute("aria-current", "step");
   });
 
-  test("rail button 05 jumps to the Secure chapter", async ({ page }) => {
+  test("rail button jumps to the Digital Marketing chapter", async ({ page }) => {
     await page.goto("/");
     const rail = page.getByRole("navigation", { name: "Story chapters" });
-    await expect(rail.getByRole("button")).toHaveCount(7);
-    const secure = rail.getByRole("button", { name: "Go to chapter: Secure" });
-    await expect(secure).toContainText("05");
-    await secure.click();
-    await expect(panel(page, "secure")).toHaveAttribute("data-active", "true", { timeout: 15_000 });
-    await expect(secure).toHaveAttribute("aria-current", "step");
-    await expect(panel(page, "secure").getByRole("link", { name: /Explore Secure/ })).toHaveAttribute("href", "/services/managed-services");
+    await expect(rail.getByRole("button")).toHaveCount(4);
+    const marketing = rail.getByRole("button", { name: "Go to chapter: Digital Marketing" });
+    await expect(marketing).toContainText("We market");
+    await marketing.click();
+    await expect(panel(page, "digital-marketing")).toHaveAttribute("data-active", "true", { timeout: 15_000 });
+    await expect(marketing).toHaveAttribute("aria-current", "step");
+    await expect(panel(page, "digital-marketing").getByRole("link", { name: /Explore Digital Marketing/ })).toHaveAttribute("href", "/services/digital-marketing");
   });
 });
 
@@ -80,7 +80,7 @@ test.describe("growth story without WebGL", () => {
     await expect(page.locator("#story canvas")).toHaveCount(0);
     // the text story still works
     await scrollToProgress(page, 0.5);
-    await expect(panel(page, "operate")).toHaveAttribute("data-active", "true", { timeout: 15_000 });
+    await expect(panel(page, "managed-services")).toHaveAttribute("data-active", "true", { timeout: 15_000 });
     expect(errors).toEqual([]);
     await browser.close();
   });

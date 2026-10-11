@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { existsSync } from "node:fs";
 import {
   PILLARS, USE_CASES, SOLUTIONS, PARTNERS, CLIENT_SECTORS, KEY_PROJECTS, REFERENCE_GROUPS,
-  VALUES, INDUSTRIES, METRICS, COMPANY, STORY, IMAGES, getPillar,
+  VALUES, INDUSTRIES, METRICS, COMPANY, STORY, LEGACY_STORY, IMAGES, getPillar,
 } from "../../src/content/index.ts";
 
 const imageSrcs = new Set(Object.values(IMAGES).map((i) => i.src));
@@ -21,7 +21,7 @@ test("seven ordered pillars with services and deep dives", () => {
 });
 
 test("story titles match pillar headlines", () => {
-  for (const p of PILLARS) assert.equal(STORY.find((c) => c.id === p.slug)?.title, p.headline);
+  for (const p of PILLARS) assert.equal(LEGACY_STORY.find((c) => c.id === p.slug)?.title, p.headline);
 });
 
 test("use cases reference valid pillars, industries and images", () => {

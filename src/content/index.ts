@@ -26,7 +26,8 @@ export {
 export { VALUES } from "./values.ts";
 export { INDUSTRIES, getIndustry } from "./industries.ts";
 export { METRICS } from "./metrics.ts";
-export { STORY } from "./story.ts";
+export { STORY, LEGACY_STORY } from "./story.ts";
+export type { GrowthChapter } from "./story.ts";
 export { IMAGES, IMAGE_STYLE, img } from "./images.ts";
 export type { ImageId, ImageSpec, Aspect } from "./images.ts";
 export { SERVICES, SERVICES_INTRO, SERVICE_SLUGS, getService, serviceHref, serviceCount } from "./services.ts";

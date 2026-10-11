@@ -1,7 +1,7 @@
 // Site navigation: header (one dropdown per service pillar), mobile menu and footer.
 // Service menus are derived from src/content/services.ts so the menu and the pages never drift apart.
 // Company facts are hard-coded here on purpose (the chrome must not depend on the content index).
-import { STORY } from "./story.ts";
+import { LEGACY_STORY as STORY } from "./story.ts";
 import { SERVICES, type ServicePillar } from "./services.ts";
 import type { PillarSlug } from "./types.ts";
 
@@ -132,7 +132,7 @@ export const NAV_CTA: NavLink = { label: "Talk to us", href: "/contact" };
 /** Service pillars for compact lists (footer, mobile, cards). */
 export const NAV_SERVICES = SERVICES.map((p) => ({ slug: p.slug, num: p.num, name: p.name, label: p.navLabel, tagline: p.tagline, href: href(p) }));
 
-// ── Legacy: the 7-chapter growth story (homepage 3D tree) still uses these ──────────────────
+// ── Legacy: the 7-pillar content (design-system samples, PillarNav) still uses these ───────
 export interface NavPillar {
   slug: PillarSlug;
   num: string;

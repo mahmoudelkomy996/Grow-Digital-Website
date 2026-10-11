@@ -7,15 +7,14 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import { getImageProps } from "next/image";
 import Link from "next/link";
 import Lenis from "lenis";
-import { STORY } from "@/content/story";
-import type { StoryChapter } from "@/content/types";
+import { STORY, type GrowthChapter } from "@/content/story";
 import { accent } from "@/lib/accent";
 import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { Eyebrow } from "@/components/ui/Eyebrow";
 // import { Logo } from "@/components/ui/Logo";
-import { CHAPTER_COUNT as N, clamp, lerp, panelOpacity, segment } from "./progress";
+import { CHAPTER_COUNT as N, chapterAt, clamp, lerp, spanOpacity } from "./progress";
 import type { StoryScene } from "./tree/scene";
 
 declare global {
@@ -24,7 +23,9 @@ declare global {
   }
 }
 
-const PILLARS = STORY.slice(1, 8);
+const PILLARS = STORY.slice(1, -1);
+const SPANS = STORY.map((c) => c.span);
+const PANELS = STORY.length;
 
 function useMediaQuery(query: string) {
   return useSyncExternalStore(
@@ -50,7 +51,7 @@ function hasWebGL2() {
   }
 }
 
-/** Fallback poster i: fades in over the chapter boundary; posters stack, so lower ones need no fade-out. */
+/** Fallback poster i (one per scene beat, not per chapter): fades in over the chapter boundary; posters stack, so lower ones need no fade-out. */
 const posterOpacity = (i: number, s: number) => (i === 0 ? 1 : clamp((s - i + 0.15) / 0.3));
 
 /** Poster i as art-directed <picture>: a portrait render for phones, a 16:10 render for everything else. */
@@ -75,7 +76,7 @@ function Poster({ i }: { i: number }) {
 const headingClass =
   "mb-[18px] text-[clamp(2.5rem,5.2vw,4.75rem)] leading-[1.02] tracking-[-0.02em] text-paper max-md:text-[2.375rem]";
 
-function PanelBody({ c, i }: { c: StoryChapter; i: number }) {
+function PanelBody({ c, i }: { c: GrowthChapter; i: number }) {
   const finale = c.id === "finale";
   const title = accent(c.title, "text-mint");
   return (
@@ -85,12 +86,25 @@ function PanelBody({ c, i }: { c: StoryChapter; i: number }) {
         <Eyebrow tone="dark" className="mb-3.5">
           {c.full}
         </Eyebrow>
-      ) : c.num ? (
+      ) : c.role ? (
         <Eyebrow tone="dark" className="mb-3.5">
-          {c.num} — {c.name} <span className="text-teal-300">/ {c.full}</span>
+          {c.role} <span className="text-teal-300">— {c.full}</span>
         </Eyebrow>
       ) : null}
       {i === 0 ? <h1 className={headingClass}>{title}</h1> : <h2 className={headingClass}>{title}</h2>}
+      {c.beats ? (
+        <p className="relative -mt-1.5 mb-4 h-5 font-mono text-[12px] tracking-[0.08em] text-mint uppercase">
+          {c.beats.map((b, k) => (
+            <span
+              key={b}
+              data-beat={k}
+              className="absolute inset-0 translate-y-1.5 opacity-0 transition-[opacity,translate] duration-300 data-[on=true]:translate-y-0 data-[on=true]:opacity-100"
+            >
+              {k + 1}/{c.beats!.length} · {b}
+            </span>
+          ))}
+        </p>
+      ) : null}
       <p className="mb-[22px] max-w-[460px] text-[17px] leading-[1.6] text-teal-200 max-md:mb-4 max-md:text-[15px]">{c.lead}</p>
       {c.chips.length ? (
         <ul className="mb-6 flex flex-wrap gap-2 max-md:mb-5" aria-label={`${c.name} services`}>
@@ -113,7 +127,7 @@ function PanelBody({ c, i }: { c: StoryChapter; i: number }) {
             Start the conversation
           </Button>
           <Button href="/#pillars" variant="ghost-dark">
-            See the seven pillars
+            See the four pillars
           </Button>
         </div>
       ) : c.href ? (
@@ -183,7 +197,8 @@ export function GrowthStory() {
     const el = sectionRef.current;
     if (!el) return;
     const top = el.getBoundingClientRect().top + window.scrollY;
-    const y = top + ((i + 0.5) / N) * (el.offsetHeight - window.innerHeight);
+    // land on the chapter's first scene beat (its camera hold), not on a transition
+    const y = top + ((STORY[i].span[0] + 0.5) / N) * (el.offsetHeight - window.innerHeight);
     if (lenisRef.current) lenisRef.current.scrollTo(y, { duration: 1.6 });
     else window.scrollTo({ top: y, behavior: reducedRef.current ? "auto" : "smooth" });
   }, []);
@@ -200,21 +215,27 @@ export function GrowthStory() {
 
     const update = (p: number) => {
       const panels = panelRefs.current;
+      const s = p * N;
       let act = -1;
-      for (let i = 0; i < N; i++) {
+      for (let i = 0; i < PANELS; i++) {
         const el = panels[i];
         if (!el) continue;
-        const { o, local } = panelOpacity(i, p);
+        const [a, b] = SPANS[i];
+        const o = spanOpacity(SPANS[i], s, i === 0, i === PANELS - 1);
         el.style.opacity = o.toFixed(3);
-        el.style.translate = `0 ${((1 - o) * (local < 0.5 ? 24 : -24)).toFixed(1)}px`;
+        el.style.translate = `0 ${((1 - o) * (s < (a + b) / 2 ? 24 : -24)).toFixed(1)}px`;
         if (o > 0.5) act = i;
+        // two-beat chapters: caption for the beat under the progress
+        const beat = Math.floor(s - a);
+        el.querySelectorAll<HTMLElement>("[data-beat]").forEach((sp, k, all) => {
+          sp.dataset.on = String(Math.min(all.length - 1, beat) === k);
+        });
       }
       if (act !== lastActive) setActive((lastActive = act));
-      const { i } = segment(p);
+      const i = chapterAt(SPANS, s);
       if (i !== lastRail) setRailActive((lastRail = i));
       if (barRef.current) barRef.current.style.width = `${(p * 100).toFixed(2)}%`;
       if (fallbackRef.current) {
-        const s = p * N;
         let top = 0;
         for (let k = 0; k < N; k++) if (posterOpacity(k, s) >= 1) top = k;
         posterRefs.current.forEach((el, k) => {
@@ -387,9 +408,9 @@ export function GrowthStory() {
 
         {fallback ? (
           <div aria-hidden className="absolute inset-0" data-testid="story-fallback">
-            {STORY.map((c, i) => (
+            {Array.from({ length: N }, (_, i) => (
               <div
-                key={c.id}
+                key={i}
                 ref={(el) => {
                   posterRefs.current[i] = el;
                 }}
@@ -459,7 +480,7 @@ export function GrowthStory() {
                     on ? "opacity-100" : "translate-x-1.5 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:opacity-100",
                   )}
                 >
-                  {c.num} {c.name}
+                  {c.role} · {c.name}
                 </span>
                 <span
                   aria-hidden
