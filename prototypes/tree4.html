@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tree · 4 Pillars</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500&family=Instrument+Serif:ital@1&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="shared/base.css">
+  <style>
+    .beat { position: relative; height: 20px; margin: -6px 0 16px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .beat span { position: absolute; inset: 0; color: var(--mint, #7fe0c8); opacity: 0; translate: 0 6px; transition: opacity .35s, translate .35s; }
+    .beat span.on { opacity: 1; translate: 0 0; }
+    .rail .name { white-space: nowrap; }
+  </style>
+  <script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/" } }</script>
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+  <script type="module">
+    import { initStory4 } from "./shared/story4.js";
+    import { createScene } from "./tree/scene.js";
+    initStory4({ createScene });
+  </script>
+</body>
+</html>
