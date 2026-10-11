@@ -1,7 +1,5 @@
 // Every public route of the site. Keep in sync with src/app.
 export const SERVICE_SLUGS = ["consultancy", "managed-services", "software-development", "digital-marketing"] as const;
-/** @deprecated kept for older specs */
-export const PILLAR_SLUGS = SERVICE_SLUGS;
 
 export const ROUTES = [
   "/",

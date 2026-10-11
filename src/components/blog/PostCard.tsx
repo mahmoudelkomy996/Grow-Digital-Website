@@ -2,12 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import type { PostMeta } from "@/lib/blog";
 import { formatDate } from "@/lib/blog";
-import { getService as getPillar } from "@/content";
+import { getService } from "@/content";
 import { cn } from "@/lib/cn";
 
 /** Card for a blog post. `featured` is the large horizontal variant used for the newest post. */
 export function PostCard({ post, featured = false, className }: { post: PostMeta; featured?: boolean; className?: string }) {
-  const pillar = getPillar(post.category);
+  const pillar = getService(post.category);
   return (
     <article
       className={cn(

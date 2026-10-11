@@ -126,4 +126,3 @@ export const REFERENCE_GROUPS: ReferenceGroup[] = [
 ];
 
 /** Every client logo, flattened (for marquees and walls). */
-export const ALL_CLIENTS = CLIENT_SECTORS.flatMap((s) => s.clients);

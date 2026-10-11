@@ -9,7 +9,7 @@ export const USE_CASES: UseCase[] = [
     id: "inflight-catering",
     title: "Inflight catering optimization",
     industry: "aviation",
-    pillar: "transform",
+    service: "software-development",
     category: "AI",
     summary:
       "Better demand forecasting and product loading for a low-cost carrier's onboard food and beverages, to minimize waste.",
@@ -28,7 +28,7 @@ export const USE_CASES: UseCase[] = [
     id: "vehicle-purchase-prediction",
     title: "Vehicle purchase prediction",
     industry: "retail",
-    pillar: "transform",
+    service: "software-development",
     category: "AI",
     summary:
       "AI models that predict what each customer wants to buy next, so campaigns reach the right product, customer and moment.",
@@ -46,7 +46,7 @@ export const USE_CASES: UseCase[] = [
     id: "banking-regulatory-chatbot",
     title: "Banking regulatory chatbot",
     industry: "financial-services",
-    pillar: "transform",
+    service: "software-development",
     category: "AI",
     summary:
       "A multilingual virtual advisor that guides businesses and individuals through KYC/AML procedures and regulatory questions.",
@@ -62,7 +62,7 @@ export const USE_CASES: UseCase[] = [
     id: "healthcare-assistant",
     title: "24/7 digital healthcare assistant",
     industry: "healthcare",
-    pillar: "transform",
+    service: "software-development",
     category: "AI",
     summary:
       "A WhatsApp chatbot that answers patients instantly, day and night, and handles bookings and requests.",
@@ -79,7 +79,7 @@ export const USE_CASES: UseCase[] = [
     id: "fraud-aml-agentic-ai",
     title: "Agentic AI against financial fraud and money laundering",
     industry: "financial-services",
-    pillar: "transform",
+    service: "software-development",
     category: "AI",
     summary:
       "AI agents that compare every transaction with a historical normal profile and raise a red flag the moment behavior deviates.",
@@ -95,7 +95,7 @@ export const USE_CASES: UseCase[] = [
     id: "clinical-decision-support",
     title: "Agentic AI for clinical decision support",
     industry: "healthcare",
-    pillar: "transform",
+    service: "software-development",
     category: "AI",
     summary:
       "A cloud-based AI product that improves clinical decisions, medical coding accuracy and claims auditing for healthcare providers.",
@@ -113,7 +113,7 @@ export const USE_CASES: UseCase[] = [
     id: "maintenance-scheduling",
     title: "AI-powered maintenance scheduling",
     industry: "manufacturing",
-    pillar: "transform",
+    service: "software-development",
     category: "AI",
     summary:
       "Human task optimization: AI plans maintenance around asset health, available technicians, skills and work priorities.",
@@ -131,7 +131,7 @@ export const USE_CASES: UseCase[] = [
     id: "skills-gap-management",
     title: "AI-based competency & skill gap management",
     industry: "manufacturing",
-    pillar: "transform",
+    service: "software-development",
     category: "AI",
     summary:
       "AI that maps workforce competencies, finds the gaps and recommends the training paths that close them.",
@@ -151,7 +151,7 @@ export const USE_CASES: UseCase[] = [
     id: "energy-cost-optimization",
     title: "Energy cost optimization",
     industry: "manufacturing",
-    pillar: "transform",
+    service: "software-development",
     category: "IoT",
     summary: "Real-time monitoring and mapping of energy usage to production output.",
     project:
@@ -167,7 +167,7 @@ export const USE_CASES: UseCase[] = [
     id: "reducing-downtime",
     title: "Reducing downtime",
     industry: "manufacturing",
-    pillar: "transform",
+    service: "software-development",
     category: "IoT",
     summary:
       "Dynamic resource deployment that uses SCADA and maintenance data to optimize repair times and skill-based technician assignments.",
@@ -180,7 +180,7 @@ export const USE_CASES: UseCase[] = [
     id: "production-efficiency",
     title: "Production efficiency",
     industry: "manufacturing",
-    pillar: "transform",
+    service: "software-development",
     category: "IoT",
     summary:
       "IIoT with data contextualization that gives every role its own insights, enabling proactive anomaly detection and production optimization.",
@@ -193,7 +193,7 @@ export const USE_CASES: UseCase[] = [
     id: "product-quality",
     title: "Improving product quality",
     industry: "manufacturing",
-    pillar: "transform",
+    service: "software-development",
     category: "IoT",
     summary: "Real-time monitoring of reactor parameters, with process adjustments driven by advanced analytics.",
     project:
@@ -205,6 +205,4 @@ export const USE_CASES: UseCase[] = [
 ];
 
 /** Use cases for the given ids, in the order given; unknown ids are skipped. */
-export function getUseCases(ids: string[]): UseCase[] {
-  return ids.flatMap((id) => USE_CASES.find((u) => u.id === id) ?? []);
-}
+

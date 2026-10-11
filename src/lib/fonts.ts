@@ -1,13 +1,13 @@
 import { Instrument_Serif, JetBrains_Mono, Outfit } from "next/font/google";
 
-export const outfit = Outfit({
+const outfit = Outfit({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600"],
   variable: "--font-outfit",
   display: "swap",
 });
 
-export const instrumentSerif = Instrument_Serif({
+const instrumentSerif = Instrument_Serif({
   subsets: ["latin"],
   weight: "400",
   style: ["italic", "normal"],
@@ -15,7 +15,7 @@ export const instrumentSerif = Instrument_Serif({
   display: "swap",
 });
 
-export const jetbrainsMono = JetBrains_Mono({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-jetbrains-mono",

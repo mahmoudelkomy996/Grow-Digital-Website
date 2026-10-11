@@ -8,7 +8,7 @@ const UP = new V3(0, 1, 0);
 const XA = new V3(1, 0, 0);
 export const DEG = Math.PI / 180;
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-export const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 export const sstep = (a: number, b: number, v: number) => {
   const t = clamp01((v - a) / (b - a));
   return t * t * (3 - 2 * t);
@@ -28,7 +28,7 @@ export function mulberry32(a: number): Rng {
 }
 
 // inverse of smoothstep's cubic (3x^2 - 2x^3)
-export function invSmooth(y: number) {
+function invSmooth(y: number) {
   y = clamp01(y);
   return 0.5 - Math.sin(Math.asin(1 - 2 * y) / 3);
 }
@@ -47,7 +47,7 @@ export const TL = {
   branch: [W(0, 0), W(1.04, 1.24), W(1.8, 2.12), W(2.8, 3.12), W(3.8, 4.12), W(4.8, 5.12), W(5.8, 6.12), W(6.8, 7.12)],
   leaves: W(6.72, 7.24),
 };
-export const winRev = (w: Win, l: number) => w[0] + (w[1] - w[0]) * invSmooth(l);
+const winRev = (w: Win, l: number) => w[0] + (w[1] - w[0]) * invSmooth(l);
 
 export const TREE = {
   trunkH: 4.8,

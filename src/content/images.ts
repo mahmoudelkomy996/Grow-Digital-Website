@@ -1,9 +1,7 @@
 // Image manifest. Every photograph on the site is AI-generated with Magnific
-// (Seedream 5 Pro, 2K) from these prompts plus IMAGE_STYLE, then saved to `src`.
+// (Seedream 5 Pro, 2K) from these prompts plus this style suffix, then saved to `src`:
+//   editorial corporate photography, cinematic, colour graded with deep teal shadows (#083B3B) and soft warm cream highlights (#F6F5F0), muted desaturated palette, soft natural light, shallow depth of field, shot on 35mm, premium and calm, photorealistic, modern Gulf (Saudi Arabia / UAE) setting, no text, no letters, no logos, no watermarks, no UI text
 import type { ImageRef } from "./types.ts";
-
-export const IMAGE_STYLE =
-  "editorial corporate photography, cinematic, colour graded with deep teal shadows (#083B3B) and soft warm cream highlights (#F6F5F0), muted desaturated palette, soft natural light, shallow depth of field, shot on 35mm, premium and calm, photorealistic, modern Gulf (Saudi Arabia / UAE) setting, no text, no letters, no logos, no watermarks, no UI text";
 
 export type Aspect = "16:9" | "4:3" | "3:2" | "4:5" | "1:1" | "21:9";
 
@@ -22,12 +20,6 @@ export const IMAGES = {
   "consult-detail": spec("/images/pillars/consult-detail.jpg", "4:3",
     "Hands annotating a printed transformation roadmap on a walnut table",
     "close-up of two hands annotating a printed transformation roadmap and architecture diagram with a fine pen on a dark walnut table, reading glasses and a closed laptop nearby, soft window light"),
-  "transform-hero": spec("/images/pillars/transform-hero.jpg", "16:9",
-    "Data scientist in front of a large display of a neural network visualization",
-    "Emirati female data scientist in an elegant black abaya and hijab standing in front of a large curved wall display showing an abstract glowing teal neural network and data point cloud, dark modern AI lab, reflections on the floor"),
-  "transform-detail": spec("/images/pillars/transform-detail.jpg", "4:3",
-    "IoT sensors with status lights mounted on steel pipes in a modern industrial plant",
-    "small wireless industrial IoT sensors with tiny status lights mounted on polished steel pipes in a modern petrochemical plant, engineer holding a tablet softly out of focus in the background, dusk light"),
   "build-hero": spec("/images/pillars/build-hero.jpg", "16:9",
     "Product team collaborating on mobile app wireframes in a bright studio",
     "product team of software developers and UX designers collaborating around a large screen showing abstract mobile app wireframes and colour blocks in a bright modern Dubai tech studio, one young Saudi man in a casual shirt and a woman in hijab pointing, plants and concrete walls"),
@@ -40,18 +32,6 @@ export const IMAGES = {
   "operate-detail": spec("/images/pillars/operate-detail.jpg", "4:3",
     "Long aisle of server racks in a modern cloud data center",
     "long symmetrical aisle of server racks in a modern cloud data centre, tiny blue-green status lights, cool teal light, polished floor reflections, one engineer walking far away"),
-  "secure-hero": spec("/images/pillars/secure-hero.jpg", "16:9",
-    "Cybersecurity analyst working in a dark security operations center",
-    "cybersecurity analyst, Saudi man in his thirties, focused in a dark security operations centre, face lit by teal screens showing abstract threat maps, shallow depth of field"),
-  "secure-detail": spec("/images/pillars/secure-detail.jpg", "4:3",
-    "Hardware security key plugged into a laptop beside a fingerprint reader",
-    "macro photograph of a hardware security key plugged into a sleek laptop and a fingerprint reader on a dark desk, teal rim light, minimal composition"),
-  "solve-hero": spec("/images/pillars/solve-hero.jpg", "16:9",
-    "Doctor and administrator reviewing a digital patient record in a modern hospital",
-    "Saudi doctor in a white coat and a hospital administrator woman in hijab reviewing a digital patient record on a tablet in a bright modern hospital corridor, glass and light wood, calm"),
-  "solve-detail": spec("/images/pillars/solve-detail.jpg", "4:3",
-    "Store associate using a tablet for visual merchandising in a premium store",
-    "store associate using a tablet to check visual merchandising in a premium fashion store in a Riyadh mall, neatly styled clothing rails, soft warm light"),
   "grow-hero": spec("/images/pillars/grow-hero.jpg", "16:9",
     "Marketing team reviewing campaign performance on a large screen",
     "marketing team in a creative agency office reviewing campaign performance charts on a large screen, abstract graphs in teal and lime, a woman in hijab presenting, colleagues with laptops, bright daylight"),
@@ -152,9 +132,6 @@ export const IMAGES = {
   "contact-hero": spec("/images/misc/contact.jpg", "3:2",
     "Reception lounge of a modern office with a city view",
     "reception lounge of a modern corporate office with lounge chairs, plants and a panoramic city view, welcoming and calm"),
-  "cta-growth": spec("/images/misc/cta-growth.jpg", "21:9",
-    "Young palm sapling in the desert at sunrise with a city skyline in the distance",
-    "a young palm sapling growing from desert sand at sunrise, a modern city skyline faint in the distance, wide cinematic composition, hopeful"),
 } satisfies Record<string, ImageSpec>;
 
 export type ImageId = keyof typeof IMAGES;

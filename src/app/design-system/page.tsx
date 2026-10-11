@@ -3,18 +3,8 @@ import type { ReactNode } from "react";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { Check, X } from "lucide-react";
-import type {
-  DeepDive,
-  ImageRef,
-  LogoItem,
-  Metric,
-  Pillar,
-  ServiceGroup,
-  Solution,
-  UseCase,
-  Value,
-} from "@/content/types";
-import { NAV_PILLARS } from "@/content/navigation";
+import type { ImageRef, LogoItem, Metric, Solution, UseCase, Value } from "@/content/types";
+import { SERVICES } from "@/content/services";
 import { cn } from "@/lib/cn";
 import { Container } from "@/components/ui/Container";
 import { Section } from "@/components/ui/Section";
@@ -24,23 +14,19 @@ import { Button, type ButtonVariant } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { SmileArc } from "@/components/ui/SmileArc";
 import { ArrowLink } from "@/components/ui/ArrowLink";
-import { Reveal } from "@/components/ui/Reveal";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { LogoTile } from "@/components/ui/LogoTile";
 import { Disclosure } from "@/components/ui/Disclosure";
 import { Logo } from "@/components/ui/Logo";
 import { PageHero } from "@/components/sections/PageHero";
 import { CtaBand } from "@/components/sections/CtaBand";
-import { PillarCard } from "@/components/sections/PillarCard";
-import { PillarGrid } from "@/components/sections/PillarGrid";
 import { UseCaseCard } from "@/components/sections/UseCaseCard";
 import { SolutionCard } from "@/components/sections/SolutionCard";
 import { LogoMarquee } from "@/components/sections/LogoMarquee";
 import { LogoWall } from "@/components/sections/LogoWall";
 import { MetricBand } from "@/components/sections/MetricBand";
-import { ScopeValue } from "@/components/sections/ScopeValue";
-import { ServiceGrid } from "@/components/sections/ServiceGrid";
-import { PillarNav } from "@/components/sections/PillarNav";
+import { ServicePillarGrid } from "@/components/services/ServicePillarGrid";
+import { ServiceNav } from "@/components/services/ServicePage";
 import { ValuesGrid } from "@/components/sections/ValuesGrid";
 
 export const metadata: Metadata = {
@@ -67,39 +53,12 @@ const logo = (id: string, name: string, src?: string, scale?: number): LogoItem 
   scale,
 });
 
-const PILLAR_ONE_LINERS: Record<string, string> = {
-  consult: "Strategy, architecture and governance that turn transformation into an executive-aligned roadmap.",
-  transform: "Predictive models, AI agents and IoT platforms that hold up in production, not just in a demo.",
-  build: "Web, mobile and custom applications measured on load time and conversion, not screenshots.",
-  operate: "SLA-based L1–L3 support, cloud operations and monitoring that keep revenue systems running.",
-  secure: "Security built around your actual attack surface, with 24/7 vigilance and governance you can audit.",
-  solve: "Our own AI platforms, plus partner solutions we exclusively represent in KSA and the UAE.",
-  grow: "Strategy, performance marketing and GrowthLab analytics pulled together, with no siloed tactics.",
-};
-
-const SAMPLE_PILLARS: Pillar[] = NAV_PILLARS.map((p) => ({
-  slug: p.slug,
-  num: p.num as Pillar["num"],
-  verb: p.name,
-  name: p.full,
-  headline: `${p.name} *sample*.`,
-  oneLiner: PILLAR_ONE_LINERS[p.slug],
-  intro: [],
-  hero: photo(`/images/pillars/${p.slug}-hero.jpg`, `${p.name} hero`),
-  secondary: photo(`/images/pillars/${p.slug}-detail.jpg`, `${p.name} detail`),
-  services: [],
-  featured: p.featured,
-  deepDives: [],
-  partnerIds: [],
-  useCaseIds: [],
-}));
-
 const SAMPLE_USE_CASES: UseCase[] = [
   {
     id: "vehicle-purchase",
     title: "Vehicle purchase prediction",
     industry: "retail",
-    pillar: "transform",
+    service: "software-development",
     category: "AI",
     summary: "Models predict what each customer wants to buy next, so campaigns target the right product at the right moment.",
     project:
@@ -115,7 +74,7 @@ const SAMPLE_USE_CASES: UseCase[] = [
     id: "banking-chatbot",
     title: "Banking regulatory chatbot",
     industry: "financial-services",
-    pillar: "transform",
+    service: "software-development",
     category: "AI",
     summary: "A multilingual virtual advisor guiding businesses and individuals through KYC/AML and transfer rules.",
     project:
@@ -127,7 +86,7 @@ const SAMPLE_USE_CASES: UseCase[] = [
     id: "production-efficiency",
     title: "Production efficiency",
     industry: "manufacturing",
-    pillar: "transform",
+    service: "software-development",
     category: "IoT",
     summary: "IIoT with data contextualization gives role-based insights for proactive production optimization.",
     project:
@@ -166,64 +125,6 @@ const SAMPLE_SOLUTIONS: Solution[] = [
     ],
     image: photo("/images/solutions/incommerce.jpg", "Shopper using a commerce app"),
     partnerId: "inveon",
-  },
-];
-
-const SAMPLE_DEEP_DIVES: DeepDive[] = [
-  {
-    id: "advisory",
-    title: "Advisory services",
-    objective: "Define strategic direction and a transformation roadmap before execution.",
-    scope: [
-      "Digital transformation strategy & roadmap",
-      "Technology landscape assessment",
-      "Enterprise architecture advisory",
-      "Vendor evaluation & selection",
-      "Target operating model design",
-      "ROI & investment prioritization",
-    ],
-    value: [
-      "Clear executive-aligned roadmap",
-      "Reduced investment risk",
-      "Improved decision-making framework",
-      "Future-ready digital architecture",
-    ],
-    image: photo("/images/pillars/consult-detail.jpg", "Hands annotating a printed transformation roadmap"),
-  },
-  {
-    id: "growshield",
-    title: "GrowShield™ managed services",
-    objective: "Keep the systems your revenue depends on available, patched and monitored.",
-    scope: [
-      "Application & system support (ERP, HIS, IoT, AI)",
-      "L1, L2, L3 support coverage",
-      "Incident & problem management",
-      "SLA-based managed services",
-    ],
-    value: ["Reduced downtime & operational risk", "Improved system availability", "Predictable operational costs"],
-    image: photo("/images/pillars/operate-detail.jpg", "Server racks in a modern data centre"),
-  },
-];
-
-const SAMPLE_SERVICES: ServiceGroup[] = [
-  {
-    items: [
-      "Digital Transformation Strategy",
-      "IT Strategy & Roadmap",
-      "Enterprise Architecture Advisory",
-      "PMO & Program Management",
-      "Quality Assurance",
-      "Business Consultancy",
-    ],
-  },
-  {
-    title: "A deeper look",
-    items: [
-      "Vulnerability Assessment & Penetration Testing",
-      "24/7 Managed Security Services",
-      "Cloud Security Architecture & Design",
-      "Security Awareness Training",
-    ],
   },
 ];
 
@@ -822,15 +723,9 @@ export default function DesignSystemPage() {
               id="cards"
               num="07"
               title="Cards with *hairlines*, not shadows."
-              lead="20px radius, 1px line borders and a 2px lift on hover. Pillar cards link to their page; use case cards can expand in place."
+              lead="20px radius, 1px line borders and a 2px lift on hover. Use case cards can expand in place."
             >
-              <div className="grid gap-3 md:grid-cols-3">
-                <div className="md:col-span-2">
-                  <PillarCard pillar={SAMPLE_PILLARS[0]} variant="feature" />
-                </div>
-                <PillarCard pillar={SAMPLE_PILLARS[1]} />
-              </div>
-              <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                 {SAMPLE_USE_CASES.map((u, i) => (
                   <UseCaseCard key={u.id} useCase={u} expandable={i === 0} />
                 ))}
@@ -858,32 +753,14 @@ export default function DesignSystemPage() {
         </Container>
       </section>
 
-      <Section tone="paper" aria-label="Pillar grid sample">
+      <Section tone="paper" aria-label="Service pillar grid sample">
         <Container>
-          <SectionHeading eyebrow="PillarGrid" title="Seven pillars, one *team*." className="mb-12" />
-          <PillarGrid pillars={SAMPLE_PILLARS} />
+          <SectionHeading eyebrow="ServicePillarGrid" title="Four pillars, one *team*." className="mb-12" />
+          <ServicePillarGrid pillars={SERVICES} />
         </Container>
       </Section>
 
       <MetricBand metrics={SAMPLE_METRICS} eyebrow="MetricBand · Impact" title="Outcomes, *measured*." id="metrics-sample" />
-
-      <Section tone="paper" aria-label="Service grid sample">
-        <Container>
-          <SectionHeading eyebrow="ServiceGrid" title="Every service, *numbered*." className="mb-12" />
-          <ServiceGrid groups={SAMPLE_SERVICES} />
-        </Container>
-      </Section>
-
-      <Section tone="paper-2" aria-label="Scope and value sample">
-        <Container className="flex flex-col gap-24">
-          <SectionHeading eyebrow="ScopeValue" title="Deep dives, *side by side*." className="-mb-8" />
-          {SAMPLE_DEEP_DIVES.map((d, i) => (
-            <Reveal key={d.id}>
-              <ScopeValue deepDive={d} index={i} reverse={i % 2 === 1} />
-            </Reveal>
-          ))}
-        </Container>
-      </Section>
 
       <Section tone="paper" aria-label="Values grid sample">
         <Container>
@@ -892,7 +769,7 @@ export default function DesignSystemPage() {
         </Container>
       </Section>
 
-      <PillarNav current="build" />
+      <ServiceNav current={SERVICES[2]} />
 
       <CtaBand />
 

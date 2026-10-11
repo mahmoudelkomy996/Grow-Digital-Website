@@ -3,11 +3,11 @@
 import type { Partner } from "./types.ts";
 
 /** Deck slide 39, lightly edited. Applies to every partner with `exclusive: true`. */
-export const EXCLUSIVE_STATEMENT =
+const EXCLUSIVE_STATEMENT =
   "Grow Digital is the exclusive representative and delivery arm for the following solution providers in the Kingdom of Saudi Arabia and the UAE.";
 
 /** Deck slide 13. Applies to the "data-ai" group. */
-export const DATA_AI_STATEMENT =
+const DATA_AI_STATEMENT =
   "Grow Digital runs Data and AI delivery with our global partners Navinspire and GTech.";
 
 export const PARTNER_GROUPS: { id: Partner["group"]; title: string; lead: string }[] = [
@@ -103,14 +103,6 @@ export const PARTNERS: Partner[] = [
     description: "Adoption of IBM Cloud services, with an emphasis on hybrid cloud solutions and AI integration.",
   },
 ];
-
-export function getPartner(id: string): Partner | undefined {
-  return PARTNERS.find((p) => p.id === id);
-}
-
-export function getPartners(ids: string[]): Partner[] {
-  return ids.flatMap((id) => getPartner(id) ?? []);
-}
 
 export function partnersInGroup(group: Partner["group"]): Partner[] {
   return PARTNERS.filter((p) => p.group === group);

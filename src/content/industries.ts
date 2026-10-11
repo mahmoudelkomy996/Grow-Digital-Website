@@ -1,7 +1,7 @@
 // Industries we serve. Descriptions summarise services, solutions and use cases from the deck;
 // they introduce no new clients, figures or capabilities.
 import { img } from "./images.ts";
-import type { Industry, IndustryId } from "./types.ts";
+import type { Industry } from "./types.ts";
 
 export const INDUSTRIES: Industry[] = [
   {
@@ -55,6 +55,4 @@ export const INDUSTRIES: Industry[] = [
   },
 ];
 
-export function getIndustry(id: IndustryId): Industry | undefined {
-  return INDUSTRIES.find((i) => i.id === id);
-}
+

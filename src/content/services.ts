@@ -440,10 +440,6 @@ const SERVICE_DATA: Omit<ServicePillar, "verb" | "oneLiner">[] = [
 
 export const SERVICES: ServicePillar[] = SERVICE_DATA.map((p) => ({ ...p, verb: p.navLabel, oneLiner: p.tagline }));
 
-export const SERVICE_SLUGS = SERVICES.map((p) => p.slug);
-
-export const serviceHref = (slug: ServiceSlug, anchor?: string) => `/services/${slug}${anchor ? `#${anchor}` : ""}`;
-
 export function getService(slug: string): ServicePillar | undefined {
   return SERVICES.find((p) => p.slug === slug);
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getService as getPillar } from "@/content";
+import { getService } from "@/content";
 import { formatDate, getAdjacentPosts, getAllPosts, getPost, getRelatedPosts, metaDescription } from "@/lib/blog";
 import { SITE_NAME, SITE_URL, blogPostingJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): P
   const title = post.seoTitle ?? post.title;
   const description = metaDescription(post.description);
   const path = `/blog/${post.slug}`;
-  const pillar = getPillar(post.category);
+  const pillar = getService(post.category);
   return {
     title,
     description,
@@ -58,7 +58,7 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
   const { slug } = await params;
   const post = await getPost(slug);
   if (!post) notFound();
-  const pillar = getPillar(post.category);
+  const pillar = getService(post.category);
   const related = getRelatedPosts(post, 3);
   const { newer, older } = getAdjacentPosts(post.slug);
   const crumbs = [

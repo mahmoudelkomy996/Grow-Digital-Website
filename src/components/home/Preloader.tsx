@@ -15,7 +15,7 @@ import { SMILE_PATH } from "@/components/ui/SmileArc";
  * curtain. While it is up, the page behind is inert and scroll is locked.
  */
 
-export const PRELOADER_SESSION_KEY = "gd:preloaded";
+const PRELOADER_SESSION_KEY = "gd:preloaded";
 const MIN_MS = 1400;
 const MAX_MS = 6500;
 const EXIT_MS = 900;

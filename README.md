@@ -74,7 +74,6 @@ Body in Markdown (GFM). Use ## and ### for sections; they build the table of con
 ```
 
 - New posts appear automatically in `/blog`, the category page, the sitemap, the RSS feed (`/blog/rss.xml`), `llms.txt`, and the related-posts sections on the home and pillar pages.
-- `scripts/migrate-wp-blog.mjs` re-imports the old WordPress posts (it overwrites `content/blog`); `npm run test:unit` validates every post.
 
 ## SEO
 
@@ -97,4 +96,4 @@ Copy `.env.example` to `.env.local` and set `RESEND_API_KEY`, `CONTACT_TO` and `
 - Design spec: `docs/superpowers/specs/2026-09-30-grow-digital-website-design.md`
 - Implementation plan: `docs/superpowers/plans/2026-09-30-grow-digital-website.md`
 - Design system rules: `DESIGN.md`
-- The 3D concept prototypes (tree, city, arc) live in `prototypes/`; the tree was chosen. Serve them with `node prototypes/serve.js 5178`.
+- The tree and navigation prototypes live in `prototypes/` (throwaway spikes, not linted). Serve them with `node prototypes/serve.js 5178`.

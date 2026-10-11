@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { PILLAR_SLUGS } from "./routes";
+import { SERVICE_SLUGS } from "./routes";
 
 test.describe("home", () => {
   test("sections, pillar links and organization JSON-LD", async ({ page }) => {
@@ -17,7 +17,7 @@ test.describe("home", () => {
 
 test.describe("service pillars", () => {
   const counts: Record<string, number> = { consultancy: 17, "managed-services": 10, "software-development": 4, "digital-marketing": 8 };
-  for (const slug of PILLAR_SLUGS) {
+  for (const slug of SERVICE_SLUGS) {
     test(`/services/${slug} renders hero, every service in the index and in detail`, async ({ page }) => {
       const res = await page.goto(`/services/${slug}`);
       expect(res?.status()).toBe(200);
@@ -136,7 +136,7 @@ test.describe("seo", () => {
   test("sitemap, robots and OG image", async ({ request }) => {
     const sitemap = await (await request.get("/sitemap.xml")).text();
     // The 12 core pages must be listed (blog posts and categories add more URLs on top).
-    for (const path of ["", "/about", "/use-cases", "/partners", "/contact", ...PILLAR_SLUGS.map((s) => `/services/${s}`)]) {
+    for (const path of ["", "/about", "/use-cases", "/partners", "/contact", ...SERVICE_SLUGS.map((s) => `/services/${s}`)]) {
       expect(sitemap, path || "/").toContain(`<loc>https://growdigital.com${path}</loc>`);
     }
     const robots = await (await request.get("/robots.txt")).text();

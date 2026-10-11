@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import type { Pillar } from "@/content/types";
 import type { ServicePillar } from "@/content/services";
 
 export const SITE_URL = "https://growdigital.com";
@@ -103,24 +102,6 @@ export function breadcrumbJsonLd(items: { label: string; href?: string }[], curr
       const href = item.href ?? (i === items.length - 1 ? currentPath : undefined);
       return { "@type": "ListItem", position: i + 1, name: item.label, ...(href ? { item: abs(href.split("#")[0] || "/") } : {}) };
     }),
-  };
-}
-
-export function serviceJsonLd(pillar: Pillar) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Service",
-    name: pillar.name,
-    serviceType: pillar.verb,
-    description: pillar.oneLiner,
-    provider: { "@id": ORG_ID, "@type": "Organization", name: SITE_NAME, url: SITE_URL },
-    areaServed: ["SA", "AE"],
-    url: `${SITE_URL}/pillars/${pillar.slug}`,
-    hasOfferCatalog: {
-      "@type": "OfferCatalog",
-      name: pillar.name,
-      itemListElement: pillar.services.flatMap((g) => g.items).map((name) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name } })),
-    },
   };
 }
 

@@ -85,10 +85,4 @@ export const SOLUTIONS: Solution[] = [
 ];
 
 /** "Grow Bot by Grow Digital", "InCommerce by Inveon", … */
-export function solutionTitle(s: Solution): string {
-  return `${s.name} by ${s.by}`;
-}
 
-export function getSolution(id: string): Solution | undefined {
-  return SOLUTIONS.find((s) => s.id === id);
-}

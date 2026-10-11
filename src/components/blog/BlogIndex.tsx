@@ -1,6 +1,6 @@
 import Link from "next/link";
-import type { ServiceSlug as PillarSlug } from "@/content";
-import { getService as getPillar } from "@/content";
+import type { ServiceSlug } from "@/content";
+import { getService } from "@/content";
 import type { PostMeta } from "@/lib/blog";
 import { getAllPosts, getBlogCategories } from "@/lib/blog";
 import { cn } from "@/lib/cn";
@@ -10,7 +10,7 @@ import { PostCard } from "./PostCard";
 
 const pageHref = (base: string, page: number) => (page <= 1 ? base : `${base}/page/${page}`);
 
-function CategoryNav({ active }: { active?: PillarSlug }) {
+function CategoryNav({ active }: { active?: ServiceSlug }) {
   const total = getAllPosts().length;
   const linkClass = (on: boolean) =>
     cn(
@@ -26,7 +26,7 @@ function CategoryNav({ active }: { active?: PillarSlug }) {
           </Link>
         </li>
         {getBlogCategories().map((c) => {
-          const pillar = getPillar(c.slug);
+          const pillar = getService(c.slug);
           return (
             <li key={c.slug}>
               <Link href={`/blog/category/${c.slug}`} className={linkClass(active === c.slug)} aria-current={active === c.slug ? "page" : undefined}>
@@ -82,7 +82,7 @@ export function BlogIndex({
   page: number;
   totalPages: number;
   base: string;
-  category?: PillarSlug;
+  category?: ServiceSlug;
 }) {
   const [first, ...rest] = posts;
   const featureFirst = page === 1 && !category && first;
@@ -91,7 +91,7 @@ export function BlogIndex({
     <Section tone="paper-2" aria-labelledby="posts-title">
       <Container>
         <h2 id="posts-title" className="sr-only">
-          {category ? `${getPillar(category)?.name} articles` : "All articles"}
+          {category ? `${getService(category)?.name} articles` : "All articles"}
           {page > 1 ? `, page ${page}` : ""}
         </h2>
         <CategoryNav active={category} />

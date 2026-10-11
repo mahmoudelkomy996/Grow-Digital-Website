@@ -12,11 +12,11 @@ import rehypeSlug from "rehype-slug";
 import rehypeStringify from "rehype-stringify";
 import { visit } from "unist-util-visit";
 import type { Element, Root } from "hast";
-import type { ServiceSlug as PillarSlug } from "@/content";
+import type { ServiceSlug } from "@/content";
 
 const DIR = join(process.cwd(), "content/blog");
-export const POSTS_PER_PAGE = 12;
-const PILLAR_SLUGS: PillarSlug[] = ["consultancy", "managed-services", "software-development", "digital-marketing"];
+const POSTS_PER_PAGE = 12;
+const CATEGORY_SLUGS: ServiceSlug[] = ["consultancy", "managed-services", "software-development", "digital-marketing"];
 
 export interface PostMeta {
   slug: string;
@@ -27,7 +27,7 @@ export interface PostMeta {
   /** ISO date (YYYY-MM-DD) */
   date: string;
   updated: string;
-  category: PillarSlug;
+  category: ServiceSlug;
   cover?: string;
   coverAlt?: string;
   author: string;
@@ -60,7 +60,7 @@ function words(md: string) {
 function parseFile(file: string): { meta: PostMeta; body: string } {
   const slug = file.replace(/\.md$/, "");
   const { data, content } = matter(readFileSync(join(DIR, file), "utf8"));
-  const category = (PILLAR_SLUGS as string[]).includes(str(data.category)) ? (str(data.category) as PillarSlug) : "consultancy";
+  const category = (CATEGORY_SLUGS as string[]).includes(str(data.category)) ? (str(data.category) as ServiceSlug) : "consultancy";
   const wordCount = words(content);
   const date = str(data.date);
   return {
@@ -93,14 +93,14 @@ const readAll = cache(() =>
 /** All posts, newest first. */
 export const getAllPosts = cache((): PostMeta[] => readAll().map((p) => p.meta));
 
-export function getPostsByCategory(category: PillarSlug): PostMeta[] {
+export function getPostsByCategory(category: ServiceSlug): PostMeta[] {
   return getAllPosts().filter((p) => p.category === category);
 }
 
 /** Categories (pillars) that have at least one post, in pillar order. */
-export function getBlogCategories(): { slug: PillarSlug; count: number }[] {
+export function getBlogCategories(): { slug: ServiceSlug; count: number }[] {
   const all = getAllPosts();
-  return PILLAR_SLUGS.map((slug) => ({ slug, count: all.filter((p) => p.category === slug).length })).filter((c) => c.count > 0);
+  return CATEGORY_SLUGS.map((slug) => ({ slug, count: all.filter((p) => p.category === slug).length })).filter((c) => c.count > 0);
 }
 
 export function paginate<T>(items: T[], page: number) {

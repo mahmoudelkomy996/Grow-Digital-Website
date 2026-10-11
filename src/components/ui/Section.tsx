@@ -28,4 +28,3 @@ export function Section({ tone = "paper", id, className, children, ...aria }: Se
   );
 }
 
-export const isDarkTone = (tone: SectionTone) => tone === "dark" || tone === "stage";

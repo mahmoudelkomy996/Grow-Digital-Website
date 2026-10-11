@@ -1,9 +1,7 @@
 // Site navigation: header (one dropdown per service pillar), mobile menu and footer.
 // Service menus are derived from src/content/services.ts so the menu and the pages never drift apart.
 // Company facts are hard-coded here on purpose (the chrome must not depend on the content index).
-import { LEGACY_STORY as STORY } from "./story.ts";
 import { SERVICES, type ServicePillar } from "./services.ts";
-import type { PillarSlug } from "./types.ts";
 
 export interface NavLink {
   label: string;
@@ -130,26 +128,7 @@ export const NAV: NavItem[] = [
 export const NAV_CTA: NavLink = { label: "Talk to us", href: "/contact" };
 
 /** Service pillars for compact lists (footer, mobile, cards). */
-export const NAV_SERVICES = SERVICES.map((p) => ({ slug: p.slug, num: p.num, name: p.name, label: p.navLabel, tagline: p.tagline, href: href(p) }));
-
-// ── Legacy: the 7-pillar content (design-system samples, PillarNav) still uses these ───────
-export interface NavPillar {
-  slug: PillarSlug;
-  num: string;
-  name: string;
-  full: string;
-  featured: string[];
-  href: string;
-}
-const PILLAR_IDS = new Set<string>(["consult", "transform", "build", "operate", "secure", "solve", "grow"]);
-export const NAV_PILLARS: NavPillar[] = STORY.filter((c) => PILLAR_IDS.has(c.id)).map((c) => ({
-  slug: c.id as PillarSlug,
-  num: c.num,
-  name: c.name,
-  full: c.full,
-  featured: c.chips.slice(0, 3),
-  href: c.href ?? "/#pillars",
-}));
+const NAV_SERVICES = SERVICES.map((p) => ({ slug: p.slug, num: p.num, name: p.name, label: p.navLabel, tagline: p.tagline, href: href(p) }));
 
 export const CONTACT = {
   email: "info@growdigital.com",
@@ -160,7 +139,7 @@ export const CONTACT = {
   tagline: "It's time to *grow*.",
 } as const;
 
-export const SOCIAL: NavLink[] = [
+const SOCIAL: NavLink[] = [
   { label: "LinkedIn", href: "https://www.linkedin.com/company/growdigitalmea", external: true },
   { label: "X", href: "https://x.com/growdigitalmea", external: true },
   { label: "Instagram", href: "https://www.instagram.com/growdigitalmea", external: true },

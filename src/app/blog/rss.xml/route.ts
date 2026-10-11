@@ -1,4 +1,4 @@
-import { getService as getPillar } from "@/content";
+import { getService } from "@/content";
 import { getAllPosts } from "@/lib/blog";
 import { SITE_NAME, SITE_URL } from "@/lib/seo";
 
@@ -12,7 +12,7 @@ export function GET() {
   const items = posts
     .map((p) => {
       const url = `${SITE_URL}/blog/${p.slug}`;
-      const cat = getPillar(p.category)?.name;
+      const cat = getService(p.category)?.name;
       return `    <item>
       <title>${esc(p.title)}</title>
       <link>${url}</link>

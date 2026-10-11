@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // throwaway HTML/three.js spikes, served as static files
+    "prototypes/**",
   ]),
 ]);
 
