@@ -20,30 +20,30 @@ const SWEEP0 = 0.55; // sweep-hand angle at the middle of OPERATE (points into t
 // Lime discipline: one lime element per chapter — 1 reserved landmark sites, 2 data districts, 4 sweep hand,
 // 5 scan-ring core, 6 product hub caps, 7 leading growth ring. Construction tips use lime only mid-transition.
 const TR = {
-  seed:     [1, 0.55, 0.15, 0, 0, 0, 0, 0, 0],
-  ground:   [0.25, 0.8, 0.85, 1, 1, 1, 1, 1, 1],
-  grid:     [0, 1, 0.35, 0.3, 0.25, 0.2, 0.2, 0.3, 0.2],
-  road:     [0, 1, 0.3, 0.4, 0.34, 0.28, 0.28, 0.34, 0.3],
-  plot:     [0, 1, 0.25, 0.22, 0.08, 0.06, 0.06, 0.14, 0.06],
-  site:     [0, 1, 0.12, 0, 0, 0, 0, 0, 0],
-  expLine:  [0, 0, 0, 0, 0, 0, 0, 0.55, 0.28],
-  trafDen:  [0, 0, 0.6, 0.2, 1, 0.45, 0.45, 0.75, 0.6],
+  seed: [1, 0.55, 0.15, 0, 0, 0, 0, 0, 0],
+  ground: [0.25, 0.8, 0.85, 1, 1, 1, 1, 1, 1],
+  grid: [0, 1, 0.35, 0.3, 0.25, 0.2, 0.2, 0.3, 0.2],
+  road: [0, 1, 0.3, 0.4, 0.34, 0.28, 0.28, 0.34, 0.3],
+  plot: [0, 1, 0.25, 0.22, 0.08, 0.06, 0.06, 0.14, 0.06],
+  site: [0, 1, 0.12, 0, 0, 0, 0, 0, 0],
+  expLine: [0, 0, 0, 0, 0, 0, 0, 0.55, 0.28],
+  trafDen: [0, 0, 0.6, 0.2, 1, 0.45, 0.45, 0.75, 0.6],
   trafMode: [0, 0, 0, 0.6, 1, 1, 1, 1, 1],
-  trafA:    [0, 0, 0.6, 0.45, 1, 0.6, 0.6, 0.85, 0.75],
-  pulse:    [0, 0, 1, 0, 0, 0, 0, 0, 0],
-  dataArc:  [0, 0, 1, 0, 0, 0, 0, 0, 0.1],
-  nodes:    [0, 0, 1, 0, 0, 0, 0, 0, 0],
-  wire:     [0, 0, 0, 1, 1, 1, 1, 1, 1],
-  edge:     [0.5, 0.5, 0.5, 1.0, 0.5, 0.45, 0.45, 0.45, 0.4],
-  fresh:    [0, 0, 0, 0, 0, 0, 0, 1, 0.25],  // GROW: new districts carry a brighter mint edge
-  lit:      [0, 0, 0, 0.05, 1.2, 0.75, 0.65, 0.6, 0.5],
-  clock:    [0, 0, 0, 0, 1, 0, 0, 0, 0],
-  beacon:   [0, 0, 0, 0, 0, 0, 1, 0, 0.16],
+  trafA: [0, 0, 0.6, 0.45, 1, 0.6, 0.6, 0.85, 0.75],
+  pulse: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+  dataArc: [0, 0, 1, 0, 0, 0, 0, 0, 0.1],
+  nodes: [0, 0, 1, 0, 0, 0, 0, 0, 0],
+  wire: [0, 0, 0, 1, 1, 1, 1, 1, 1],
+  edge: [0.5, 0.5, 0.5, 1.0, 0.5, 0.45, 0.45, 0.45, 0.4],
+  fresh: [0, 0, 0, 0, 0, 0, 0, 1, 0.25],  // GROW: new districts carry a brighter mint edge
+  lit: [0, 0, 0, 0.05, 1.2, 0.75, 0.65, 0.6, 0.5],
+  clock: [0, 0, 0, 0, 1, 0, 0, 0, 0],
+  beacon: [0, 0, 0, 0, 0, 0, 1, 0, 0.16],
   solveArc: [0, 0, 0, 0, 0, 0, 1, 0, 0.1],
   solveHit: [0, 0, 0, 0, 0, 0, 1, 0, 0.18],
-  grow:     [0, 0, 0, 0, 0, 0, 0, 1, 0],
-  haze:     [0.25, 0.2, 0.35, 0.6, 0.5, 0.6, 0.5, 0.85, 1.1],
-  dust:     [0.3, 0.2, 0.5, 0.6, 0.6, 0.6, 0.7, 0.5, 0.7],
+  grow: [0, 0, 0, 0, 0, 0, 0, 1, 0],
+  haze: [0.25, 0.2, 0.35, 0.6, 0.5, 0.6, 0.5, 0.85, 1.1],
+  dust: [0.3, 0.2, 0.5, 0.6, 0.6, 0.6, 0.7, 0.5, 0.7],
 };
 function track(v, s) {
   let out = v[0];
@@ -696,7 +696,7 @@ export async function createScene({ canvas, reducedMotion, isMobile }) {
       renderer.setSize(W, H, false);
       camera.aspect = W / H;
       camera.updateProjectionMatrix();
-      // frame the hero to the right of the text panel (panel = min(520px, 88vw) from a clamp(16px, 6vw, 96px) margin)
+      // frame the hero to the right of the text panel (panel = min(580px, 88vw) from a clamp(16px, 6vw, 96px) margin)
       const narrow = isMobile || W < 768;
       if (narrow) { view.shiftX = 0; view.shiftY = 0.16; view.distK = 1; }
       else {

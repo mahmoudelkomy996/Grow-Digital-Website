@@ -433,7 +433,7 @@ export function createScene({ canvas, reducedMotion, isMobile }) {
       if (dpr !== reqDpr || !curDpr) { reqDpr = dpr; curDpr = fixedDpr ? dpr : Math.min(dpr, 1.5); pendingDpr = 0; }
       camera.aspect = W / H;
       if (!isMobile) {
-        // the text column is ~fixed in CSS px (base.css: left clamp(16px, 6vw, 96px), width min(520px, 88vw)),
+        // the text column is ~fixed in CSS px (base.css: left clamp(16px, 6vw, 96px), width min(580px, 88vw)),
         // so on narrower windows it covers more of the frame: move the subject right, pull back, widen the mask
         const e = Math.min(0.62, (Math.min(96, Math.max(16, 0.06 * W)) + Math.min(520, 0.88 * W)) / W);
         aspectShift = Math.min(0.5, Math.max(0.3, 2 * (e + 0.23) - 1)) - 0.3;

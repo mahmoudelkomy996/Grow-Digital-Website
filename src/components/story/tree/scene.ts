@@ -7,10 +7,27 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { clamp, segment } from "../progress";
 import {
-  TL, TREE, DEG, lerp, sstep, sstepW, mulberry32,
-  generateTree, buildTubeGeometry, buildRootMap, buildSapTexture, buildSapParticles, buildLeaves,
-  buildFireflies, buildBlocks, buildBuds, buildShellGeometry, buildOrbits, toQuads,
-  type Curve, type FruitView,
+  TL,
+  TREE,
+  DEG,
+  lerp,
+  sstep,
+  sstepW,
+  mulberry32,
+  generateTree,
+  buildTubeGeometry,
+  buildRootMap,
+  buildSapTexture,
+  buildSapParticles,
+  buildLeaves,
+  buildFireflies,
+  buildBlocks,
+  buildBuds,
+  buildShellGeometry,
+  buildOrbits,
+  toQuads,
+  type Curve,
+  type FruitView,
 } from "./gen";
 import * as M from "./shaders";
 import { DualBloomPass } from "./bloom";
@@ -53,7 +70,7 @@ const EL = [8, 26, 9, 18, 24, 8, 24, 18, 6];
 /**
  * Left edge + width of the story text column in CSS px, mirroring GrowthStory's layout: the panel sits
  * on the site container's left edge (`container-site`: 1280px max content, clamp(16px, 4vw, 32px) gutter)
- * and is min(520px, 88vw) wide.
+ * and is min(580px, 88vw) wide.
  */
 function textColumnRight(W: number) {
   const gutter = Math.min(32, Math.max(16, 0.04 * W));
@@ -62,15 +79,55 @@ function textColumnRight(W: number) {
 }
 
 /** Let the browser paint and handle input between the heavy build steps (keeps each task short). */
-const yieldToMain = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
+const yieldToMain = () =>
+  new Promise<void>((resolve) => setTimeout(resolve, 0));
 
-export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = false }: SceneOptions): Promise<StoryScene> {
+export async function createScene({
+  canvas,
+  reducedMotion,
+  isMobile,
+  fixedDpr = false,
+}: SceneOptions): Promise<StoryScene> {
   const Q = isMobile
-    ? { leaves: 2800, sapNP: 32, sapNPd: 12, sap: 640, fire: 60, motes: 110, shellDetail: 3, blocks: 90, blockScale: 1.2, lineK: 1.4, buds: 180, rootMap: 512, radialDrop: 2 }
-    : { leaves: 7000, sapNP: 56, sapNPd: 20, sap: 1400, fire: 150, motes: 320, shellDetail: 5, blocks: 120, blockScale: 1, lineK: 1, buds: 420, rootMap: 1024, radialDrop: 0 };
+    ? {
+        leaves: 2800,
+        sapNP: 32,
+        sapNPd: 12,
+        sap: 640,
+        fire: 60,
+        motes: 110,
+        shellDetail: 3,
+        blocks: 90,
+        blockScale: 1.2,
+        lineK: 1.4,
+        buds: 180,
+        rootMap: 512,
+        radialDrop: 2,
+      }
+    : {
+        leaves: 7000,
+        sapNP: 56,
+        sapNPd: 20,
+        sap: 1400,
+        fire: 150,
+        motes: 320,
+        shellDetail: 5,
+        blocks: 120,
+        blockScale: 1,
+        lineK: 1,
+        buds: 420,
+        rootMap: 1024,
+        radialDrop: 0,
+      };
 
   // ---------------------------------------------------------------- renderer / scene / camera
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, stencil: false, powerPreference: "high-performance" });
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: false,
+    alpha: false,
+    stencil: false,
+    powerPreference: "high-performance",
+  });
   renderer.setClearColor(BG, 1);
   renderer.toneMapping = THREE.NoToneMapping;
   const scene = new THREE.Scene();
@@ -80,28 +137,70 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
 
   const col = (h: number) => new THREE.Color(h);
   const U = {
-    uTime: { value: 0 }, uFlow: { value: 0 }, uS: { value: 0 }, uPx: { value: 600 },
+    uTime: { value: 0 },
+    uFlow: { value: 0 },
+    uS: { value: 0 },
+    uPx: { value: 600 },
     uMotion: { value: reducedMotion ? 0 : 1 },
-    uFogColor: { value: col(BG) }, uFogDensity: { value: 0.04 },
-    uRes: { value: new THREE.Vector2(1, 1) }, uMaskMode: { value: isMobile ? 1 : 0 }, uMaskFloor: { value: 0.3 },
-    uMint: { value: col(0x7fe0c8) }, uLime: { value: col(0xc8f169) }, uPaper: { value: col(0xf6f5f0) },
-    uBody: { value: col(0x0d4b4a) }, uT600: { value: col(0x1e7773) }, uT500: { value: col(0x2e948e) },
-    uT400: { value: col(0x58b0a9) }, uT300: { value: col(0x8fcdc6) },
-    uGrow: { value: new Array<number>(9).fill(0) }, uHi: { value: new Array<number>(9).fill(0) }, uAct: { value: new Array<number>(9).fill(0) },
-    uTrace: { value: new Array<number>(9).fill(-1) }, uTrunkK: { value: 0.35 }, uSprout: { value: 0 },
-    uPulse: { value: 0 }, uDim: { value: 0 }, uBands: { value: 0 }, uRootGlow: { value: 1 }, uSap: { value: 0 }, uRootSap: { value: 0.4 },
-    uSapTrunk: { value: 1 }, uRetract: { value: 0 }, uSweep: { value: -1 }, uBudA: { value: 0 },
-    uNear: { value: new THREE.Vector2(2.5, 5.0) }, uMaskX: { value: new THREE.Vector2(0.3, 0.47) },
-    uSapSize: { value: isMobile ? 1.6 : 1 }, uSapMin: { value: isMobile ? 3.5 : 1.6 },
-    uFire: { value: 0 }, uMotes: { value: 1 },
-    uShell: { value: 0 }, uShellA: { value: 0 }, uHiShell: { value: 0 },
-    uLeafHi: { value: 0 }, uLeafGlow: { value: 0.5 }, uDrift: { value: 0 },
-    uBlockGlow: { value: 1 }, uLineK: { value: Q.lineK },
-    uFruitS: { value: [0, 0, 0] }, uOrbitA: { value: 0 },
-    uRootMap: { value: null as THREE.Texture | null }, uExtent: { value: 10 }, uRootGrow: { value: 0 }, uGridBase: { value: 0.6 }, uGridLit: { value: 1.5 },
-    uBeat: { value: 1 }, uClock: { value: 0 }, uSeedGlow: { value: 1 }, uBirth: { value: 0 },
-    uPaths: { value: null as THREE.Texture | null }, uNP: { value: Q.sapNP }, uNS: { value: 128 },
-    uShellC: { value: new THREE.Vector3() }, uShellR: { value: 1 },
+    uFogColor: { value: col(BG) },
+    uFogDensity: { value: 0.04 },
+    uRes: { value: new THREE.Vector2(1, 1) },
+    uMaskMode: { value: isMobile ? 1 : 0 },
+    uMaskFloor: { value: 0.3 },
+    uMint: { value: col(0x7fe0c8) },
+    uLime: { value: col(0xc8f169) },
+    uPaper: { value: col(0xf6f5f0) },
+    uBody: { value: col(0x0d4b4a) },
+    uT600: { value: col(0x1e7773) },
+    uT500: { value: col(0x2e948e) },
+    uT400: { value: col(0x58b0a9) },
+    uT300: { value: col(0x8fcdc6) },
+    uGrow: { value: new Array<number>(9).fill(0) },
+    uHi: { value: new Array<number>(9).fill(0) },
+    uAct: { value: new Array<number>(9).fill(0) },
+    uTrace: { value: new Array<number>(9).fill(-1) },
+    uTrunkK: { value: 0.35 },
+    uSprout: { value: 0 },
+    uPulse: { value: 0 },
+    uDim: { value: 0 },
+    uBands: { value: 0 },
+    uRootGlow: { value: 1 },
+    uSap: { value: 0 },
+    uRootSap: { value: 0.4 },
+    uSapTrunk: { value: 1 },
+    uRetract: { value: 0 },
+    uSweep: { value: -1 },
+    uBudA: { value: 0 },
+    uNear: { value: new THREE.Vector2(2.5, 5.0) },
+    uMaskX: { value: new THREE.Vector2(0.3, 0.47) },
+    uSapSize: { value: isMobile ? 1.6 : 1 },
+    uSapMin: { value: isMobile ? 3.5 : 1.6 },
+    uFire: { value: 0 },
+    uMotes: { value: 1 },
+    uShell: { value: 0 },
+    uShellA: { value: 0 },
+    uHiShell: { value: 0 },
+    uLeafHi: { value: 0 },
+    uLeafGlow: { value: 0.5 },
+    uDrift: { value: 0 },
+    uBlockGlow: { value: 1 },
+    uLineK: { value: Q.lineK },
+    uFruitS: { value: [0, 0, 0] },
+    uOrbitA: { value: 0 },
+    uRootMap: { value: null as THREE.Texture | null },
+    uExtent: { value: 10 },
+    uRootGrow: { value: 0 },
+    uGridBase: { value: 0.6 },
+    uGridLit: { value: 1.5 },
+    uBeat: { value: 1 },
+    uClock: { value: 0 },
+    uSeedGlow: { value: 1 },
+    uBirth: { value: 0 },
+    uPaths: { value: null as THREE.Texture | null },
+    uNP: { value: Q.sapNP },
+    uNS: { value: 128 },
+    uShellC: { value: new THREE.Vector3() },
+    uShellR: { value: 1 },
   };
 
   // ---------------------------------------------------------------- procedural tree
@@ -111,13 +210,23 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
     el: EL[k],
     ...(k === 6 ? { d: 10.5 } : { dCrown: k === 7 ? 4.3 : 4.7 }),
   }));
-  const tree = generateTree({ thetas: THETA.slice(1, 8), mobile: isMobile, fruitViews, textAz: isMobile ? null : THETA[1] + (1.5 - 4.5) * DRIFT });
+  const tree = generateTree({
+    thetas: THETA.slice(1, 8),
+    mobile: isMobile,
+    fruitViews,
+    textAz: isMobile ? null : THETA[1] + (1.5 - 4.5) * DRIFT,
+  });
   await yieldToMain();
   const rng = mulberry32(4711);
 
   const tubes = new THREE.Mesh(
     buildTubeGeometry(tree.curves, (c) => {
-      const base = c.group === 1 ? 18 : c.group === 0 ? [6, 5, 4][c.level] : [10, 7, 5, 4][c.level];
+      const base =
+        c.group === 1
+          ? 18
+          : c.group === 0
+            ? [6, 5, 4][c.level]
+            : [10, 7, 5, 4][c.level];
       return Math.max(3, base - Q.radialDrop);
     }),
     M.tubeMaterial(U),
@@ -130,7 +239,10 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
   await yieldToMain();
   U.uRootMap.value = rootMap;
   U.uExtent.value = tree.rootExtent;
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), M.groundMaterial(U));
+  const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(90, 90),
+    M.groundMaterial(U),
+  );
   ground.rotation.x = -Math.PI / 2;
   ground.renderOrder = -1;
   ground.frustumCulled = false;
@@ -143,7 +255,11 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
   const seed = new THREE.Group();
   seed.position.set(0, seedY, 0);
   scene.add(seed);
-  const huskMat = M.orbMaterial(U, { uIntensity: { value: 1 }, uHiO: { value: 0 }, uBandsO: { value: 0.35 } });
+  const huskMat = M.orbMaterial(U, {
+    uIntensity: { value: 1 },
+    uHiO: { value: 0 },
+    uBandsO: { value: 0.35 },
+  });
   const halfGeo = new THREE.SphereGeometry(1, 40, 20, 0, Math.PI);
   const husks = new THREE.Group();
   husks.rotation.y = (THETA[1] + (1 - 4.5) * DRIFT + 90) * DEG;
@@ -160,12 +276,19 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
     husks.add(pivot);
     hinges.push(pivot);
   }
-  const coreMat = M.orbMaterial(U, { uIntensity: { value: 1.2 }, uHiO: { value: 0 }, uBandsO: { value: 0 } });
+  const coreMat = M.orbMaterial(U, {
+    uIntensity: { value: 1.2 },
+    uHiO: { value: 0 },
+    uBandsO: { value: 0 },
+  });
   const core = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 16), coreMat);
   seed.add(core);
   const quad = new THREE.PlaneGeometry(1, 1);
   const seedHaloMat = M.haloMaterial(U, {
-    uCenter: { value: new THREE.Vector3(0, seedY, 0) }, uSize: { value: 1.3 }, uColor: { value: col(0x7fe0c8) }, uIntensity: { value: 1 },
+    uCenter: { value: new THREE.Vector3(0, seedY, 0) },
+    uSize: { value: 1.3 },
+    uColor: { value: col(0x7fe0c8) },
+    uIntensity: { value: 1 },
   });
   const seedHalo = new THREE.Mesh(quad, seedHaloMat);
   seedHalo.frustumCulled = false;
@@ -175,14 +298,21 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
   const paths = buildSapTexture(tree, Q.sapNP, 128, Q.sapNPd);
   await yieldToMain();
   U.uPaths.value = paths;
-  const sap = new THREE.Mesh(toQuads(buildSapParticles(Q.sapNP, Q.sap, rng)), M.sapMaterial(U));
+  const sap = new THREE.Mesh(
+    toQuads(buildSapParticles(Q.sapNP, Q.sap, rng)),
+    M.sapMaterial(U),
+  );
   sap.frustumCulled = false;
   scene.add(sap);
   const m2 = tree.mains[1];
   const nodePos = m2.pts[m2.n - 1].clone();
   const nodeMat = M.haloMaterial(U, {
-    uCenter: { value: nodePos }, uSize: { value: isMobile ? 1.0 : 0.8 }, uColor: { value: col(0x7fe0c8) },
-    uCoreColor: { value: col(0xf6f5f0) }, uIntensity: { value: 0 }, uRing: { value: 0.55 },
+    uCenter: { value: nodePos },
+    uSize: { value: isMobile ? 1.0 : 0.8 },
+    uColor: { value: col(0x7fe0c8) },
+    uCoreColor: { value: col(0xf6f5f0) },
+    uIntensity: { value: 0 },
+    uRing: { value: 0.55 },
   });
   const node = new THREE.Mesh(quad, nodeMat);
   node.frustumCulled = false;
@@ -204,19 +334,29 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
   blockGeo.setAttribute("aFrom", new THREE.InstancedBufferAttribute(bFrom, 3));
   blockGeo.setAttribute("aIn", new THREE.InstancedBufferAttribute(bIn, 3));
   blockGeo.setAttribute("aTime", new THREE.InstancedBufferAttribute(bTime, 3));
-  const blocks = new THREE.InstancedMesh(blockGeo, M.blockMaterial(U), blockList.length);
+  const blocks = new THREE.InstancedMesh(
+    blockGeo,
+    M.blockMaterial(U),
+    blockList.length,
+  );
   blockList.forEach((b, i) => blocks.setMatrixAt(i, b.m));
   blocks.instanceMatrix.needsUpdate = true;
   blocks.frustumCulled = false;
   scene.add(blocks);
 
   // buds on twig tips
-  const buds = new THREE.Mesh(toQuads(buildBuds(tree, rng, Q.buds)), M.budMaterial(U));
+  const buds = new THREE.Mesh(
+    toQuads(buildBuds(tree, rng, Q.buds)),
+    M.budMaterial(U),
+  );
   buds.frustumCulled = false;
   scene.add(buds);
 
   // fireflies + motes
-  const flies = new THREE.Mesh(toQuads(buildFireflies(tree, Q.fire, Q.motes, rng)), M.fireflyMaterial(U));
+  const flies = new THREE.Mesh(
+    toQuads(buildFireflies(tree, Q.fire, Q.motes, rng)),
+    M.fireflyMaterial(U),
+  );
   flies.frustumCulled = false;
   scene.add(flies);
 
@@ -225,7 +365,10 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
   const shellR = tree.crownR + 0.35;
   U.uShellC.value.copy(shellC);
   U.uShellR.value = shellR;
-  const shell = new THREE.Mesh(buildShellGeometry(Q.shellDetail), M.shellMaterial(U));
+  const shell = new THREE.Mesh(
+    buildShellGeometry(Q.shellDetail),
+    M.shellMaterial(U),
+  );
   await yieldToMain();
   shell.position.copy(shellC);
   shell.scale.setScalar(shellR);
@@ -235,13 +378,22 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
   // SOLVE fruits + orbits
   const fruitGeo = new THREE.SphereGeometry(1, 36, 24);
   const fruits = tree.fruits.map((f) => {
-    const mat = M.fruitMaterial(U, { uIntensity: { value: 0.9 }, uHiO: { value: 0 }, uBandsO: { value: 0.5 } });
+    const mat = M.fruitMaterial(U, {
+      uIntensity: { value: 0.9 },
+      uHiO: { value: 0 },
+      uBandsO: { value: 0.5 },
+    });
     const m = new THREE.Mesh(fruitGeo, mat);
     m.position.copy(f.pos);
     m.scale.setScalar(0.0001);
     m.visible = false;
     scene.add(m);
-    const haloMat = M.haloMaterial(U, { uCenter: { value: f.pos.clone() }, uSize: { value: f.r * 6.5 }, uColor: { value: col(0x7fe0c8) }, uIntensity: { value: 0 } });
+    const haloMat = M.haloMaterial(U, {
+      uCenter: { value: f.pos.clone() },
+      uSize: { value: f.r * 6.5 },
+      uColor: { value: col(0x7fe0c8) },
+      uIntensity: { value: 0 },
+    });
     const halo = new THREE.Mesh(quad, haloMat);
     halo.frustumCulled = false;
     scene.add(halo);
@@ -256,16 +408,23 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
   scene.add(sats);
 
   // GROW leaves
-  const leaves = new THREE.Mesh(toQuads(buildLeaves(tree, Q.leaves, rng)), M.leavesMaterial(U));
+  const leaves = new THREE.Mesh(
+    toQuads(buildLeaves(tree, Q.leaves, rng)),
+    M.leavesMaterial(U),
+  );
   await yieldToMain();
   leaves.frustumCulled = false;
   scene.add(leaves);
 
   // ---------------------------------------------------------------- camera keys (one per chapter)
   const V = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
-  const trunkAt = (h: number) => tree.trunk.pts[Math.round((h / TREE.trunkH) * (tree.trunk.n - 1))];
+  const trunkAt = (h: number) =>
+    tree.trunk.pts[Math.round((h / TREE.trunkH) * (tree.trunk.n - 1))];
   const mid = (c: Curve, f = 0.5) => c.pts[Math.floor((c.n - 1) * f)];
-  const focus = (k: number, f: number) => trunkAt(TREE.H[k - 1]).clone().lerp(mid(tree.mains[k - 1]), f);
+  const focus = (k: number, f: number) =>
+    trunkAt(TREE.H[k - 1])
+      .clone()
+      .lerp(mid(tree.mains[k - 1]), f);
   const buildFocus = focus(3, 0.8);
   const fruitFocus = V(0, 0, 0);
   tree.fruits.forEach((f) => fruitFocus.add(f.pos));
@@ -318,14 +477,24 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
     const x = clamp(i + t - 0.5, 0, 8);
     const k = Math.min(7, Math.floor(x));
     // intro -> CONSULT pulls back early, so the seed opens in a wide shot (not in the close-up)
-    const w = k === 0 ? smoother((s - 0.62) / 0.4) : smoother((x - k - 0.18) / 0.64);
+    const w =
+      k === 0 ? smoother((s - 0.62) / 0.4) : smoother((x - k - 0.18) / 0.64);
     const A = K[k],
       B = K[k + 1];
     tgt.lerpVectors(A.t, B.t, w);
-    const d = lerp(A.d, B.d, w) * (1 + 0.02 * Math.sin(s * Math.PI * 2 - Math.PI / 2)) * aspectD;
-    const az = (lerp(A.az, B.az, w) + (s - 4.5) * DRIFT + Math.sin(tm * 0.11) * 0.8) * DEG;
+    const d =
+      lerp(A.d, B.d, w) *
+      (1 + 0.02 * Math.sin(s * Math.PI * 2 - Math.PI / 2)) *
+      aspectD;
+    const az =
+      (lerp(A.az, B.az, w) + (s - 4.5) * DRIFT + Math.sin(tm * 0.11) * 0.8) *
+      DEG;
     const el = (lerp(A.el, B.el, w) + Math.sin(tm * 0.083) * 0.35) * DEG;
-    camera.position.set(tgt.x + d * Math.sin(az) * Math.cos(el), tgt.y + d * Math.sin(el), tgt.z + d * Math.cos(az) * Math.cos(el));
+    camera.position.set(
+      tgt.x + d * Math.sin(az) * Math.cos(el),
+      tgt.y + d * Math.sin(el),
+      tgt.z + d * Math.cos(az) * Math.cos(el),
+    );
     camera.lookAt(tgt);
     U.uFogDensity.value = 0.42 / d;
   }
@@ -335,19 +504,25 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
     HI = U.uHi.value,
     ACT = U.uAct.value,
     TR = U.uTrace.value;
-  const active = (w: readonly [number, number], s: number) => sstep(w[0] - 0.03, w[0] + 0.03, s) * (1 - sstep(w[1] - 0.03, w[1] + 0.05, s));
+  const active = (w: readonly [number, number], s: number) =>
+    sstep(w[0] - 0.03, w[0] + 0.03, s) *
+    (1 - sstep(w[1] - 0.03, w[1] + 0.05, s));
   const traceAt = (s: number, t0: number, dur: number) => {
     const x = (s - t0) / dur;
     return x < 0 || x > 1 ? -1 : x * 1.2 - 0.08;
   };
   function beatCurve(t: number) {
     const ph = (t / 1.6) % 1;
-    return Math.exp(-Math.pow((ph - 0.08) * 16, 2)) + 0.6 * Math.exp(-Math.pow((ph - 0.26) * 16, 2));
+    return (
+      Math.exp(-Math.pow((ph - 0.08) * 16, 2)) +
+      0.6 * Math.exp(-Math.pow((ph - 0.26) * 16, 2))
+    );
   }
   function schedule(s: number, tm: number) {
     G[0] = sstepW(TL.roots, s);
     let tr = 0;
-    for (let k = 1; k <= 7; k++) tr += (tree.TOPL[k] - tree.TOPL[k - 1]) * sstepW(TL.trunk[k], s);
+    for (let k = 1; k <= 7; k++)
+      tr += (tree.TOPL[k] - tree.TOPL[k - 1]) * sstepW(TL.trunk[k], s);
     G[1] = tr;
     for (let k = 1; k <= 7; k++) {
       G[k + 1] = sstepW(TL.branch[k], s);
@@ -364,18 +539,21 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
     // finale roll-call: trunk first, then pillars 1 -> 7; finished before the finale text is fully in
     TR[0] = -1;
     TR[1] = traceAt(s, 7.72, 0.14);
-    for (let k = 1; k <= 7; k++) TR[k + 1] = traceAt(s, 7.78 + (k - 1) * 0.045, 0.15);
+    for (let k = 1; k <= 7; k++)
+      TR[k + 1] = traceAt(s, 7.78 + (k - 1) * 0.045, 0.15);
 
     U.uS.value = s;
     U.uTime.value = tm;
     U.uFlow.value = tm + s * 0.8;
     U.uRootGrow.value = G[0];
     U.uGridBase.value = 0.55 + 0.45 * sstep(0.7, 1.2, s);
-    U.uGridLit.value = 1.5 + 1.3 * sstep(1.0, 1.24, s) * (1 - sstep(1.75, 2.2, s));
+    U.uGridLit.value =
+      1.5 + 1.3 * sstep(1.0, 1.24, s) * (1 - sstep(1.75, 2.2, s));
     U.uBirth.value = clamp((s - 0.9) / 0.45);
     const beatOn = 1 - sstep(0.8, 1.0, s);
     U.uBeat.value = beatOn * (reducedMotion ? 0 : 1);
-    U.uTrunkK.value = 0.22 + 0.43 * sstep(1.7, 2.15, s) + 0.35 * sstep(2.7, 3.1, s);
+    U.uTrunkK.value =
+      0.22 + 0.43 * sstep(1.7, 2.15, s) + 0.35 * sstep(2.7, 3.1, s);
     U.uSprout.value = sstep(0.95, 1.12, s) * (1 - sstep(1.75, 2.2, s));
     U.uSap.value = sstep(1.72, 2.18, s) * (1 - 0.72 * sstep(2.78, 3.2, s));
     U.uSapTrunk.value = 1 - 0.9 * sstep(2.8, 3.2, s); // after TRANSFORM the flow lives in the branches
@@ -384,7 +562,8 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
     U.uRetract.value = sstep(3.8, 4.25, s);
     U.uBlockGlow.value = 1 - 0.88 * U.uRetract.value;
     // BUILD hold: an integration sweep runs along the finished modules (trunk -> tip)
-    U.uSweep.value = s > 3.18 && s < 3.86 ? lerp(-0.12, 1.12, (s - 3.2) / 0.62) : -1;
+    U.uSweep.value =
+      s > 3.18 && s < 3.86 ? lerp(-0.12, 1.12, (s - 3.2) / 0.62) : -1;
     U.uPulse.value = sstep(3.72, 4.18, s) * (1 - 0.7 * sstep(4.78, 5.2, s));
     U.uDim.value = sstep(3.72, 4.18, s) * (1 - sstep(4.78, 5.2, s));
     U.uBudA.value = sstep(3.72, 4.15, s) * (1 - 0.7 * sstep(6.85, 7.2, s));
@@ -395,7 +574,9 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
     U.uFire.value = sstep(3.7, 4.2, s) * (1 - 0.55 * sstep(4.8, 5.2, s));
     U.uClock.value = sstep(3.72, 4.2, s) * (1 - sstep(4.75, 5.15, s));
     U.uShell.value = sstep(4.78, 5.24, s);
-    U.uShellA.value = sstep(4.7, 4.75, s) * (1 - sstep(5.72, 6.1, s)) + 0.12 * sstep(7.7, 8.2, s);
+    U.uShellA.value =
+      sstep(4.7, 4.75, s) * (1 - sstep(5.72, 6.1, s)) +
+      0.12 * sstep(7.7, 8.2, s);
     U.uHiShell.value = HI[6];
     U.uLeafHi.value = HI[8];
     U.uLeafGlow.value = 0.5 - 0.08 * sstep(7.7, 8.2, s);
@@ -414,20 +595,32 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
     const huskGone = sstep(1.62, 1.98, s);
     husks.scale.setScalar(Math.max(1e-4, 1 - huskGone));
     husks.visible = huskGone < 0.999;
-    huskMat.uniforms.uIntensity.value = (0.9 + 0.35 * beat * beatOn) * (1 + 0.35 * open) * (1 - 0.35 * sstep(1.15, 1.5, s));
-    core.scale.setScalar(Math.max(1e-4, seedR * (0.62 + 0.1 * beat * beatOn) * (1 + 0.2 * flash) * coreK));
+    huskMat.uniforms.uIntensity.value =
+      (0.9 + 0.35 * beat * beatOn) *
+      (1 + 0.35 * open) *
+      (1 - 0.35 * sstep(1.15, 1.5, s));
+    core.scale.setScalar(
+      Math.max(
+        1e-4,
+        seedR * (0.62 + 0.1 * beat * beatOn) * (1 + 0.2 * flash) * coreK,
+      ),
+    );
     core.visible = coreK > 0.001;
     coreMat.uniforms.uIntensity.value = 1.15 + 0.8 * flash;
     seed.visible = husks.visible || core.visible;
-    const baseHalo = (0.55 + 0.35 * beat * beatOn) * (1 - 0.75 * sstep(1.0, 1.4, s)) + 0.1 * (1 - sstep(1.7, 2.2, s));
+    const baseHalo =
+      (0.55 + 0.35 * beat * beatOn) * (1 - 0.75 * sstep(1.0, 1.4, s)) +
+      0.1 * (1 - sstep(1.7, 2.2, s));
     seedHaloMat.uniforms.uIntensity.value = (baseHalo + 0.55 * flash) * 0.8;
     seedHaloMat.uniforms.uSize.value = 1.25 + 1.8 * flash;
     seedHalo.visible = seedHaloMat.uniforms.uIntensity.value > 0.002;
-    U.uSeedGlow.value = (1 + 0.5 * beat * beatOn + 0.8 * flash) * (1 - 0.6 * sstep(1.3, 2.0, s));
+    U.uSeedGlow.value =
+      (1 + 0.5 * beat * beatOn + 0.8 * flash) * (1 - 0.6 * sstep(1.3, 2.0, s));
 
     // TRANSFORM: the decision node at the tip of branch 2 lights as the streams reach it
     const dn = sstep(2.0, 2.2, s) * (1 - sstep(2.8, 3.15, s));
-    nodeMat.uniforms.uIntensity.value = dn * (1 + (reducedMotion ? 0 : 0.1 * Math.sin(tm * 2.2)));
+    nodeMat.uniforms.uIntensity.value =
+      dn * (1 + (reducedMotion ? 0 : 0.1 * Math.sin(tm * 2.2)));
     node.visible = dn > 0.001;
 
     // SOLVE fruits bloom as the branch-6 tips arrive
@@ -442,7 +635,8 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
       o.mat.uniforms.uHiO.value = HI[7];
       o.mat.uniforms.uIntensity.value = 0.9 + 0.12 * HI[7];
       o.mat.uniforms.uBandsO.value = 0.5 * (1 - sstep(6.75, 7.2, s));
-      o.haloMat.uniforms.uIntensity.value = sstep(0.2, 1, b) * (0.34 + 0.14 * HI[7]);
+      o.haloMat.uniforms.uIntensity.value =
+        sstep(0.2, 1, b) * (0.34 + 0.14 * HI[7]);
     }
     U.uOrbitA.value = 1 - 0.45 * sstep(6.8, 7.2, s);
 
@@ -461,7 +655,11 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
   const composer = new EffectComposer(renderer, rt);
   const renderPass = new RenderPass(scene, camera);
   composer.addPass(renderPass);
-  const bloom = new DualBloomPass({ levels: isMobile ? 4 : 5, threshold: 0.36, knee: 0.3 });
+  const bloom = new DualBloomPass({
+    levels: isMobile ? 4 : 5,
+    threshold: 0.36,
+    knee: 0.3,
+  });
   composer.addPass(bloom);
   const out = new ShaderPass(M.outputMaterial());
   out.uniforms.tBloom.value = bloom.texture;
@@ -594,8 +792,12 @@ export async function createScene({ canvas, reducedMotion, isMobile, fixedDpr = 
       scene.traverse((o) => {
         const m = o as THREE.Mesh;
         if (m.geometry) geos.add(m.geometry);
-        if (m.material) (Array.isArray(m.material) ? m.material : [m.material]).forEach((x) => mats.add(x));
-        if ((o as THREE.InstancedMesh).isInstancedMesh) (o as THREE.InstancedMesh).dispose();
+        if (m.material)
+          (Array.isArray(m.material) ? m.material : [m.material]).forEach((x) =>
+            mats.add(x),
+          );
+        if ((o as THREE.InstancedMesh).isInstancedMesh)
+          (o as THREE.InstancedMesh).dispose();
       });
       geos.forEach((g) => g.dispose());
       mats.forEach((x) => x.dispose());

@@ -42,7 +42,7 @@ a { color: inherit; }
 
 /* Chapter panels (cross-faded by story.js) */
 .panels { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
-.panel { position: absolute; left: clamp(16px, 6vw, 96px); top: 50%; width: min(520px, 88vw); transform: translateY(-50%); opacity: 0; will-change: opacity, transform; }
+.panel { position: absolute; left: clamp(16px, 6vw, 96px); top: 50%; width: min(580px, 88vw); transform: translateY(-50%); opacity: 0; will-change: opacity, transform; }
 .panel.is-active { pointer-events: auto; }
 .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--lime); margin: 0 0 14px; }
 .eyebrow span { color: var(--teal-300); }

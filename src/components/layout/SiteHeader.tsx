@@ -207,7 +207,7 @@ export function SiteHeader() {
                             );
                           }
                         }}
-                        className="group/nav relative flex h-10 items-center gap-1.5 rounded-full px-3.5 text-[0.9375rem] xl:px-4"
+                        className="group/nav relative flex h-10 items-center gap-1.5 rounded-full px-3.5 text-[0.9375rem] xl:px-2"
                       >
                         {item.label}
                         <ChevronDown

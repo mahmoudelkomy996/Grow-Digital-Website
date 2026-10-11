@@ -14,7 +14,7 @@ import { cn } from "@/lib/cn";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { Eyebrow } from "@/components/ui/Eyebrow";
-import { Logo } from "@/components/ui/Logo";
+// import { Logo } from "@/components/ui/Logo";
 import { CHAPTER_COUNT as N, clamp, lerp, panelOpacity, segment } from "./progress";
 import type { StoryScene } from "./tree/scene";
 
@@ -80,7 +80,7 @@ function PanelBody({ c, i }: { c: StoryChapter; i: number }) {
   const title = accent(c.title, "text-mint");
   return (
     <>
-      {finale ? <Logo className="mb-[26px] h-auto! w-[min(420px,80vw)] text-paper max-md:w-[min(300px,70vw)]" /> : null}
+      {/* {finale ? <Logo className="mb-[26px] h-auto! w-[min(420px,80vw)] text-paper max-md:w-[min(300px,70vw)]" /> : null} */}
       {i === 0 ? (
         <Eyebrow tone="dark" className="mb-3.5">
           {c.full}
@@ -422,7 +422,7 @@ export function GrowthStory() {
                 aria-hidden={i === active ? undefined : true}
                 inert={i !== active}
                 className={cn(
-                  "w-[min(520px,88vw)] [grid-area:1/1] [align-self:safe_center] will-change-[opacity,translate] max-md:self-end",
+                  "w-[min(580px,88vw)] [grid-area:1/1] [align-self:safe_center] will-change-[opacity,translate] max-md:self-end",
                   i === active && "pointer-events-auto",
                 )}
                 style={{ opacity: i === 0 ? 1 : 0, translate: i === 0 ? "0 0px" : "0 24px" }}
