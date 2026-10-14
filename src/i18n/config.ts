@@ -48,3 +48,6 @@ export const hasPath = (locale: Locale, path: string) => !isBlogPath(path) || BL
 
 /** Whether a locale (string from route params) has the blog. */
 export const hasBlog = (lang: string) => (BLOG_LOCALES as readonly string[]).includes(lang);
+
+/** Show the language switch in the header and mobile menu. Off for now: Arabic pages stay reachable by URL (/ar). */
+export const SHOW_LANGUAGE_SWITCH = false;

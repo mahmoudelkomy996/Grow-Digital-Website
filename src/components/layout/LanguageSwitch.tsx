@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/cn";
-import { LOCALES, LOCALE_META, hasPath, localizeHref } from "@/i18n/config";
+import { LOCALES, LOCALE_META, SHOW_LANGUAGE_SWITCH, hasPath, localizeHref } from "@/i18n/config";
 import { useDict, useLocale } from "@/i18n/LocaleProvider";
 
 /**
@@ -13,6 +13,7 @@ export function LanguageSwitch({ pathname, className }: { pathname: string; clas
   const locale = useLocale();
   const t = useDict();
   const other = LOCALES.find((l) => l !== locale)!;
+  if (!SHOW_LANGUAGE_SWITCH) return null;
   const href = localizeHref(other, hasPath(other, pathname) ? pathname : "/");
   return (
     <a

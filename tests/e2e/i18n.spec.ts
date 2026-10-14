@@ -77,7 +77,9 @@ test.describe("Arabic site", () => {
   });
 });
 
+// Hidden for now (SHOW_LANGUAGE_SWITCH = false in src/i18n/config.ts); flip both together.
 test.describe("language switch", () => {
+  test.skip(true, "language switch is hidden");
   test("switches to the same page in the other language", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "chromium-desktop", "the desktop header shows the switch");
     await page.goto("/services/managed-services");
